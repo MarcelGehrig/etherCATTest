@@ -11,7 +11,15 @@ Environment Profile=
 Extra Arguments=
 Install Directory=file:///home/ubuntu/installx86
 
+[CustomDefinesAndIncludes][ProjectPath0]
+Defines=\x00\x00\x00\x00
+Includes=\x00\x00\x00\x01\x00\x00\x00Z\x00/\x00h\x00o\x00m\x00e\x00/\x00m\x00g\x00e\x00h\x00r\x00i\x00g\x002\x00/\x00g\x00i\x00t\x00_\x00r\x00e\x00p\x00o\x00s\x00/\x00i\x00n\x00s\x00t\x00a\x00l\x00l\x00-\x00x\x008\x006\x00/\x00i\x00n\x00c\x00l\x00u\x00d\x00e\x00/
+Path=.
+
 [Defines And Includes][Compiler]
 Name=GCC
 Path=gcc
 Type=GCC
+
+[Project]
+VersionControlSupport=kdevgit
