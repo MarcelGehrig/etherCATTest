@@ -27,49 +27,39 @@ public:
 	int64_t getPosAux(int driveNumber);
 	
 	//advanced set functions:
-	void setControlWord(int driveNumber, controlWordCommand word);
-	void setModeOfOperation(int driveNumber, driveMode mode);
+// 	void setControlWord(int driveNumber, controlWordCommand word);
 	void disableVelocityControl(int driveNumber);
 	void enableVelocityControl(int driveNumber);
 	void enableDrive(int driveNumber);
-	void enableAllDrives();
-	void disable(int driveNumber);
 	void disableAllDrives();
 	
-	//index pulse
-	//	at the moment, only one touchProbe at a time can be used
-// 		void homeWithIndexPulse(std::array<int, numberOfWheels> driveNumbers, std::array<int, numberOfWheels> offsets, std::array<bool, numberOfWheels> auxPos);	//parallel multiple drives
-// 		void homeWithIndexPulse(std::array<int, numberOfWheels> driveNumbers, std::array<int, numberOfWheels> offsets, std::array<bool, numberOfWheels> auxPos, std::array<int, numberOfWheels> touchProbes);	//
-// 		int32_t homeWithIndexPulse(int driveNumber, int offset=0, bool auxPos, int touchProbe=1);
-	bool enableCapturingIndexPulse(std::vector<int> driveNumbers);
-	bool enableCapturingIndexPulse(std::vector<int> driveNumbers, std::vector<int> touchProbes);
-	bool enableCapturingIndexPulse(int driveNumber, int touchProbe=1);
-	bool disableCapturingIndexPulse(int driveNumber, int touchProbe=1);
-// 		void waitForAllIndexPulses(std::array<int, numberOfWheels> driveNumbers, int pollingTimeUSec=1e5);
-// 		void waitForAllIndexPulses(std::array<int, numberOfWheels> driveNumbers, std::array<int, numberOfWheels> touchProbes, int pollingTimeUSec=1e5);
-// 		void waitForAllIndexPulses(int driveNumber, int touchProbe=1, int pollingTimeUSec=1e5);
-	void setOffsetAtIndexPos(std::vector<int> driveNumbers, bool isAuxPos, std::vector<int> offsets);
-	void setOffsetAtIndexPos(std::vector<int> driveNumbers, bool isAuxPos, std::vector<int> offsets, std::vector<int> touchProbes);
-	void setOffsetAtIndexPos(int driveNumber, bool isAuxPos, int offset=0, int touchProbe=1);
+	// gain scheduling functions
+	void disableVelocityControl(int driveNumber);
+	void enableVelocityControl(int driveNumber);
 	
-	bool getIndexPulseIsCaptured(int driveNumber, int touchProbe=1);	// both pulses are captured
-	bool getIndexPulsePositiveEdgeIsCaptured(int driveNumber, int touchProbe=1);
-	bool getIndexPulseNegativeEdgeIsCaptured(int driveNumber, int touchProbe=1);
-	bool getIndexPulseIsCapturedIsValid(int driveNumber, int touchProbe=1);
-	int32_t getCapturedPosition(int driveNumber, int touchProbe=1);			// compensated for direction of rotation
-	int32_t getCapturedPositionPositivePulse(int driveNumber, int touchProbe=1);
-	int32_t getCapturedPositionNegativePulse(int driveNumber, int touchProbe=1);
-// 		bool isDirectionOfRotationPositive(int driveNumber, int touchProbe=1);
+	
+	
+
+	
+	// basic functions
+	void disableDrive(int driveNumber);
+	void enableDrive();
+	void setModeOfOperation(int driveNumber, driveModeOfOperation_ELMO mode, bool scheduleGainIndex = false);
+	
+	bool getIsDriveEnabled(int driveNumber);
+	driveModeOfOperation_ELMO getDriveModeElmo(int driveNumber);
+	bool checkDriveStatus(int driveNumber, driveStatus_ELMO driveStatusToCheck);
+	driveStatus_ELMO getDriveStatusElmo(int driveNumber);
 	
 	
 	
 	
 	
 	
-	// Basic get and set functions to get/write values from/to buffer array
+	// Low level get and set functions to get/write values from/to buffer array
 	// ////////////////////////////////////////////////////////////////////
 	
-	//basic set functions:
+	// low level set functions:
 	void setControlWord(int driveNumber, uint16_t controlWord);
 	void setModeOfOperation(int driveNumber, int8_t modeOfOperation);
 	void setTargetTorque(int driveNumber, int16_t targetTorque);
@@ -80,7 +70,7 @@ public:
 	void setProfileVelocity(int driveNumber, uint32_t profileVelocity);
 	void setEndVelocity(int driveNumber, uint32_t endVelocity);
 	void setProfileAcceleration(int driveNumber, uint32_t profileAcceleration);
-	void setProfileDeceleration(int driveNumber, uint32_t ProfileDeceleration);
+	void setProfileDeceleration(int driveNumber, uint32_t profileDeceleration);
 	void setTorqueSlope(int driveNumber, uint32_t torqueSlope);
 	void setPositionOffset(int driveNumber, int32_t positionOffset);
 	void setVelocityOffset(int driveNumber, int32_t velocityOffset);
@@ -91,6 +81,8 @@ public:
 	void setTargetVelocity(int driveNumber, int32_t targetVelocity);
 	void setDigitalOutput(int driveNumber, uint32_t digitalOutput);
 	void setPolarity(int driveNumber, uint8_t polarity);
+	
+	void setGainSchedulingManualIndex(int driveNumber, uint16_t index);
 	
 // 	void setControlWord(int driveNumber, uint16_t word);
 // 	void setModeOfOperation(int driveNumber, int8_t mode);
@@ -109,9 +101,9 @@ public:
 	
 	
 	
-	//basic get functions:
+	// low level get functions:
 	uint16_t getStatusWord(int driveNumber);
-	uint8_t getModeOfOperationDisplay(int driveNumber);
+	int8_t getModeOfOperationDisplay(int driveNumber);
 	int32_t getPositionDemand_UU(int driveNumber);
 	int32_t getActualPosition_counts(int driveNumber);
 	int32_t getPositionActualValue(int driveNumber);
@@ -150,14 +142,53 @@ public:
 // 	int32_t getPosOffset(int driveNumber);
 // 	int32_t getPosAuxOffset(int driveNumber);
 // 	
+		//index pulse
+	//	at the moment, only one touchProbe at a time can be used
+// 		void homeWithIndexPulse(std::array<int, numberOfWheels> driveNumbers, std::array<int, numberOfWheels> offsets, std::array<bool, numberOfWheels> auxPos);	//parallel multiple drives
+// 		void homeWithIndexPulse(std::array<int, numberOfWheels> driveNumbers, std::array<int, numberOfWheels> offsets, std::array<bool, numberOfWheels> auxPos, std::array<int, numberOfWheels> touchProbes);	//
+// 		int32_t homeWithIndexPulse(int driveNumber, int offset=0, bool auxPos, int touchProbe=1);
+	bool enableCapturingIndexPulse(std::vector<int> driveNumbers);
+	bool enableCapturingIndexPulse(std::vector<int> driveNumbers, std::vector<int> touchProbes);
+	bool enableCapturingIndexPulse(int driveNumber, int touchProbe=1);
+	bool disableCapturingIndexPulse(int driveNumber, int touchProbe=1);
+// 		void waitForAllIndexPulses(std::array<int, numberOfWheels> driveNumbers, int pollingTimeUSec=1e5);
+// 		void waitForAllIndexPulses(std::array<int, numberOfWheels> driveNumbers, std::array<int, numberOfWheels> touchProbes, int pollingTimeUSec=1e5);
+// 		void waitForAllIndexPulses(int driveNumber, int touchProbe=1, int pollingTimeUSec=1e5);
+	void setOffsetAtIndexPos(std::vector<int> driveNumbers, bool isAuxPos, std::vector<int> offsets);
+	void setOffsetAtIndexPos(std::vector<int> driveNumbers, bool isAuxPos, std::vector<int> offsets, std::vector<int> touchProbes);
+	void setOffsetAtIndexPos(int driveNumber, bool isAuxPos, int offset=0, int touchProbe=1);
+	
+	bool getIndexPulseIsCaptured(int driveNumber, int touchProbe=1);	// both pulses are captured
+	bool getIndexPulsePositiveEdgeIsCaptured(int driveNumber, int touchProbe=1);
+	bool getIndexPulseNegativeEdgeIsCaptured(int driveNumber, int touchProbe=1);
+	bool getIndexPulseIsCapturedIsValid(int driveNumber, int touchProbe=1);
+	int32_t getCapturedPosition(int driveNumber, int touchProbe=1);			// compensated for direction of rotation
+	int32_t getCapturedPositionPositivePulse(int driveNumber, int touchProbe=1);
+	int32_t getCapturedPositionNegativePulse(int driveNumber, int touchProbe=1);
+// 		bool isDirectionOfRotationPositive(int driveNumber, int touchProbe=1);
+	
+	
 	
 	
 	
 	
 // 	private:
-	ethercat::EtherCATMain* etherCATStack;
+	ecmasterlib::EtherCATMain* etherCATStack;
 	uint8_t* inBuffer;
 	uint8_t* outBuffer;
+	
+	struct drive {
+		int32_t posOffset		= 0;
+		int32_t auxPosOffset	= 0;
+		int32_t prevRawPos		= 0;
+		int32_t prevRawAuxPos	= 0;
+		int64_t absPos 			= 0;
+		int64_t absAuxPos 		= 0;
+	};
+	
+	drive drives[numberOfDrives];
+	
+	
 	
 	touchProbeStateEnum touchProbeState[numberOfDrives];
 	

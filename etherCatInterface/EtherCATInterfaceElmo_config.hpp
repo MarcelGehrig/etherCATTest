@@ -8,7 +8,7 @@ namespace etherCATInterface {
 	// Configurations offsets in PDOs (ENI files)
 	// //////////////////////////////////////////
 		
-	// Offsets Output PDOs (output from master)
+	// Output Offsets (oo) PDOs (output from master)
 	// Elmo: GoldLine "EtherCAT Application Manual.pdf"     p. 21
 	static constexpr int oo_controlWord				= -1;
 	static constexpr int oo_modeOfOperation			= -1;
@@ -23,16 +23,19 @@ namespace etherCATInterface {
 	static constexpr int oo_profileDeceleration		= -1;
 	static constexpr int oo_torqueSlope				= -1;
 	static constexpr int oo_positionOffset			= -1;
+	static constexpr int oo_velocityOffset			= -1;
 	static constexpr int oo_torqueOffset			= -1;
 	static constexpr int oo_touchProbeFunction		= -1;
 	static constexpr int oo_interpolatedDataRecord_1		= -1;
 	static constexpr int oo_interpolatedDataRecord_2		= -1;
 	static constexpr int oo_targetVelocity			= -1;
 	static constexpr int oo_digitalOutput			= -1;
-	static constexpr int oo_polarity				= -1; 
+	static constexpr int oo_polarity				= -1;
+	
+	static constexpr int oo_gainSchedlingManualIndex = -1;
 	
 	
-	// Offsets Input PDOs
+	// Input Offsets (io) PDOs
 	// Elmo: GoldLine "EtherCAT Application Manual.pdf"     p. 23
 	static constexpr int io_statusWord					= -1;
 	static constexpr int io_modeOfOperationDisplay		= -1;
@@ -61,26 +64,67 @@ namespace etherCATInterface {
 	// Configurations for Elmo drives
 	// //////////////////////////////
 	
-	enum driveMode_ELMO {
-		  profilePosition,
-		  profileVelocity,
-		  profileTorque,
-		  homing,
-		  interpolatedPosition,
-		  cyclicSynchronousPosition,
-		  cyclicSynchronousVelocity,
-		  cyclicSynchronousTorque
-	  };
-	  
+	enum driveModeOfOperation_ELMO {
+		CANEncoderMode,
+		profilePosition,
+		profileVelocity,
+		profileTorque,
+		homing,
+		interpolatedPosition,
+		cyclicSynchronousPosition,
+		cyclicSynchronousVelocity,
+		cyclicSynchronousTorque
+	};
+	
+	// drive mode of operations value (dmoov)
+	static constexpr int16_t dmoov_CANEncoderMode				= -3;
+	static constexpr int16_t dmoov_profilePosition				= 1;
+	static constexpr int16_t dmoov_profileVelocity				= 3;
+	static constexpr int16_t dmoov_profileTorque				= 4;
+	static constexpr int16_t dmoov_homing						= 6;
+	static constexpr int16_t dmoov_interpolatedPosition			= 7;
+	static constexpr int16_t dmoov_cyclicSynchronousPosition	= 8;
+	static constexpr int16_t dmoov_cyclicSynchronousVelocity	= 9;
+	static constexpr int16_t dmoov_cyclicSynchronousTorque		= 10;
+	
+	
+	    
+	 
 	  enum controlWordCommand_ELMO {
-		  shutdown,		//0x06
-		  switchOn,		//0X07
-		  disableDrive,		//0X07 same as switchOn
-		  enableOperation,	//0X0F
-		  faultReset		//0X80
+		shutdown,			//0x06
+		switchOn,			//0X07
+		switchOnAndEnable,	//0x0F
+		disableVoltage,		//0x00
+		quickStop,			//0x02
+		disableOperation,	//0x07
+		enableOperation,	//0x0F
+		faultReset			//0X80
 	  };
 	  
-	  enum touchProbeStateEnum_ELMO {
+	// Control World Commands (cwc)
+	static constexpr uint16_t cwc_shutdown			= 0x06;
+	static constexpr uint16_t cwc_switchOn			= 0x07;
+	static constexpr uint16_t cwc_switchOnAndEnable	= 0x0F;
+	static constexpr uint16_t cwc_disableVoltage	= 0x00;
+	static constexpr uint16_t cwc_quickStop			= 0x02;
+	static constexpr uint16_t cwc_disableOperation	= 0x07;
+	static constexpr uint16_t cwc_enableOperation	= 0x0F;
+	static constexpr uint16_t cwc_faultReset		= 0x80;
+	  
+	
+	// Drive states (elmo "CAN DS-402 Implementation Guide" p. 46
+	enum driveStatus_ELMO {
+		notReadyToSwitchOn,
+		switchOnDisabled,
+		readyToSwitchOn,
+		switchedOn,
+		operationEnabled,
+		quickStopActive,
+		faultReactionactive,
+		fault
+	};
+	
+	enum touchProbeStateEnum_ELMO {
 		  reset,
 		  enableProbe,
 		  enableSampling,
@@ -105,6 +149,11 @@ namespace etherCATInterface {
 	static constexpr uint16_t faultMask =					0x0048;
 
 
+	// switch to different set of gains for velocity/torque 
+	static constexpr int gainSchedulingManualIndex_position =	-1;		// chair 1
+	static constexpr int gainSchedulingManualIndex_velocity =	-1;		// chair 1
+	static constexpr int gainSchedulingManualIndex_torque =		-1;		// chair 2
+	static constexpr int gainSchedulingManualIndex_homing =		-1;		// chair 2
 
 
 

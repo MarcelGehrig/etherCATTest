@@ -223,19 +223,29 @@ void setPosAuxOffset(int driveNumber, int32_t offset)
 
 
 //private:
-bool checkOffset(int offsetInByte) {
+bool EtherCATInterfaceBase::checkOffset(int offsetInByte) {
 	if(offsetInByte < 0) {
 		std::cout << "ERROR: the PDO offset is not defined in EtherCATInterfaceXXX" << std::endl;
 		return false;
 	}
 }
 
-bool checkMaskedBits(uint16_t variable, uint16_t compareWord, uint16_t mask)
+bool EtherCATInterfaceBase::checkMaskedBits(uint16_t variable, uint16_t compareWord, uint16_t mask)
 {
 	variable = variable & mask;
 	compareWord = compareWord & mask;
 	if ( variable == compareWord ) return true;
 	else return false;
+}
+
+void EtherCATInterfaceBase::log(std::__cxx11::string message)
+{
+	std::cout << message << std::endl;
+}
+
+void EtherCATInterfaceBase::logError(std::__cxx11::string message)
+{
+	log(message);
 }
 
 // void checkDriveNumber(int driveNumber)

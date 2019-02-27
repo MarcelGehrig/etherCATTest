@@ -7,7 +7,7 @@
 #include <EtherCATMain.hpp>
 
 // nur lokal TODO
-#include "../eeros/installx86/include/EtherCATMain.hpp"
+// #include "../eeros/installx86/include/EtherCATMain.hpp"
 
 
 class etherCATInterface::EtherCATInterfaceBase {
@@ -48,8 +48,9 @@ public:
 // 	//crude debug functions, do not use:
 // 	int16_t DBGgetSetTorque();
 	bool checkOffset(int offsetInByte);
-	
 	bool checkMaskedBits(uint16_t variable, uint16_t compareWord, uint16_t mask);
+	void log(std::string message);
+	void logError(std::string message);
 	
 	private:
 	ethercat::EtherCATMain* etherCATStack;

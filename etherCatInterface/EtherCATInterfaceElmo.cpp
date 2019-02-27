@@ -90,57 +90,55 @@ bool isAllDrivesReady()
 	return ready;		
 }
 
-bool isDriveEnabled(int driveNumber)
-{
-//	//DEBUG böse häck
-//	if(driveNumber == 0) return true;
-	
-	
-	return checkMaskedBits( getStatus(driveNumber), operationEnabledValue, operationEnabledMask);
-}
 
-bool isAllDrivesEnabled()
+bool EtherCATInterfaceElmo::isAllDrivesEnabled()
 {
-	bool ready = true;
+	bool enabled = true;
 	for ( int i; i < numberOfDrives; i++) {
-		if ( !isDriveEnabled(i) ) ready = false;
+		if ( !isDriveEnabled(i) ) enabled = false;
 	}
-	return ready;
+	return enabled;
 }
 
-int64_t getPos(int driveNumber)
+int64_t EtherCATInterfaceElmo::getPos(int driveNumber)
 {
-	int32_t rawPos = getPosRaw(driveNumber);
-	int32_t diff = rawPos - prevRawPos[driveNumber];
-	prevRawPos[driveNumber] = rawPos;
-	absPos[driveNumber] += static_cast<int64_t>(diff);
- 	return absPos[driveNumber] + static_cast<int64_t>(getPosOffset(driveNumber));
+	int32_t rawPos = getPositionActualValue(driveNumber);
+	int32_t diff = rawPos - drives[driveNumber].prevRawPos;
+	drives[driveNumber].prevRawPos = rawPos;
+	drives[driveNumber].absPos += static_cast<int64_t>(diff);
+ 	return drives[driveNumber].absPos + static_cast<int64_t>(drives[driveNumber].posOffset);
 }
 
-int64_t getPosAux(int driveNumber)
+int64_t EtherCATInterfaceElmo::getPosAux(int driveNumber)
 {
-	int32_t rawAuxPos = getPosAuxRaw(driveNumber);
-	int32_t diff = rawAuxPos - prevRawAuxPos[driveNumber];
-	prevRawAuxPos[driveNumber] = rawAuxPos;
-	absAuxPos[driveNumber] += static_cast<int64_t>(diff);;
- 	return absAuxPos[driveNumber] + static_cast<int64_t>(getPosAuxOffset(driveNumber));
+	int32_t rawAuxPos = getAuxilaryPositionActualValue(driveNumber);
+	int32_t diff = rawAuxPos - drives[driveNumber].prevRawAuxPos;
+	drives[driveNumber].prevRawAuxPos = rawAuxPos;
+	drives[driveNumber].absAuxPos += static_cast<int64_t>(diff);
+ 	return drives[driveNumber].absAuxPos + static_cast<int64_t>(drives[driveNumber].auxPosOffset);
 }
 
 
 
 //advanced set functions:
-void setControlWord(int driveNumber, movingchair::controlWordCommand word)
+void EtherCATInterfaceElmo::setControlWord(int driveNumber, controlWordCommand_ELMO word)
 {
 	switch(word) {
-		case controlWordCommand::shutdown :			setControlWord(driveNumber, 0x06);
+		case controlWordCommand_ELMO::shutdown :			setControlWord(driveNumber, cwc_shutdown);
 			break;
-		case controlWordCommand::switchOn :			setControlWord(driveNumber, 0x07);
+		case controlWordCommand_ELMO::switchOn :			setControlWord(driveNumber, cwc_switchOn);
 			break;
-		case controlWordCommand::disableDrive :		setControlWord(driveNumber, 0x07);	//same as switchOn
+		case controlWordCommand_ELMO::switchOnAndEnable :	setControlWord(driveNumber, cwc_switchOnAndEnable);
 			break;
-		case controlWordCommand::enableOperation :	setControlWord(driveNumber, 0x0f);
+		case controlWordCommand_ELMO::disableVoltage :		setControlWord(driveNumber, cwc_switchOnAndEnable);
 			break;
-		case controlWordCommand::faultReset :		setControlWord(driveNumber, 0x80);
+		case controlWordCommand_ELMO::quickStop :			setControlWord(driveNumber, cwc_quickStop);
+			break;
+		case controlWordCommand_ELMO::disableOperation :	setControlWord(driveNumber, cwc_disableOperation);
+			break;
+		case controlWordCommand_ELMO::enableOperation :		setControlWord(driveNumber, cwc_enableOperation);
+			break;
+		case controlWordCommand_ELMO::faultReset :			setControlWord(driveNumber, cwc_faultReset);
 			break;
 		default :
 			break;
@@ -148,84 +146,191 @@ void setControlWord(int driveNumber, movingchair::controlWordCommand word)
 	
 }
 
-void setModeOfOperation(int driveNumber, movingchair::driveMode mode)
-{
-	switch(mode) {
-		case driveMode::profilePosition :			
-			enableVelocityControl(driveNumber);
-			setModeOfOperation(driveNumber, 1); 
-			break;
-		case driveMode::profileVelocity :		
-			enableVelocityControl(driveNumber);
-			setModeOfOperation(driveNumber, 3); 
-			break;
-		case driveMode::profileTorque :		
-			disableVelocityControl(driveNumber);
-			setModeOfOperation(driveNumber, 4); 
-			break;
-		case driveMode::homing :		
-			disableVelocityControl(driveNumber);
-			setModeOfOperation(driveNumber, 6); 
-			break;
-		case driveMode::interpolatedPosition :
-			enableVelocityControl(driveNumber);
-			setModeOfOperation(driveNumber, 7); 
-			break;
-		case driveMode::cyclicSynchronousPosition :
-			enableVelocityControl(driveNumber);
-			setModeOfOperation(driveNumber, 8); 
-			break;
-		case driveMode::cyclicSynchronousVelocity :
-			enableVelocityControl(driveNumber);
-			setModeOfOperation(driveNumber, 9); 
-			break;
-		case driveMode::cyclicSynchronousTorque :		
-			disableVelocityControl(driveNumber);
-			setModeOfOperation(driveNumber, 10); 
-			break;
-		default : 
-			break;
-	}
-}
 
-void disableVelocityControl(int driveNumber)
-{
-	setGainSchedulingManualIndex(driveNumber, 2);
-}
 
-void enableVelocityControl(int driveNumber)
-{
-	setGainSchedulingManualIndex(driveNumber, 1);
-}
 
-void enableDrive(int driveNumber)
-{
-// 	if ( !checkMaskedBits(getStatus(driveNumber), switchedOnValue, switchedOnMask) ) log.error() << "Drive: " << driveNumber << " needs to be in state 'switched on'";
-//	if ( !checkMaskedBits(getStatus(driveNumber), switchedOnValue, switchedOnMask) ) log.error() << "EnableDrive(" << driveNumber << ") with status: 0x" << std::hex << getStatus(driveNumber) << " needs to be in state 'switched on'";
-	if ( !checkMaskedBits(getStatus(driveNumber), switchedOnValue, switchedOnMask) and !checkMaskedBits(getStatus(driveNumber), operationEnabledValue, operationEnabledMask) ) {
-		log.error() << "EnableDrive(" << driveNumber << ") with status: 0x" << std::hex << getStatus(driveNumber) << " needs to be in state 'switched on'";
-	}
-	else setControlWord(driveNumber, enableOperation);;
-}
-
-void enableAllDrives()
+void EtherCATInterfaceElmo::enableAllDrives()
 {
 	for ( int i; i < numberOfDrives; i++) {
 		enableDrive(i);
 	}
 }
 
-void disableAllDrives()
+void EtherCATInterfaceElmo::disableAllDrives()
 {
 	for ( int i; i < numberOfDrives; i++) {
-		disable(i);
+		disableDrive(i);
 	}
 }
 
-void disable(int driveNumber)
+
+
+// gain scheduling functions (chair)
+
+void EtherCATInterfaceElmo::disableVelocityControl(int driveNumber)
+{
+	setGainSchedulingManualIndex(driveNumber, 2);
+}
+
+void EtherCATInterfaceElmo::enableVelocityControl(int driveNumber)
+{
+	setGainSchedulingManualIndex(driveNumber, 1);
+}
+
+
+
+
+
+// basic functions
+
+void EtherCATInterfaceElmo::disableDrive(int driveNumber)
 {
 	setControlWord(driveNumber, disableDrive);
 }
+
+void EtherCATInterfaceElmo::enableDrive(int driveNumber)
+{
+	if ( !checkDriveStatus(driveNumber, driveStatus_ELMO::switchedOn) and getIsDriveEnabled(driveNumber) ) {
+		std::string s;
+		s << "EnableDrive(" << driveNumber << ") with status: 0x" << std::hex << getStatusWord(driveNumber) << "not possible. It needs to be in state 'switched on'";
+		logError(s);
+	}
+	else setControlWord(driveNumber, cwc_enableOperation);
+}
+
+void EtherCATInterfaceElmo::setModeOfOperation(int driveNumber, driveModeOfOperation_ELMO mode, bool scheduleGainIndex)
+{
+	int index;
+	switch(mode) {
+		case driveModeOfOperation_ELMO::CANEncoderMode :
+			setModeOfOperation(driveNumber, dmoov_CANEncoderMode);
+			break;
+		case driveModeOfOperation_ELMO::profilePosition :
+			if ( scheduleGainIndex and (gainSchedulingManualIndex_position >= 0) ) {
+				setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_position);
+			}
+			setModeOfOperation(driveNumber, dmoov_profilePosition); 
+			break;
+		case driveModeOfOperation_ELMO::profileVelocity :
+			if ( scheduleGainIndex and (gainSchedulingManualIndex_velocity >= 0) ) {
+				setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_velocity);
+			}
+			setModeOfOperation(driveNumber, dmoov_profileVelocity); 
+			break;
+		case driveModeOfOperation_ELMO::profileTorque :
+			if ( scheduleGainIndex and (gainSchedulingManualIndex_torque >= 0) ) {
+				setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_torque);
+			}
+			setModeOfOperation(driveNumber, dmoov_profileTorque); 
+			break;
+		case driveModeOfOperation_ELMO::homing :
+			if ( scheduleGainIndex and (gainSchedulingManualIndex_homing >= 0) ) {
+				setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_homing);
+			}
+			setModeOfOperation(driveNumber, dmoov_homing); 
+			break;
+		case driveModeOfOperation_ELMO::interpolatedPosition :
+			if ( scheduleGainIndex and (gainSchedulingManualIndex_position >= 0) ) {
+				setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_position);
+			}
+			setModeOfOperation(driveNumber, dmoov_interpolatedPosition); 
+			break;
+		case driveModeOfOperation_ELMO::cyclicSynchronousPosition :
+			if ( scheduleGainIndex and (gainSchedulingManualIndex_position >= 0) ) {
+				setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_position);
+			}
+			setModeOfOperation(driveNumber, dmoov_cyclicSynchronousPosition); 
+			break;
+		case driveModeOfOperation_ELMO::cyclicSynchronousVelocity :
+			if ( scheduleGainIndex and (gainSchedulingManualIndex_velocity >= 0) ) {
+				setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_velocity);
+			}
+			setModeOfOperation(driveNumber, dmoov_cyclicSynchronousVelocity); 
+			break;
+		case driveModeOfOperation_ELMO::cyclicSynchronousTorque :
+			if ( scheduleGainIndex and (gainSchedulingManualIndex_torque >= 0) ) {
+				setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_torque);
+			}
+			setModeOfOperation(driveNumber, dmoov_cyclicSynchronousTorque); 
+			break;
+		default : 
+			break;
+	}
+}
+
+
+bool EtherCATInterfaceElmo::getIsDriveEnabled(int driveNumber)
+{
+	return checkMaskedBits(getStatusWord(driveNumber), operationEnabledValue, operationEnabledMask);
+}
+
+driveModeOfOperation_ELMO EtherCATInterfaceElmo::getDriveModeElmo(int driveNumber)
+{
+	int8_t modeOfOperation = getModeOfOperationDisplay(driveNumber);
+	switch( modeOfOperation ) {
+		case dmoov_CANEncoderMode:				return driveModeOfOperation_ELMO::CANEncoderMode;
+		case dmoov_profilePosition:				return driveModeOfOperation_ELMO::profilePosition;
+		case dmoov_profileVelocity:				return driveModeOfOperation_ELMO::profileVelocity;
+		case dmoov_profileTorque:				return driveModeOfOperation_ELMO::profileTorque;
+		case dmoov_homing:						return driveModeOfOperation_ELMO::homing;
+		case dmoov_interpolatedPosition:		return driveModeOfOperation_ELMO::interpolatedPosition;
+		case dmoov_cyclicSynchronousPosition:	return driveModeOfOperation_ELMO::interpolatedPosition;
+		case dmoov_cyclicSynchronousVelocity:	return driveModeOfOperation_ELMO::cyclicSynchronousVelocity;
+		case dmoov_cyclicSynchronousTorque:		return driveModeOfOperation_ELMO::cyclicSynchronousTorque;
+		default:		std::string s;
+						s << "EtherCATInterfaceElmo: 0x" << std::hex << modeOfOperation  << std::dec << " is no valid mode of operation code";
+						logError(s);
+	}
+}
+
+bool EtherCATInterfaceElmo::checkDriveStatus(int driveNumber, driveStatus_ELMO driveStatusToCheck)
+{
+	return getDriveStatusElmo(driveNumber) == driveStatusToCheck;
+}
+
+
+driveStatus_ELMO EtherCATInterfaceElmo::getDriveStatusElmo(int driveNumber)
+{
+	uint16_t statusWord = getStatusWord(driveNumber);
+	if ( checkMaskedBits(statusWord, notReadyToSwitchOnValue, notReadyToSwitchOnMask) ) {
+		return driveStatus_ELMO::notReadyToSwitchOn;
+	}
+	if ( checkMaskedBits(statusWord, switchOnDisabledValue, switchOnDisabledMask) ) {
+		return driveStatus_ELMO::switchOnDisabled;
+	}
+	if ( checkMaskedBits(statusWord, readyToSwitchOnValue, readyToSwitchOnMask) ) {
+		return driveStatus_ELMO::readyToSwitchOn;
+	}
+	if ( checkMaskedBits(statusWord, switchedOnValue, switchedOnMask) ) {
+		return driveStatus_ELMO::switchedOn;
+	}
+	if ( checkMaskedBits(statusWord, operationEnabledValue, operationEnabledMask) ) {
+		return driveStatus_ELMO::operationEnabled;
+	}
+	if ( checkMaskedBits(statusWord, quickStopActiveValue, quickStopActiveMask) ) {
+		return driveStatus_ELMO::quickStopActive;
+	}
+	if ( checkMaskedBits(statusWord, faultReactionActiveValue, faultReactionActiveMask) ) {
+		return driveStatus_ELMO::faultReactionactive;
+	}
+	if ( checkMaskedBits(statusWord, faultValue, faultMask) ) {
+		return driveStatus_ELMO::fault;
+	}
+	
+	std::string s;
+	s << "EtherCATInterfaceElmo: 0x" << std::hex << statusWord  << std::dec << " is no valid status word";
+	logError(s);
+
+
+}
+
+
+
+
+
+
+
+
 
 
 //index pulse
@@ -543,503 +648,224 @@ int32_t getCapturedPositionNegativePulse(int driveNumber, int touchProbe)
 //basic set functions:
 void EtherCATInterfaceElmo::setControlWord(int driveNumber, uint16_t controlWord)
 {
-	EtherCATInterfaceBase::set16bit(oo_controlWord, driveNumber, controlWord);
+	set16bit(oo_controlWord, driveNumber, controlWord);
 }
 
 void EtherCATInterfaceElmo::setModeOfOperation(int driveNumber, int8_t modeOfOperation)
 {
-
+	set8bit(oo_modeOfOperation, driveNumber, modeOfOperation);
 }
 
 void EtherCATInterfaceElmo::setTargetTorque(int driveNumber, int16_t targetTorque)
 {
-
+	set16bit(oo_targetTorque, driveNumber, targetTorque);
 }
 
 void EtherCATInterfaceElmo::setMaxCurrent(int driveNumber, int16_t maxCurrent)
 {
-
+	set16bit(oo_maxCurrent, driveNumber, maxCurrent);
 }
 
 void EtherCATInterfaceElmo::setTargetPosition(int driveNumber, int32_t targetPosition)
 {
-
+	set32bit(oo_targetPostition, driveNumber, targetPosition);
 }
 
 void EtherCATInterfaceElmo::setMaxProfileVelocity(int driveNumber, uint32_t maxProfileVelocity)
 {
-
+	set32bit(oo_maxProfileVelocity, driveNumber, maxProfileVelocity);
 }
 
 void EtherCATInterfaceElmo::setProfileVelocity(int driveNumber, uint32_t profileVelocity)
 {
-
+	set32bit(oo_profileVelocity, driveNumber, profileVelocity);
 }
 
 void EtherCATInterfaceElmo::setEndVelocity(int driveNumber, uint32_t endVelocity)
 {
-
+	set32bit(oo_endVelocity, driveNumber, endVelocity);
 }
 
 void EtherCATInterfaceElmo::setProfileAcceleration(int driveNumber, uint32_t profileAcceleration)
 {
-
+	set32bit(oo_profileAcceleration, driveNumber, profileAcceleration);
 }
 
-void EtherCATInterfaceElmo::setProfileDeceleration(int driveNumber, uint32_t ProfileDeceleration)
+void EtherCATInterfaceElmo::setProfileDeceleration(int driveNumber, uint32_t profileDeceleration)
 {
-
+	set32bit(oo_profileDeceleration, driveNumber, profileDeceleration);
 }
 
 void EtherCATInterfaceElmo::setTorqueSlope(int driveNumber, uint32_t torqueSlope)
 {
-
+	set32bit(oo_torqueSlope, driveNumber, torqueSlope);
 }
 
-int32_t EtherCATInterfaceElmo::getActualPosition_counts(int driveNumber)
+void EtherCATInterfaceElmo::setPositionOffset(int driveNumber, int32_t positionOffset)
 {
-
+	set32bit(oo_positionOffset, driveNumber, positionOffset);
 }
 
 void EtherCATInterfaceElmo::setVelocityOffset(int driveNumber, int32_t velocityOffset)
 {
-
+	set32bit(oo_velocityOffset, driveNumber, velocityOffset);
 }
 
 void EtherCATInterfaceElmo::setTorqueOffset(int driveNumber, int16_t torqueOffset)
 {
-
+	set16bit(oo_torqueOffset, driveNumber, torqueOffset);
 }
 
-int32_t EtherCATInterfaceElmo::getTouchProbePos1Negative(int driveNumber)
+void EtherCATInterfaceElmo::setTouchProbeFunction(int driveNumber, uint16_t touchProbeFunction)
 {
-
+	set16bit(oo_touchProbeFunction, driveNumber, touchProbeFunction);
 }
 
 void EtherCATInterfaceElmo::setInterpolatedDataRecord1(int driveNumber, int32_t interpolatedDataRecord1)
 {
-
+	set32bit(oo_interpolatedDataRecord_1, driveNumber, interpolatedDataRecord1);
 }
 
 void EtherCATInterfaceElmo::setInterpolatedDataRecord2(int driveNumber, int32_t interpolatedDataRecord2)
 {
-
+	set32bit(oo_interpolatedDataRecord_2, driveNumber, interpolatedDataRecord2);
 }
 
 void EtherCATInterfaceElmo::setTargetVelocity(int driveNumber, int32_t targetVelocity)
 {
-
+	set32bit(oo_targetVelocity, driveNumber, targetVelocity);
 }
 
 void EtherCATInterfaceElmo::setDigitalOutput(int driveNumber, uint32_t digitalOutput)
 {
-
+	set32bit(oo_digitalOutput, driveNumber, digitalOutput);
 }
 
 void EtherCATInterfaceElmo::setPolarity(int driveNumber, uint8_t polarity)
 {
-
+	set8bit(oo_polarity, driveNumber, polarity);
 }
 
+void EtherCATInterfaceElmo::setGainSchedulingManualIndex(int driveNumber, uint16_t index)
+{
+	set16bit(oo_gainSchedlingManualIndex, driveNumber, index);
+}
+
+
+
+//TODO casting signed/unsigned?
 
 //basic get functions:
 uint16_t EtherCATInterfaceElmo::getStatusWord(int driveNumber)
 {
-	return EtherCATInterfaceBase::get16bit(io_statusWord, driveNumber);
+	return get16bit(io_statusWord, driveNumber);
 }
 
-uint8_t EtherCATInterfaceElmo::getModeOfOperationDisplay(int driveNumber)
+int8_t EtherCATInterfaceElmo::getModeOfOperationDisplay(int driveNumber)
 {
-
+	return get8bit(io_modeOfOperationDisplay, driveNumber);
 }
 
 
 int32_t EtherCATInterfaceElmo::getPositionDemand_UU(int driveNumber)
 {
-
+	return get32bit(io_postionDemand_UU, driveNumber);
 }
 
-int32_t EtherCATInterfaceElmo::ActualPosition_counts(int driveNumber)
+int32_t EtherCATInterfaceElmo::getActualPosition_counts(int driveNumber)
 {
-
+	return get32bit(io_actualPosition_counts, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getPositionActualValue(int driveNumber)
 {
-
+	return get32bit(io_positionActualValue, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getVelocitySensorActualValue(int driveNumber)
 {
-
+	return get32bit(io_velocitySensorActualValue, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getVelocityDemand(int driveNumber)
 {
-
+	return get32bit(io_velocityDemand, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getVelocityActualValue(int driveNumber)
 {
-
+	return get32bit(io_velocityActualValue, driveNumber);
 }
 
 int16_t EtherCATInterfaceElmo::getTorqueDemandValue(int driveNumber)
 {
-
+	return get16bit(io_torqueDemandValue, driveNumber);
 }
 
 int16_t EtherCATInterfaceElmo::getTorqueActualValue(int driveNumber)
 {
-
+	return get16bit(io_torqueActualValue, driveNumber);
 }
 
 uint16_t EtherCATInterfaceElmo::getTouchProbeStatus(int driveNumber)
 {
-
+	return get16bit(io_touchProbeStatus, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getTouchProbePos1Positive(int driveNumber)
 {
-
+	return get32bit(io_touchProbePos1Positive, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getTouchProbePos1Negative(int driveNumber)
 {
-
+	return get32bit(io_touchProbePos1Negative, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getTouchProbePos2Positive(int driveNumber)
 {
-
+	return get32bit(io_touchProbePos2Positive, driveNumber);
 }
 
 uint32_t EtherCATInterfaceElmo::getDCLinkCircuitVoltage(int driveNumber)
 {
-
+	return get32bit(io_DCLinkCircuitVoltage, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getPositionFollowingError(int driveNumber)
 {
-
+	return get32bit(io_positionFollowingError, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getControllEffort(int driveNumber)
 {
-
+	return get32bit(io_controllEffort, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getPositionDemandValue_cnt(int driveNumber)
 {
-
+	return get32bit(io_positionDemandValue_cnt, driveNumber);
 }
 
 uint32_t EtherCATInterfaceElmo::getDigitalInputs(int driveNumber)
 {
-
+	return get32bit(io_digitalInputs, driveNumber);
 }
 
 int16_t EtherCATInterfaceElmo::getAnalogInput(int driveNumber)
 {
-
+	return get16bit(io_analogInput, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getAuxilaryPositionActualValue(int driveNumber)
 {
-
+	return get32bit(io_auxilaryPositionActualValue, driveNumber);
 }
 
 int16_t EtherCATInterfaceElmo::getCurrentActualValue(int driveNumber)
 {
-
+	return get16bit(io_currentActualValue, driveNumber);
 }
 
-
-	
-	
-
-/*
-// // Pseudolock
-// // //////////////////
-// basic get functions:
-uint16_t getStatus(int driveNumber)
-{
-//	checkDriveNumber( driveNumber );
-	return etherCATStack->getFrmWord( inBuffer + driveNumber*byteSizePerSlave + 0 );
-}
-
-int8_t getModeOfOperation(int driveNumber)
-{
-//	checkDriveNumber( driveNumber );
- 	return *( inBuffer + driveNumber*byteSizePerSlave + 2 );
-}
-
-int32_t getPosRaw(int driveNumber)
-{
-//	checkDriveNumber( driveNumber );
-	int32_t pos = etherCATStack->getFrmDWord( inBuffer + driveNumber*byteSizePerSlave + 4 );
-	return pos;
-}
-
-int32_t getVel(int driveNumber)
-{
-//	checkDriveNumber( driveNumber );
-	return etherCATStack->getFrmDWord( inBuffer + driveNumber*byteSizePerSlave + 8 );
-
-}
-
-int16_t getTorque(int driveNumber)
-{
-//	checkDriveNumber( driveNumber );
-	return etherCATStack->getFrmWord( inBuffer + driveNumber*byteSizePerSlave + 12 );
-}
-
-uint16_t getTouchProbeStatus(int driveNumber)
-{
-//	checkDriveNumber( driveNumber );
-	return etherCATStack->getFrmWord( inBuffer + driveNumber*byteSizePerSlave + 14 );
-}
-
-int32_t getTouchProbePos1Positive(int driveNumber)
-{
-//	checkDriveNumber( driveNumber );
-	return etherCATStack->getFrmDWord( inBuffer + driveNumber*byteSizePerSlave + 16 );
-}
-
-int32_t getTouchProbePos1Negative(int driveNumber)
-{
-//	checkDriveNumber( driveNumber );
-	return etherCATStack->getFrmDWord( inBuffer + driveNumber*byteSizePerSlave + 20 );
-}
-
-int32_t getTouchProbePos2PosValue(int driveNumber)
-{
-//	checkDriveNumber( driveNumber );
-	return etherCATStack->getFrmDWord( inBuffer + driveNumber*byteSizePerSlave + 24 );
-}
-
-int32_t getPosAuxRaw(int driveNumber)
-{
-//	checkDriveNumber( driveNumber );
-	int32_t pos = etherCATStack->getFrmDWord( inBuffer + driveNumber*byteSizePerSlave + 28 );
-	return pos;
-}
-
-int32_t getPosOffset(int driveNumber)
-{
-//	checkDriveNumber( driveNumber );
-	return posOffset[driveNumber];
-}
-
-int32_t getPosAuxOffset(int driveNumber)
-{
-//	checkDriveNumber( driveNumber );
-	return posAuxOffset[driveNumber];
-}
-
-
-
-// basic set funcitons:
-void setControlWord(int driveNumber, uint16_t word)
-{
-//	checkDriveNumber( driveNumber );
-	etherCATStack->setWord(outBuffer + driveNumber*byteSizePerSlave + 0, word);
-}
-
-void setModeOfOperation(int driveNumber, int8_t mode)
-{
-//	checkDriveNumber( driveNumber );
-	etherCATStack->setByte(outBuffer + driveNumber*byteSizePerSlave + 2, mode);
-}
-
-void setTorque(int driveNumber, int16_t torque)
-{
-//	checkDriveNumber( driveNumber );
-// 	if ( torque >= 0 AND torque <= 0 ) {
-		etherCATStack->setDWord(outBuffer + driveNumber*byteSizePerSlave + 4, torque);
-// 	}
-}
-
-void setPos(int driveNumber, int32_t position)
-{
-//	checkDriveNumber( driveNumber );
-	etherCATStack->setDWord(outBuffer + driveNumber*byteSizePerSlave + 6, position);
-}
-
-void setTouchProbeFunction(int driveNumber, uint16_t function)
-{
-//	checkDriveNumber( driveNumber );
-	etherCATStack->setWord(outBuffer + driveNumber*byteSizePerSlave + 10, function);
-}
-
-void setGainSchedulingManualIndex(int driveNumber, uint16_t index)
-{
-//	checkDriveNumber( driveNumber );
-	etherCATStack->setWord(outBuffer + driveNumber*byteSizePerSlave + 12, index);
-}
-
-void setVel(int driveNumber, int32_t velocity)
-{
-//	checkDriveNumber( driveNumber );
-// 	etherCATStack->setDWord(outBuffer + driveNumber*byteSizePerSlave + 14, velocity);
-	EtherCATInterfaceBase::set32bit(14, driveNumber, velocity);
-}
-
-
-void setPosOffset(int driveNumber, int32_t offset)
-{
-//	checkDriveNumber( driveNumber );
-	posOffset[driveNumber] = offset;
-}
-void setPosAuxOffset(int driveNumber, int32_t offset)
-{
-//	checkDriveNumber( driveNumber );
-	posAuxOffset[driveNumber] = offset;
-}
-
-
-
-*/
-
-// // original
-// // ///////////////
-// // basic get functions:
-// uint16_t getStatus(int driveNumber)
-// {
-// //	checkDriveNumber( driveNumber );
-// 	return EC_GET_FRM_WORD( inBuffer + driveNumber*byteSizePerSlave + 0 );
-// }
-// 
-// 
-// int32_t getPosRaw(int driveNumber)
-// {
-// //	checkDriveNumber( driveNumber );
-// 	int32_t pos = EC_GET_FRM_DWORD( inBuffer + driveNumber*byteSizePerSlave + 2 );
-// 	return pos;
-// }
-// 
-// int32_t getVel(int driveNumber)
-// {
-// //	checkDriveNumber( driveNumber );
-// 	return EC_GET_FRM_DWORD( inBuffer + driveNumber*byteSizePerSlave + 6 );
-// 
-// }
-// 
-// int16_t getTorque(int driveNumber)
-// {
-// //	checkDriveNumber( driveNumber );
-// 	return EC_GET_FRM_WORD( inBuffer + driveNumber*byteSizePerSlave + 10 );
-// }
-// 
-// uint16_t getTouchProbeStatus(int driveNumber)
-// {
-// //	checkDriveNumber( driveNumber );
-// 	return EC_GET_FRM_WORD( inBuffer + driveNumber*byteSizePerSlave + 12 );
-// }
-// 
-// int32_t getTouchProbePos1Positive(int driveNumber)
-// {
-// //	checkDriveNumber( driveNumber );
-// 	return EC_GET_FRM_DWORD( inBuffer + driveNumber*byteSizePerSlave + 14 );
-// }
-// 
-// int32_t getTouchProbePos1Negative(int driveNumber)
-// {
-// //	checkDriveNumber( driveNumber );
-// 	return EC_GET_FRM_DWORD( inBuffer + driveNumber*byteSizePerSlave + 18 );
-// }
-// 
-// int32_t getTouchProbePos2PosValue(int driveNumber)
-// {
-// //	checkDriveNumber( driveNumber );
-// 	return EC_GET_FRM_DWORD( inBuffer + driveNumber*byteSizePerSlave + 22 );
-// }
-// 
-// int32_t getPosAuxRaw(int driveNumber)
-// {
-// //	checkDriveNumber( driveNumber );
-// 	int32_t pos = EC_GET_FRM_DWORD( inBuffer + driveNumber*byteSizePerSlave + 26 );
-// 	return pos;
-// }
-// 
-// int32_t getPosOffset(int driveNumber)
-// {
-// //	checkDriveNumber( driveNumber );
-// 	return posOffset[driveNumber];
-// }
-// 
-// int32_t getPosAuxOffset(int driveNumber)
-// {
-// //	checkDriveNumber( driveNumber );
-// 	return posAuxOffset[driveNumber];
-// }
-// 
-// 
-// 
-// // basic set funcitons:
-// void setControlWord(int driveNumber, uint16_t word)
-// {
-// //	checkDriveNumber( driveNumber );
-// 	EC_SETWORD(outBuffer + driveNumber*byteSizePerSlave + 0, word);
-// }
-// 
-// void setModeOfOperation(int driveNumber, int8_t mode)
-// {
-// //	checkDriveNumber( driveNumber );
-// 	std::cout << "outBuffer: " << driveNumber*byteSizePerSlave + 2 << "     mode: " << mode;
-// 	*(outBuffer + driveNumber*byteSizePerSlave + 2) = mode;
-// }
-// 
-// void setTorque(int driveNumber, int16_t torque)
-// {
-// //	checkDriveNumber( driveNumber );
-// 	EC_SETDWORD(outBuffer + driveNumber*byteSizePerSlave + 4, torque);
-// }
-// 
-// void setPos(int driveNumber, int32_t position)
-// {
-// //	checkDriveNumber( driveNumber );
-// 	EC_SETDWORD(outBuffer + driveNumber*byteSizePerSlave + 6, position);
-// }
-// 
-// void setTouchProbeFunction(int driveNumber, uint16_t function)
-// {
-// //	checkDriveNumber( driveNumber );
-// 	EC_SETWORD(outBuffer + driveNumber*byteSizePerSlave + 10, function);
-// }
-// 
-// void setVel(int driveNumber, int32_t velocity)
-// {
-// //	checkDriveNumber( driveNumber );
-// 	EC_SETDWORD(outBuffer + driveNumber*byteSizePerSlave + 12, velocity);
-// }
-// 
-// 
-// void setPosOffset(int driveNumber, int32_t offset)
-// {
-// //	checkDriveNumber( driveNumber );
-// 	posOffset[driveNumber] = offset;
-// }
-// void setPosAuxOffset(int driveNumber, int32_t offset)
-// {
-// //	checkDriveNumber( driveNumber );
-// 	posAuxOffset[driveNumber] = offset;
-// }
-// 
-// 
-// 
-// //private:
-// bool checkMaskedBits(uint16_t variable, uint16_t compareWord, uint16_t mask)
-// {
-// 	variable = variable & mask;
-// 	compareWord = compareWord & mask;
-// 	if ( variable == compareWord ) return true;
-// 	else return false;
-// }
-// 
-// void checkDriveNumber(int driveNumber)
-// {
-// 	if ( driveNumber > numberOfDrives ) log.error() << "driveNumber is out of range: " << driveNumber;
-// }
 
 
