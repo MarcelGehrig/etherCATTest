@@ -10,82 +10,88 @@ EtherCATInterfaceBase(etherCATStack)
 
 
 //advanced functions:
-void initElmoDrives()
-{
-// 	log.trace() << "initElmoDrives()";
-	bool allDrivesAreSwitchedOn = false;
-	while (!allDrivesAreSwitchedOn) {
-		allDrivesAreSwitchedOn = switchOnAllDrives();
-	}
-	
-	for (int drive = 0; drive < numberOfDrives; drive++) {
-		setModeOfOperation(drive, driveMode::profileVelocity);
-// 		setModeOfOperation(drive, driveMode::profilePosition);
-	}
-// 	log.trace() << "done";
-}
+// void initElmoDrives()
+// {
+// // 	log.trace() << "initElmoDrives()";
+// 	bool allDrivesAreSwitchedOn = false;
+// 	while (!allDrivesAreSwitchedOn) {
+// 		allDrivesAreSwitchedOn = switchOnAllDrives();
+// 	}
+// 	
+// 	for (int drive = 0; drive < numberOfDrives; drive++) {
+// 		setModeOfOperation(drive, driveMode::profileVelocity);
+// // 		setModeOfOperation(drive, driveMode::profilePosition);
+// 	}
+// // 	log.trace() << "done";
+// }
 
-bool recoverAllDrivesFromFault()
+bool EtherCATInterfaceElmo::initAllDrives()
 {
 	return switchOnAllDrives();
 }
 
-bool switchOnAllDrives()
+bool EtherCATInterfaceElmo::recoverAllDrivesFromFault()
+{
+	return switchOnAllDrives();
+}
+
+bool EtherCATInterfaceElmo::switchOnAllDrives()
 {
 	bool allDrivesAreSwitchedOn = true;
-		for (int driveNumber = 0; driveNumber < numberOfDrives; driveNumber++) {
-			auto driveState = getStatus(driveNumber);
-			
-// 			log.trace() << "drive " << driveNumber << " hase state: 0x" << std::hex << getStatus(driveNumber);
-			
-			// 0:	'start' -> 'not ready to switch on'					: The drive self-tests and/or self-initializes
-			
-			// 1:	'not ready to switch on' -> 'switch on disabled'	: The drive activates communication
-			
-			// 15: 	fault reset
-			if (checkMaskedBits( driveState, faultValue, faultMask)) {
-				setControlWord(driveNumber, faultReset);
-// 				log.trace() << "drive " << driveNumber << " is in 15 fault reset";
-			}
-			
-			
-			// 2:	'switch on disabled' -> 'ready to switch on'		:
-			if (checkMaskedBits( driveState, switchOnDisabledValue, switchOnDisabledMask)) {
-				setControlWord(driveNumber, shutdown);
-// 				log.trace() << "drive " << driveNumber << " is in 2: switch on disabled";
-			}
-			
-			// 3:	'ready to switch on' -> 'switched on'				:
-			if (checkMaskedBits( driveState, readyToSwitchOnValue, readyToSwitchOnMask)) {
-				setControlWord(driveNumber, switchOn);	
-// 				log.trace() << "drive " << driveNumber << " is in 3: ready to switch on";
-			}
-			
-			if (!checkMaskedBits( driveState, switchedOnValue, switchedOnMask)) {
-				allDrivesAreSwitchedOn = false;
-// 				log.trace() << "drive " << driveNumber << " is not ready";
-			}
+	
+	for (int driveNumber = 0; driveNumber < numberOfDrives; driveNumber++) {
+		if (!switchOnDrive( driveNumber )) {
+			allDrivesAreSwitchedOn = false;
 		}
+	}
 	
 	return allDrivesAreSwitchedOn;
 }
 
 
-//advanced get functions:
-bool isDriveReady(int driveNumber)
+bool EtherCATInterfaceElmo::switchOnDrive(int driveNumber)
 {
-//	//DEBUG böse häck
-//	if(driveNumber == 0) return true;
+	driveStatus_ELMO  driveState = getDriveStatusElmo(driveNumber);
+// 			log.trace() << "drive " << driveNumber << " hase state: 0x" << std::hex << getStatus(driveNumber);
+	
+	// 0:	'start' -> 'not ready to switch on'					: The drive self-tests and/or self-initializes
+	
+	// 1:	'not ready to switch on' -> 'switch on disabled'	: The drive activates communication
+	
+	// 15: 	fault reset
+// 	if (checkMaskedBits( driveState, faultValue, faultMask)) {
+	// TODO switch case
+	if ( driveState == driveStatus_ELMO::fault ) {
+		setControlWord(driveNumber, faultReset);
+// 				log.trace() << "drive " << driveNumber << " is in 15 fault reset";
+	}
 	
 	
-	return checkMaskedBits( getStatus(driveNumber), switchedOnValue, switchedOnMask);
+	// 2:	'switch on disabled' -> 'ready to switch on'		:
+// 	if (checkMaskedBits( driveState, switchOnDisabledValue, switchOnDisabledMask)) {
+	if ( driveState == driveStatus_ELMO::switchOnDisabled ) {
+		setControlWord(driveNumber, shutdown);
+// 				log.trace() << "drive " << driveNumber << " is in 2: switch on disabled";
+	}
+	
+	// 3:	'ready to switch on' -> 'switched on'				:
+// 	if (checkMaskedBits( driveState, readyToSwitchOnValue, readyToSwitchOnMask)) {
+	if ( driveState == driveStatus_ELMO::readyToSwitchOn ) {
+		setControlWord(driveNumber, switchOn);	
+// 				log.trace() << "drive " << driveNumber << " is in 3: ready to switch on";
+	}
+	
+	return getIsDriveSwitchedOn( driveNumber) ;
 }
 
-bool isAllDrivesReady()
+
+//advanced get functions:
+
+bool EtherCATInterfaceElmo::isAllDrivesReady()
 {
 	bool ready = true;
 	for ( int i; i < numberOfDrives; i++) {
-		if ( !isDriveReady(i) ) ready = false;
+		if ( !getIsDriveReady(i) ) ready = false;
 	}
 	return ready;		
 }
@@ -95,7 +101,7 @@ bool EtherCATInterfaceElmo::isAllDrivesEnabled()
 {
 	bool enabled = true;
 	for ( int i; i < numberOfDrives; i++) {
-		if ( !isDriveEnabled(i) ) enabled = false;
+		if ( !getIsDriveEnabled(i) ) enabled = false;
 	}
 	return enabled;
 }
@@ -185,15 +191,16 @@ void EtherCATInterfaceElmo::enableVelocityControl(int driveNumber)
 
 void EtherCATInterfaceElmo::disableDrive(int driveNumber)
 {
-	setControlWord(driveNumber, disableDrive);
+	setControlWord(driveNumber, controlWordCommand_ELMO::disableOperation);
 }
 
 void EtherCATInterfaceElmo::enableDrive(int driveNumber)
 {
 	if ( !checkDriveStatus(driveNumber, driveStatus_ELMO::switchedOn) and getIsDriveEnabled(driveNumber) ) {
-		std::string s;
-		s << "EnableDrive(" << driveNumber << ") with status: 0x" << std::hex << getStatusWord(driveNumber) << "not possible. It needs to be in state 'switched on'";
-		logError(s);
+//		TODO log
+// 		std::string s;
+// 		s << "EnableDrive(" << driveNumber << ") with status: 0x" << std::hex << getStatusWord(driveNumber) << "not possible. It needs to be in state 'switched on'";
+// 		logError(s);
 	}
 	else setControlWord(driveNumber, cwc_enableOperation);
 }
@@ -264,6 +271,16 @@ bool EtherCATInterfaceElmo::getIsDriveEnabled(int driveNumber)
 	return checkMaskedBits(getStatusWord(driveNumber), operationEnabledValue, operationEnabledMask);
 }
 
+bool EtherCATInterfaceElmo::getIsDriveReady(int driveNumber)
+{
+	return getIsDriveSwitchedOn( driveNumber );
+}
+
+bool EtherCATInterfaceElmo::getIsDriveSwitchedOn(int driveNumber)
+{
+	return checkMaskedBits( getStatusWord(driveNumber), switchedOnValue, switchedOnMask);
+}
+
 driveModeOfOperation_ELMO EtherCATInterfaceElmo::getDriveModeElmo(int driveNumber)
 {
 	int8_t modeOfOperation = getModeOfOperationDisplay(driveNumber);
@@ -277,9 +294,10 @@ driveModeOfOperation_ELMO EtherCATInterfaceElmo::getDriveModeElmo(int driveNumbe
 		case dmoov_cyclicSynchronousPosition:	return driveModeOfOperation_ELMO::interpolatedPosition;
 		case dmoov_cyclicSynchronousVelocity:	return driveModeOfOperation_ELMO::cyclicSynchronousVelocity;
 		case dmoov_cyclicSynchronousTorque:		return driveModeOfOperation_ELMO::cyclicSynchronousTorque;
-		default:		std::string s;
-						s << "EtherCATInterfaceElmo: 0x" << std::hex << modeOfOperation  << std::dec << " is no valid mode of operation code";
-						logError(s);
+//		TODO log
+// 		default:		std::string s;
+// 						s << "EtherCATInterfaceElmo: 0x" << std::hex << modeOfOperation  << std::dec << " is no valid mode of operation code";
+// 						logError(s);
 	}
 }
 
@@ -317,9 +335,10 @@ driveStatus_ELMO EtherCATInterfaceElmo::getDriveStatusElmo(int driveNumber)
 		return driveStatus_ELMO::fault;
 	}
 	
-	std::string s;
-	s << "EtherCATInterfaceElmo: 0x" << std::hex << statusWord  << std::dec << " is no valid status word";
-	logError(s);
+//	TODO log
+// 	std::string s;
+// 	s << "EtherCATInterfaceElmo: 0x" << std::hex << statusWord  << std::dec << " is no valid status word";
+// 	logError(s);
 
 
 }
@@ -333,310 +352,310 @@ driveStatus_ELMO EtherCATInterfaceElmo::getDriveStatusElmo(int driveNumber)
 
 
 
-//index pulse
-// void homeWithIndexPulse(std::array< int, numberOfWheels > driveNumbers, std::array< int, numberOfWheels > offsets, bool auxPos)
+// //index pulse
+// // void homeWithIndexPulse(std::array< int, numberOfWheels > driveNumbers, std::array< int, numberOfWheels > offsets, bool auxPos)
+// // {
+// // 	std::array< int, numberOfWheels > touchProbes;
+// // // 	touchProbes.resize( driveNumbers.size() );
+// // 	std::fill( touchProbes.begin(), touchProbes.end(), 1 );		//allways use touchProbe 1
+// // 	return homeWithIndexPulse(driveNumbers, offsets, touchProbes);
+// // }
+// // 
+// // 
+// // void homeWithIndexPulse(std::array< int, numberOfWheels > driveNumbers, std::array< int, numberOfWheels > offsets, bool auxPos, std::array< int, numberOfWheels > touchProbes)
+// // {
+// // 	if ( (driveNumbers.size()!=offsets.size()) || (offsets.size()!=touchProbes.size()) ) {
+// // 		log.error() << "homeWithIndexPulse(...) all argument lists have to be of the same size";
+// // 		return;
+// // 	}
+// // 	
+// // 	//enable capturing for all drives
+// // 	enableCapturingIndexPulse(driveNumbers, touchProbes);
+// // 	
+// // 	//waiting for all pulses to be captured
+// // 	waitForAllIndexPulses(driveNumbers, touchProbes);
+// // 	
+// // 	//set offsets
+// // 	setOffsetAtIndexPos(driveNumbers, offsets, touchProbes);
+// // }
+// // 
+// // int32_t homeWithIndexPulse(int driveNumber, int offset, bool auxPos, int touchProbe)
+// // {
+// // 	//TODO check status of drive?
+// // 	enableCapturingIndexPulse(driveNumber, touchProbe);
+// // 	while ( !getIndexPulseIsCaptured(driveNumber, touchProbe) )	usleep(100);
+// // 	int32_t posOffset = static_cast<int32_t>( static_cast<int>(getCapturedPosition(driveNumber)) + offset );
+// // 	setPosOffset(driveNumber, posOffset);asdf	//	isAuxPos ? setPosAuxOffset(driveNumber, offs) : setPosOffset(driveNumber, offs);
+// // 	return posOffset;
+// // }
+// 
+// bool enableCapturingIndexPulse(std::vector< int > driveNumbers )
 // {
-// 	std::array< int, numberOfWheels > touchProbes;
-// // 	touchProbes.resize( driveNumbers.size() );
+// 	std::vector< int > touchProbes;
+// 	touchProbes.resize( driveNumbers.size() );
 // 	std::fill( touchProbes.begin(), touchProbes.end(), 1 );		//allways use touchProbe 1
-// 	return homeWithIndexPulse(driveNumbers, offsets, touchProbes);
+// 	return enableCapturingIndexPulse(driveNumbers, touchProbes);
+// 
 // }
 // 
-// 
-// void homeWithIndexPulse(std::array< int, numberOfWheels > driveNumbers, std::array< int, numberOfWheels > offsets, bool auxPos, std::array< int, numberOfWheels > touchProbes)
+// bool enableCapturingIndexPulse(std::vector< int > driveNumbers, std::vector< int > touchProbes)
 // {
-// 	if ( (driveNumbers.size()!=offsets.size()) || (offsets.size()!=touchProbes.size()) ) {
-// 		log.error() << "homeWithIndexPulse(...) all argument lists have to be of the same size";
-// 		return;
+// 	if ( (driveNumbers.size()!=touchProbes.size()) ) {
+// 		log.error() << "enableCapturingIndexPulse(...) all argument vectors have to be of the same size";
+// 		return false;
 // 	}
 // 	
-// 	//enable capturing for all drives
-// 	enableCapturingIndexPulse(driveNumbers, touchProbes);
-// 	
-// 	//waiting for all pulses to be captured
-// 	waitForAllIndexPulses(driveNumbers, touchProbes);
-// 	
-// 	//set offsets
-// 	setOffsetAtIndexPos(driveNumbers, offsets, touchProbes);
-// }
-// 
-// int32_t homeWithIndexPulse(int driveNumber, int offset, bool auxPos, int touchProbe)
-// {
-// 	//TODO check status of drive?
-// 	enableCapturingIndexPulse(driveNumber, touchProbe);
-// 	while ( !getIndexPulseIsCaptured(driveNumber, touchProbe) )	usleep(100);
-// 	int32_t posOffset = static_cast<int32_t>( static_cast<int>(getCapturedPosition(driveNumber)) + offset );
-// 	setPosOffset(driveNumber, posOffset);asdf	//	isAuxPos ? setPosAuxOffset(driveNumber, offs) : setPosOffset(driveNumber, offs);
-// 	return posOffset;
-// }
-
-bool enableCapturingIndexPulse(std::vector< int > driveNumbers )
-{
-	std::vector< int > touchProbes;
-	touchProbes.resize( driveNumbers.size() );
-	std::fill( touchProbes.begin(), touchProbes.end(), 1 );		//allways use touchProbe 1
-	return enableCapturingIndexPulse(driveNumbers, touchProbes);
-
-}
-
-bool enableCapturingIndexPulse(std::vector< int > driveNumbers, std::vector< int > touchProbes)
-{
-	if ( (driveNumbers.size()!=touchProbes.size()) ) {
-		log.error() << "enableCapturingIndexPulse(...) all argument vectors have to be of the same size";
-		return false;
-	}
-	
-	bool allProbesReady = true;
-	for (	std::vector< int >::iterator itDriveNumbers=driveNumbers.begin(),
-			itTouchProbes=touchProbes.begin();
-			itDriveNumbers != driveNumbers.end();
-			++itDriveNumbers, ++itTouchProbes)
-	{
-			if ( !enableCapturingIndexPulse(*itDriveNumbers, *itTouchProbes) )	allProbesReady = false;
-	}
-	
-	return allProbesReady;
-}
-
-bool enableCapturingIndexPulse(int driveNumber, int touchProbe)
-{
-	if ( touchProbe != 1 ) {
-		log.error() << "touchProbe " << touchProbe << "is not implemented";
-		return false;
-	}
-	
-	
-	switch(touchProbeState[driveNumber]) {
-		case touchProbeStateEnum::reset :
-			setTouchProbeFunction( driveNumber, 0x0000 );		// disable everything
-			if ( getTouchProbeStatus(driveNumber) == 0x0000 )	// touch probe is swithced off  -> stored values on elmo are reset
-				touchProbeState[driveNumber] = touchProbeStateEnum::enableProbe;
-			return false;
-			break;
-		case touchProbeStateEnum::enableProbe :
-			setTouchProbeFunction( driveNumber, 0x0001 );		//0x01 enable touchProbe1; disabled sampling -> stored value on elmo is reset
-			if ( getTouchProbeStatus(driveNumber) == 0x0001 )	// touch probe is enabled again
-				touchProbeState[driveNumber] = touchProbeStateEnum::enableSampling;
-			return false;
-			break;
-		case touchProbeStateEnum::enableSampling :
-			setTouchProbeFunction( driveNumber, 0x0031 );		//0x31 enable sampling on positive and negative edge
-			touchProbeState[driveNumber] = touchProbeStateEnum::enabled;
-			return true;
-			break;
-		case touchProbeStateEnum::enabled :
-			return true;
-			break;
-		default :
-			log.error() << "touchProbeStateEnum does not exist";
-	}
-}
-
-
-bool disableCapturingIndexPulse(int driveNumber, int touchProbe)
-{
-	if ( touchProbe != 1 ) {
-		log.error() << "touchProbe " << touchProbe << "is not implemented";
-		return false;
-	}
-	
-	setTouchProbeFunction( driveNumber, 0x0000 );		// disable everything
-	if ( getTouchProbeStatus(driveNumber) == 0x0000 ) {	// touch probe is swithced off  -> stored values on elmo are reset 
-		touchProbeState[driveNumber] = touchProbeStateEnum::reset;
-		return true;
-	}
-	return false;
-}
-
-
-// void waitForAllIndexPulses(std::array< int, numberOfWheels > driveNumbers, int pollingTimeUSec)
-// {
-// 	std::array< int, numberOfWheels > touchProbes;
-// // 	touchProbes.resize( driveNumbers.size() );
-// 	std::fill( touchProbes.begin(), touchProbes.end(), 1 );		//allways use touchProbe 1
-// 	return waitForAllIndexPulses(driveNumbers, touchProbes);
-// 
-// }
-// 
-// void waitForAllIndexPulses(std::array< int, numberOfWheels > driveNumbers, std::array< int, numberOfWheels > touchProbes, int pollingTimeUSec)
-// {	
-// 	bool allPulsesCaptured = false;
-// 	while ( !allPulsesCaptured ) {
-// 			for (	std::array< int, numberOfWheels >::iterator itDriveNumbers=driveNumbers.begin(),
-// 					itTouchProbes=touchProbes.begin();
-// 					itDriveNumbers != driveNumbers.end();
-// 					++itDriveNumbers, ++itTouchProbes) {
-// 						if ( getIndexPulseIsCaptured(*itDriveNumbers, *itTouchProbes) ) {
-// 							allPulsesCaptured = true;
-// 						}
-// 						else {
-// 							allPulsesCaptured = false;
-// 							usleep(pollingTimeUSec);		// 0.1 sec
-// 							break;
-// 						}
-// 					}
+// 	bool allProbesReady = true;
+// 	for (	std::vector< int >::iterator itDriveNumbers=driveNumbers.begin(),
+// 			itTouchProbes=touchProbes.begin();
+// 			itDriveNumbers != driveNumbers.end();
+// 			++itDriveNumbers, ++itTouchProbes)
+// 	{
+// 			if ( !enableCapturingIndexPulse(*itDriveNumbers, *itTouchProbes) )	allProbesReady = false;
 // 	}
-// 
-// }
-// 
-// void waitForAllIndexPulses(int driveNumber, int touchProbe, int pollingTimeUSec)
-// {
-// 	if ( !getIndexPulseIsCaptured(driveNumber, touchProbe) ) usleep(pollingTimeUSec);
-// }
-
-
-void setOffsetAtIndexPos(std::vector< int > driveNumbers, bool isAuxPos, std::vector< int > offsets)
-{
-	std::vector< int > touchProbes;
-	touchProbes.resize( driveNumbers.size() );
-	std::fill( touchProbes.begin(), touchProbes.end(), 1 );		//allways use touchProbe 1
-	return setOffsetAtIndexPos(driveNumbers, isAuxPos, offsets, touchProbes);
-
-}
-
-void setOffsetAtIndexPos(std::vector< int > driveNumbers, bool isAuxPos, std::vector< int > offsets, std::vector< int > touchProbes)
-{
-	for (	std::vector< int >::iterator itDriveNumbers=driveNumbers.begin(),
-			itOffsets=offsets.begin(),
-			itTouchProbes=touchProbes.begin();
-			itDriveNumbers != driveNumbers.end();
-			++itDriveNumbers, ++itOffsets, ++itTouchProbes) {
-				setOffsetAtIndexPos(*itDriveNumbers, isAuxPos, *itOffsets, *itTouchProbes);
-	}
-
-}
-
-void setOffsetAtIndexPos(int driveNumber, bool isAuxPos, int offset, int touchProbe)
-{
-	log.trace() << "Argument offset: " << offset;
-	log.trace() << "captured Position: " << getCapturedPosition(driveNumber, touchProbe);
-	int32_t offs = static_cast<int32_t>( - static_cast<int>( getCapturedPosition(driveNumber, touchProbe) ) + offset );
-	log.trace() << "setOffsetAtIndexPos(...) offs: " << offs;
-	isAuxPos ? setPosAuxOffset(driveNumber, offs) : setPosOffset(driveNumber, offs);
-}
-
-bool getIndexPulseIsCaptured(int driveNumber, int touchProbe)
-{
-	if ( getIndexPulsePositiveEdgeIsCaptured(driveNumber, touchProbe) || getIndexPulseNegativeEdgeIsCaptured(driveNumber, touchProbe) ) {
-		return true;
-	}
-	
-	return false;
-}
-
-bool getIndexPulsePositiveEdgeIsCaptured(int driveNumber, int touchProbe)
-{	
-	uint16_t touchProbeStatus = getTouchProbeStatus(driveNumber);
-	// 0x0060 both; 0x0040 negative edge; 0x0020 positive edge
-	if	( touchProbe == 1 ) {
-		if ( checkMaskedBits(touchProbeStatus, 0x0002, 0x0002) ) return true;
-	}
-	else if	( touchProbe == 2 ) {
-		if ( checkMaskedBits(touchProbeStatus, 0x0200, 0x0200) ) return true;
-	}
-	else	log.error() << "touchProbe " << touchProbe << " does not exists.";
-	return false;
-}
-
-bool getIndexPulseNegativeEdgeIsCaptured(int driveNumber, int touchProbe)
-{
-	uint16_t touchProbeStatus = getTouchProbeStatus(driveNumber);
-	// 0x0060 both; 0x0040 negative edge; 0x0020 positive edge
-	if	( touchProbe == 1 ) {
-		if ( checkMaskedBits(touchProbeStatus, 0x0004, 0x0004) ) return true;
-	}
-	else if	( touchProbe == 2 ) {
-		if ( checkMaskedBits(touchProbeStatus, 0x0400, 0x0400) ) return true;
-	}
-	else	log.error() << "touchProbe " << touchProbe << " does not exists.";
-	return false;
-	
-}
-
-bool getIndexPulseIsCapturedIsValid(int driveNumber, int touchProbe)
-{
-	if ( !getIndexPulseIsCaptured(driveNumber, touchProbe) ) {
-		log.warn() << "isDirectionOfRotationPositive(...) index pulse is not captured";
-		return false;
-	}
-	
-	if ( touchProbe == 1 ) {
-		auto positiveEdgeValue = getCapturedPositionPositivePulse(driveNumber, touchProbe);
-		auto negativeEdgeValue = getCapturedPositionNegativePulse(driveNumber, touchProbe);
-		
-		//check if both physical index pulses are captured
-		if ( abs( abs(positiveEdgeValue) - abs(negativeEdgeValue) ) < 32000 ) {	// 0/1
-			log.trace() << "Positve edge value ( " << positiveEdgeValue << " ) is to similar to negative edge value ( " << negativeEdgeValue 
-			<< " ). Difference: " << abs( abs(positiveEdgeValue) - abs(negativeEdgeValue) );
-			return false;
-		}
-		else {
-			return true;
-		}
-	}
-	else {
-		log.error() << "Touch probe " << touchProbe << " is not implemented.";
-		return false;
-	}
-}
-
-int32_t getCapturedPosition(int driveNumber, int touchProbe)	// compensated for direction of rotation
-{	
-
-	return getCapturedPositionPositivePulse(driveNumber, touchProbe);
-  
-// 	// Bastel aus Zeiten deffekter Magnetringe
-// 	if ( !getIndexPulseIsCaptured(driveNumber, touchProbe) ) log.warn() << "isDirectionOfRotationPositive(...) index pulse is not captured";
 // 	
-// 	auto positiveEdgeValue = getCapturedPositionPositivePulse(driveNumber, touchProbe);
-// 	auto negativeEdgeValue = getCapturedPositionNegativePulse(driveNumber, touchProbe);
+// 	return allProbesReady;
+// }
 // 
-// 	if (abs( abs(positiveEdgeValue) - abs(negativeEdgeValue)) < 200000) {
-// 		if (positiveEdgeValue < negativeEdgeValue  ) // positive
-// 			return getCapturedPositionPositivePulse(driveNumber, touchProbe);
-// 		else // negative
-// 			return getCapturedPositionNegativePulse(driveNumber, touchProbe);
-// 	} 
-// 	else {
-// 		if (positiveEdgeValue < negativeEdgeValue  ) // positive
-// 			return getCapturedPositionNegativePulse(driveNumber, touchProbe);
-// 		else // negative
-// 			return getCapturedPositionPositivePulse(driveNumber, touchProbe);
+// bool enableCapturingIndexPulse(int driveNumber, int touchProbe)
+// {
+// 	if ( touchProbe != 1 ) {
+// 		log.error() << "touchProbe " << touchProbe << "is not implemented";
+// 		return false;
 // 	}
-}
-
-int32_t getCapturedPositionPositivePulse(int driveNumber, int touchProbe)
-{
-	int32_t position;
-	if	( touchProbe == 1 ) position = getTouchProbePos1Positive(driveNumber);
-	else if	( touchProbe == 2 ) position = getTouchProbePos2PosValue(driveNumber);
-	else	log.error() << "touchProbe " << touchProbe << " does not exists.";
-	return position;
-}
-
-int32_t getCapturedPositionNegativePulse(int driveNumber, int touchProbe)
-{
-	int32_t position;
-	if	( touchProbe == 1 ) position = getTouchProbePos1Negative(driveNumber);
-	else if	( touchProbe == 2 ) log.error() << "No TouchProbePosition negative pulse for TouchProbe 2.";
-	else	log.error() << "touchProbe " << touchProbe << " does not exists.";
-	return position;
-}
-
-// bool isDirectionOfRotationPositive(int driveNumber, int touchProbe)
-// {
-// 	if ( !getIndexPulseIsCaptured(driveNumber, touchProbe) ) log.warn() << "isDirectionOfRotationPositive(...) index pulse is not captured";
 // 	
-// 	auto positiveEdgeValue = getCapturedPositionPositivePulse(driveNumber, touchProbe);
-// 	auto negativeEdgeValue = getCapturedPositionNegativePulse(driveNumber, touchProbe);
-// 		
-// 	if (positiveEdgeValue < negativeEdgeValue  ) {			// positive direction of rotation
+// 	
+// 	switch(touchProbeState[driveNumber]) {
+// 		case touchProbeStateEnum::reset :
+// 			setTouchProbeFunction( driveNumber, 0x0000 );		// disable everything
+// 			if ( getTouchProbeStatus(driveNumber) == 0x0000 )	// touch probe is swithced off  -> stored values on elmo are reset
+// 				touchProbeState[driveNumber] = touchProbeStateEnum::enableProbe;
+// 			return false;
+// 			break;
+// 		case touchProbeStateEnum::enableProbe :
+// 			setTouchProbeFunction( driveNumber, 0x0001 );		//0x01 enable touchProbe1; disabled sampling -> stored value on elmo is reset
+// 			if ( getTouchProbeStatus(driveNumber) == 0x0001 )	// touch probe is enabled again
+// 				touchProbeState[driveNumber] = touchProbeStateEnum::enableSampling;
+// 			return false;
+// 			break;
+// 		case touchProbeStateEnum::enableSampling :
+// 			setTouchProbeFunction( driveNumber, 0x0031 );		//0x31 enable sampling on positive and negative edge
+// 			touchProbeState[driveNumber] = touchProbeStateEnum::enabled;
+// 			return true;
+// 			break;
+// 		case touchProbeStateEnum::enabled :
+// 			return true;
+// 			break;
+// 		default :
+// 			log.error() << "touchProbeStateEnum does not exist";
+// 	}
+// }
+// 
+// 
+// bool disableCapturingIndexPulse(int driveNumber, int touchProbe)
+// {
+// 	if ( touchProbe != 1 ) {
+// 		log.error() << "touchProbe " << touchProbe << "is not implemented";
+// 		return false;
+// 	}
+// 	
+// 	setTouchProbeFunction( driveNumber, 0x0000 );		// disable everything
+// 	if ( getTouchProbeStatus(driveNumber) == 0x0000 ) {	// touch probe is swithced off  -> stored values on elmo are reset 
+// 		touchProbeState[driveNumber] = touchProbeStateEnum::reset;
 // 		return true;
 // 	}
-// 	else if ( positiveEdgeValue > negativeEdgeValue  ) {	// negative direction of rotation
+// 	return false;
+// }
+// 
+// 
+// // void waitForAllIndexPulses(std::array< int, numberOfWheels > driveNumbers, int pollingTimeUSec)
+// // {
+// // 	std::array< int, numberOfWheels > touchProbes;
+// // // 	touchProbes.resize( driveNumbers.size() );
+// // 	std::fill( touchProbes.begin(), touchProbes.end(), 1 );		//allways use touchProbe 1
+// // 	return waitForAllIndexPulses(driveNumbers, touchProbes);
+// // 
+// // }
+// // 
+// // void waitForAllIndexPulses(std::array< int, numberOfWheels > driveNumbers, std::array< int, numberOfWheels > touchProbes, int pollingTimeUSec)
+// // {	
+// // 	bool allPulsesCaptured = false;
+// // 	while ( !allPulsesCaptured ) {
+// // 			for (	std::array< int, numberOfWheels >::iterator itDriveNumbers=driveNumbers.begin(),
+// // 					itTouchProbes=touchProbes.begin();
+// // 					itDriveNumbers != driveNumbers.end();
+// // 					++itDriveNumbers, ++itTouchProbes) {
+// // 						if ( getIndexPulseIsCaptured(*itDriveNumbers, *itTouchProbes) ) {
+// // 							allPulsesCaptured = true;
+// // 						}
+// // 						else {
+// // 							allPulsesCaptured = false;
+// // 							usleep(pollingTimeUSec);		// 0.1 sec
+// // 							break;
+// // 						}
+// // 					}
+// // 	}
+// // 
+// // }
+// // 
+// // void waitForAllIndexPulses(int driveNumber, int touchProbe, int pollingTimeUSec)
+// // {
+// // 	if ( !getIndexPulseIsCaptured(driveNumber, touchProbe) ) usleep(pollingTimeUSec);
+// // }
+// 
+// 
+// void setOffsetAtIndexPos(std::vector< int > driveNumbers, bool isAuxPos, std::vector< int > offsets)
+// {
+// 	std::vector< int > touchProbes;
+// 	touchProbes.resize( driveNumbers.size() );
+// 	std::fill( touchProbes.begin(), touchProbes.end(), 1 );		//allways use touchProbe 1
+// 	return setOffsetAtIndexPos(driveNumbers, isAuxPos, offsets, touchProbes);
+// 
+// }
+// 
+// void setOffsetAtIndexPos(std::vector< int > driveNumbers, bool isAuxPos, std::vector< int > offsets, std::vector< int > touchProbes)
+// {
+// 	for (	std::vector< int >::iterator itDriveNumbers=driveNumbers.begin(),
+// 			itOffsets=offsets.begin(),
+// 			itTouchProbes=touchProbes.begin();
+// 			itDriveNumbers != driveNumbers.end();
+// 			++itDriveNumbers, ++itOffsets, ++itTouchProbes) {
+// 				setOffsetAtIndexPos(*itDriveNumbers, isAuxPos, *itOffsets, *itTouchProbes);
+// 	}
+// 
+// }
+// 
+// void setOffsetAtIndexPos(int driveNumber, bool isAuxPos, int offset, int touchProbe)
+// {
+// 	log.trace() << "Argument offset: " << offset;
+// 	log.trace() << "captured Position: " << getCapturedPosition(driveNumber, touchProbe);
+// 	int32_t offs = static_cast<int32_t>( - static_cast<int>( getCapturedPosition(driveNumber, touchProbe) ) + offset );
+// 	log.trace() << "setOffsetAtIndexPos(...) offs: " << offs;
+// 	isAuxPos ? setPosAuxOffset(driveNumber, offs) : setPosOffset(driveNumber, offs);
+// }
+// 
+// bool getIndexPulseIsCaptured(int driveNumber, int touchProbe)
+// {
+// 	if ( getIndexPulsePositiveEdgeIsCaptured(driveNumber, touchProbe) || getIndexPulseNegativeEdgeIsCaptured(driveNumber, touchProbe) ) {
+// 		return true;
+// 	}
+// 	
+// 	return false;
+// }
+// 
+// bool getIndexPulsePositiveEdgeIsCaptured(int driveNumber, int touchProbe)
+// {	
+// 	uint16_t touchProbeStatus = getTouchProbeStatus(driveNumber);
+// 	// 0x0060 both; 0x0040 negative edge; 0x0020 positive edge
+// 	if	( touchProbe == 1 ) {
+// 		if ( checkMaskedBits(touchProbeStatus, 0x0002, 0x0002) ) return true;
+// 	}
+// 	else if	( touchProbe == 2 ) {
+// 		if ( checkMaskedBits(touchProbeStatus, 0x0200, 0x0200) ) return true;
+// 	}
+// 	else	log.error() << "touchProbe " << touchProbe << " does not exists.";
+// 	return false;
+// }
+// 
+// bool getIndexPulseNegativeEdgeIsCaptured(int driveNumber, int touchProbe)
+// {
+// 	uint16_t touchProbeStatus = getTouchProbeStatus(driveNumber);
+// 	// 0x0060 both; 0x0040 negative edge; 0x0020 positive edge
+// 	if	( touchProbe == 1 ) {
+// 		if ( checkMaskedBits(touchProbeStatus, 0x0004, 0x0004) ) return true;
+// 	}
+// 	else if	( touchProbe == 2 ) {
+// 		if ( checkMaskedBits(touchProbeStatus, 0x0400, 0x0400) ) return true;
+// 	}
+// 	else	log.error() << "touchProbe " << touchProbe << " does not exists.";
+// 	return false;
+// 	
+// }
+// 
+// bool getIndexPulseIsCapturedIsValid(int driveNumber, int touchProbe)
+// {
+// 	if ( !getIndexPulseIsCaptured(driveNumber, touchProbe) ) {
+// 		log.warn() << "isDirectionOfRotationPositive(...) index pulse is not captured";
+// 		return false;
+// 	}
+// 	
+// 	if ( touchProbe == 1 ) {
+// 		auto positiveEdgeValue = getCapturedPositionPositivePulse(driveNumber, touchProbe);
+// 		auto negativeEdgeValue = getCapturedPositionNegativePulse(driveNumber, touchProbe);
+// 		
+// 		//check if both physical index pulses are captured
+// 		if ( abs( abs(positiveEdgeValue) - abs(negativeEdgeValue) ) < 32000 ) {	// 0/1
+// 			log.trace() << "Positve edge value ( " << positiveEdgeValue << " ) is to similar to negative edge value ( " << negativeEdgeValue 
+// 			<< " ). Difference: " << abs( abs(positiveEdgeValue) - abs(negativeEdgeValue) );
+// 			return false;
+// 		}
+// 		else {
+// 			return true;
+// 		}
+// 	}
+// 	else {
+// 		log.error() << "Touch probe " << touchProbe << " is not implemented.";
 // 		return false;
 // 	}
 // }
+// 
+// int32_t getCapturedPosition(int driveNumber, int touchProbe)	// compensated for direction of rotation
+// {	
+// 
+// 	return getCapturedPositionPositivePulse(driveNumber, touchProbe);
+//   
+// // 	// Bastel aus Zeiten deffekter Magnetringe
+// // 	if ( !getIndexPulseIsCaptured(driveNumber, touchProbe) ) log.warn() << "isDirectionOfRotationPositive(...) index pulse is not captured";
+// // 	
+// // 	auto positiveEdgeValue = getCapturedPositionPositivePulse(driveNumber, touchProbe);
+// // 	auto negativeEdgeValue = getCapturedPositionNegativePulse(driveNumber, touchProbe);
+// // 
+// // 	if (abs( abs(positiveEdgeValue) - abs(negativeEdgeValue)) < 200000) {
+// // 		if (positiveEdgeValue < negativeEdgeValue  ) // positive
+// // 			return getCapturedPositionPositivePulse(driveNumber, touchProbe);
+// // 		else // negative
+// // 			return getCapturedPositionNegativePulse(driveNumber, touchProbe);
+// // 	} 
+// // 	else {
+// // 		if (positiveEdgeValue < negativeEdgeValue  ) // positive
+// // 			return getCapturedPositionNegativePulse(driveNumber, touchProbe);
+// // 		else // negative
+// // 			return getCapturedPositionPositivePulse(driveNumber, touchProbe);
+// // 	}
+// }
+// 
+// int32_t getCapturedPositionPositivePulse(int driveNumber, int touchProbe)
+// {
+// 	int32_t position;
+// 	if	( touchProbe == 1 ) position = getTouchProbePos1Positive(driveNumber);
+// 	else if	( touchProbe == 2 ) position = getTouchProbePos2PosValue(driveNumber);
+// 	else	log.error() << "touchProbe " << touchProbe << " does not exists.";
+// 	return position;
+// }
+// 
+// int32_t getCapturedPositionNegativePulse(int driveNumber, int touchProbe)
+// {
+// 	int32_t position;
+// 	if	( touchProbe == 1 ) position = getTouchProbePos1Negative(driveNumber);
+// 	else if	( touchProbe == 2 ) log.error() << "No TouchProbePosition negative pulse for TouchProbe 2.";
+// 	else	log.error() << "touchProbe " << touchProbe << " does not exists.";
+// 	return position;
+// }
+// 
+// // bool isDirectionOfRotationPositive(int driveNumber, int touchProbe)
+// // {
+// // 	if ( !getIndexPulseIsCaptured(driveNumber, touchProbe) ) log.warn() << "isDirectionOfRotationPositive(...) index pulse is not captured";
+// // 	
+// // 	auto positiveEdgeValue = getCapturedPositionPositivePulse(driveNumber, touchProbe);
+// // 	auto negativeEdgeValue = getCapturedPositionNegativePulse(driveNumber, touchProbe);
+// // 		
+// // 	if (positiveEdgeValue < negativeEdgeValue  ) {			// positive direction of rotation
+// // 		return true;
+// // 	}
+// // 	else if ( positiveEdgeValue > negativeEdgeValue  ) {	// negative direction of rotation
+// // 		return false;
+// // 	}
+// // }
 
 
 

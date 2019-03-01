@@ -12,6 +12,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -g")
  
  
  
-add_executable(ethercattest main.cpp)
+add_executable(ethercattest 
+								main.cpp
+								etherCatInterface/EtherCATInterfaceBase.cpp
+								etherCatInterface/EtherCATInterfaceElmo.cpp
+)
+
 target_link_libraries(ethercattest eeros ucl ecmasterlib ${CMAKE_DL_LIBS})
 add_subdirectory(etherCatInterface)

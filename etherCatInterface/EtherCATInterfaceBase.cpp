@@ -2,12 +2,12 @@
 
 using namespace etherCATInterface;
 
-EtherCATInterfaceBase::EtherCATInterfaceBase(ethercat::EtherCATMain* etherCATStack) :
+EtherCATInterfaceBase::EtherCATInterfaceBase(ecmasterlib::EtherCATMain* etherCATStack) :
 etherCATStack(etherCATStack)
 {
 	outBuffer = etherCATStack->getOutBuffer();
 	inBuffer = etherCATStack->getInBuffer();
-	memset(outBuffer, 0, numberOfDrives * bytesPerPDOFrameTx);
+	memset(outBuffer, 0, bytesPerPDOFrameTx);
 	
 // 	for (unsigned int i=0; i<sizeof(touchProbeState); i++) {
 // 		touchProbeState[i] = touchProbeStateEnum::reset;
@@ -65,14 +65,14 @@ unsigned char EtherCATInterfaceBase::get8bit(uint32_t offsetInByte, uint32_t dri
 	}
 }
 
-unsigned char EtherCATInterfaceBase::get16bit(uint32_t offsetInByte, uint32_t driveNumber)
+unsigned short EtherCATInterfaceBase::get16bit(uint32_t offsetInByte, uint32_t driveNumber)
 {
 	if(checkOffset(offsetInByte)) {
 		etherCATStack->getFrmWord(inBuffer + driveNumber*bytesPerPDOFrameTx + offsetInByte);
 	}
 }
 
-unsigned char EtherCATInterfaceBase::get32bit(uint32_t offsetInByte, uint32_t driveNumber)
+unsigned int EtherCATInterfaceBase::get32bit(uint32_t offsetInByte, uint32_t driveNumber)
 {
 	if(checkOffset(offsetInByte)) {
 		etherCATStack->getFrmDWord(inBuffer + driveNumber*bytesPerPDOFrameTx + offsetInByte);

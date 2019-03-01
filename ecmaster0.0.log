@@ -11,67 +11,67 @@ Full command line: -f "06_ENI_2Elmo_1000ms.xml"-i8254x 1 1 -perf -v 4
 003004 : EC-Master V2.9.2.13 (Protected) for Linux_x64 Copyright acontis technologies GmbH @ 2018
 003004 : OsGetLinkLayerRegFunc: try to load '/home/ubuntu/projects/etherCATTest/libemllI8254x.so'
 003005 : PCI: device 00:19.0 found
-007253 : Unlicensed version, stop sending ethernet frames after 60 minutes!
-007293 : Bus scan successful - 2 slaves found
-007313 : 1 identical messages skipped
-007313 : ******************************************************************************
-007313 : Slave ID............: 0x00000000
-007313 : Bus Index...........: 0
-007313 : Bus AutoInc Address.: 0x0000
-007313 : Bus Station Address.: 0x03e9 (1001)
-007313 : Bus Alias Address...: 0x0000 (   0)
-007313 : Vendor ID...........: 0x0000009A = Elmo Motion Control Ltd.
-007313 : Product Code........: 0x00030924 = Unknown
-007313 : Revision............: 0x00010420   Serial Number: 18342982
-007313 : ESC Type............: Beckhoff ET1100 (0x11)  Revision: 0  Build: 3
-007313 : Connection at Port A: yes (to 0x00010000)
-007313 : Connection at Port D: no  (to 0xFFFFFFFF)
-007313 : Connection at Port B: yes (to 0x00000001)
-007313 : Connection at Port C: no  (to 0xFFFFFFFF)
-007313 : Line Crossed........: no 
-007313 : Cfg Station Address.: 0x03e9 (1001)
-007313 : PD IN    Byte.Bit offset: 0.0   Size: 80 bits
-007313 : PD OUT   Byte.Bit offset: 0.0   Size: 80 bits
-007313 : ******************************************************************************
-007313 : Slave ID............: 0x00000001
-007313 : Bus Index...........: 1
-007313 : Bus AutoInc Address.: 0xffff
-007313 : Bus Station Address.: 0x03ea (1002)
-007313 : Bus Alias Address...: 0x0000 (   0)
-007313 : Vendor ID...........: 0x0000009A = Elmo Motion Control Ltd.
-007313 : Product Code........: 0x00030924 = Unknown
-007313 : Revision............: 0x00010420   Serial Number: 18342978
-007313 : ESC Type............: Beckhoff ET1100 (0x11)  Revision: 0  Build: 3
-007313 : Connection at Port A: yes (to 0x00000000)
-007313 : Connection at Port D: no  (to 0xFFFFFFFF)
-007313 : Connection at Port B: no  (to 0xFFFFFFFF)
-007313 : Connection at Port C: no  (to 0xFFFFFFFF)
-007313 : Line Crossed........: no 
-007313 : Cfg Station Address.: 0x03ea (1002)
-007313 : PD IN    Byte.Bit offset: 10.0   Size: 80 bits
-007313 : PD OUT   Byte.Bit offset: 10.0   Size: 80 bits
-007313 : EtherCAT network adapter MAC: 90-B1-1C-8C-C5-C1
+007085 : Unlicensed version, stop sending ethernet frames after 60 minutes!
+007144 : Bus scan successful - 2 slaves found
+007167 : 1 identical messages skipped
+007167 : ******************************************************************************
+007167 : Slave ID............: 0x00000000
+007167 : Bus Index...........: 0
+007167 : Bus AutoInc Address.: 0x0000
+007167 : Bus Station Address.: 0x03e9 (1001)
+007167 : Bus Alias Address...: 0x0000 (   0)
+007167 : Vendor ID...........: 0x0000009A = Elmo Motion Control Ltd.
+007167 : Product Code........: 0x00030924 = Unknown
+007167 : Revision............: 0x00010420   Serial Number: 18342982
+007167 : ESC Type............: Beckhoff ET1100 (0x11)  Revision: 0  Build: 3
+007167 : Connection at Port A: yes (to 0x00010000)
+007167 : Connection at Port D: no  (to 0xFFFFFFFF)
+007167 : Connection at Port B: yes (to 0x00000001)
+007167 : Connection at Port C: no  (to 0xFFFFFFFF)
+007167 : Line Crossed........: no 
+007167 : Cfg Station Address.: 0x03e9 (1001)
+007167 : PD IN    Byte.Bit offset: 0.0   Size: 80 bits
+007167 : PD OUT   Byte.Bit offset: 0.0   Size: 80 bits
+007167 : ******************************************************************************
+007167 : Slave ID............: 0x00000001
+007167 : Bus Index...........: 1
+007167 : Bus AutoInc Address.: 0xffff
+007167 : Bus Station Address.: 0x03ea (1002)
+007167 : Bus Alias Address...: 0x0000 (   0)
+007167 : Vendor ID...........: 0x0000009A = Elmo Motion Control Ltd.
+007167 : Product Code........: 0x00030924 = Unknown
+007167 : Revision............: 0x00010420   Serial Number: 18342978
+007167 : ESC Type............: Beckhoff ET1100 (0x11)  Revision: 0  Build: 3
+007167 : Connection at Port A: yes (to 0x00000000)
+007167 : Connection at Port D: no  (to 0xFFFFFFFF)
+007167 : Connection at Port B: no  (to 0xFFFFFFFF)
+007167 : Connection at Port C: no  (to 0xFFFFFFFF)
+007167 : Line Crossed........: no 
+007167 : Cfg Station Address.: 0x03ea (1002)
+007167 : PD IN    Byte.Bit offset: 10.0   Size: 80 bits
+007167 : PD OUT   Byte.Bit offset: 10.0   Size: 80 bits
+007167 : EtherCAT network adapter MAC: 90-B1-1C-8C-C5-C1
 
-007313 : =====================
-007313 : Start EtherCAT Master
-007313 : =====================
-007317 : Master state changed from <UNKNOWN> to <INIT>
-007318 : prepare
-007351 : Master state changed from <INIT> to <PREOP>
-012080 : DCM in sync Cur=" -29004", Avg="  -2048", Max=" -33178"
-012133 : Cyclic command WKC error on LRW - Address: 0x10000000 - WKC act/set=2/6
-012133 : Master state changed from <PREOP> to <SAFEOP>
-012175 : Master state changed from <SAFEOP> to <OP>
-012175 : 
-012175 : Job times during startup <INIT> to <OP>:
-012175 : ============================================================================
-012175 : PerfMsmt 'JOB_ProcessAllRxFrames' (min/avg/max) [usec]:    0.1/   2.9/  10.4
-012175 : PerfMsmt 'JOB_SendAllCycFrames  ' (min/avg/max) [usec]:    1.2/   3.8/   7.9
-012175 : PerfMsmt 'JOB_MasterTimer       ' (min/avg/max) [usec]:    0.7/   1.9/  26.1
-012175 : PerfMsmt 'JOB_SendAcycFrames    ' (min/avg/max) [usec]:    0.1/   0.9/  16.7
-012175 : PerfMsmt 'Cycle Time            ' (min/avg/max) [usec]:  239.8/ 999.9/1005.4
-012175 : PerfMsmt 'myAppWorkPd           ' (min/avg/max) [usec]:    0.1/   0.4/   6.8
-012175 : PerfMsmt 'Write DCM logfile     ' (min/avg/max) [usec]:    0.3/   0.4/   2.2
-012175 : 
-012175 : DCM during startup (<INIT> to <OP>)
-012175 : DCM Diff(ns): Cur= -14458, Avg=  -2361, Max= -35522
+007167 : =====================
+007167 : Start EtherCAT Master
+007167 : =====================
+007179 : Master state changed from <UNKNOWN> to <INIT>
+007179 : prepare
+007213 : Master state changed from <INIT> to <PREOP>
+011942 : DCM in sync Cur=" -11389", Avg="  -2625", Max=" -33791"
+011994 : Cyclic command WKC error on LRW - Address: 0x10000000 - WKC act/set=2/6
+011994 : Master state changed from <PREOP> to <SAFEOP>
+012037 : Master state changed from <SAFEOP> to <OP>
+012037 : 
+012037 : Job times during startup <INIT> to <OP>:
+012037 : ============================================================================
+012037 : PerfMsmt 'JOB_ProcessAllRxFrames' (min/avg/max) [usec]:    0.1/   3.0/  10.8
+012037 : PerfMsmt 'JOB_SendAllCycFrames  ' (min/avg/max) [usec]:    2.3/   3.2/   8.3
+012037 : PerfMsmt 'JOB_MasterTimer       ' (min/avg/max) [usec]:    0.5/   1.8/  23.0
+012037 : PerfMsmt 'JOB_SendAcycFrames    ' (min/avg/max) [usec]:    0.1/   0.8/  16.5
+012037 : PerfMsmt 'Cycle Time            ' (min/avg/max) [usec]:  737.8/ 999.9/1005.1
+012037 : PerfMsmt 'myAppWorkPd           ' (min/avg/max) [usec]:    0.1/   2.1/   5.7
+012037 : PerfMsmt 'Write DCM logfile     ' (min/avg/max) [usec]:    0.3/   0.4/   1.6
+012037 : 
+012037 : DCM during startup (<INIT> to <OP>)
+012037 : DCM Diff(ns): Cur= -12109, Avg=  -2932, Max= -37489
