@@ -58,24 +58,29 @@ void EtherCATInterfaceBase::set32bit(uint32_t offsetInByte, uint32_t driveNumber
 
 
 
-unsigned char EtherCATInterfaceBase::get8bit(uint32_t offsetInByte, uint32_t driveNumber)
+uint8_t EtherCATInterfaceBase::get8bit(uint32_t offsetInByte, uint32_t driveNumber)
 {
 	if(checkOffset(offsetInByte)) {
-		etherCATStack->getFrmByte(inBuffer + driveNumber*bytesPerPDOFrameTx + offsetInByte);
+		return (uint8_t)etherCATStack->getFrmByte(inBuffer + driveNumber*bytesPerPDOFrameTx + offsetInByte);
 	}
 }
 
-unsigned short EtherCATInterfaceBase::get16bit(uint32_t offsetInByte, uint32_t driveNumber)
+uint16_t EtherCATInterfaceBase::get16bit(uint32_t offsetInByte, uint32_t driveNumber)
 {
+	auto data16 = etherCATStack->getFrmWord(inBuffer + driveNumber*bytesPerPDOFrameTx + offsetInByte);
+ 	std::cout << "IBase: get16bit: driveNumber: " << driveNumber << "   offsetInByte: " << offsetInByte << "   data: 0x" << std::hex << data16 << std::endl;
+// 	return data16;
+	
 	if(checkOffset(offsetInByte)) {
-		etherCATStack->getFrmWord(inBuffer + driveNumber*bytesPerPDOFrameTx + offsetInByte);
+// 		std::cout << "IBase: Offset ok" << std::endl;
+		return (uint16_t)etherCATStack->getFrmWord(inBuffer + driveNumber*bytesPerPDOFrameTx + offsetInByte);
 	}
 }
 
-unsigned int EtherCATInterfaceBase::get32bit(uint32_t offsetInByte, uint32_t driveNumber)
+uint32_t EtherCATInterfaceBase::get32bit(uint32_t offsetInByte, uint32_t driveNumber)
 {
 	if(checkOffset(offsetInByte)) {
-		etherCATStack->getFrmDWord(inBuffer + driveNumber*bytesPerPDOFrameTx + offsetInByte);
+		return (uint32_t)etherCATStack->getFrmDWord(inBuffer + driveNumber*bytesPerPDOFrameTx + offsetInByte);
 	}
 }
 
@@ -225,8 +230,11 @@ void setPosAuxOffset(int driveNumber, int32_t offset)
 //private:
 bool EtherCATInterfaceBase::checkOffset(int offsetInByte) {
 	if(offsetInByte < 0) {
-		std::cout << "ERROR: the PDO offset is not defined in EtherCATInterfaceXXX" << std::endl;
+		std::cout << "ERROR: the PDO offset is not defined in EtherCATInterface" << std::endl; //TODO log
 		return false;
+	}
+	else {
+		return true;
 	}
 }
 

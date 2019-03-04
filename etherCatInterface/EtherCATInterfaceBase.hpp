@@ -26,9 +26,9 @@ namespace etherCATInterface {
 		
 		
 		// basic get functions:
-		unsigned char get8bit(uint32_t offsetInByte, uint32_t driveNumber);
-		unsigned short get16bit(uint32_t offsetInByte, uint32_t driveNumber);
-		unsigned int get32bit(uint32_t offsetInByte, uint32_t driveNumber);
+		uint8_t get8bit(uint32_t offsetInByte, uint32_t driveNumber);
+		uint16_t get16bit(uint32_t offsetInByte, uint32_t driveNumber);
+		uint32_t get32bit(uint32_t offsetInByte, uint32_t driveNumber);
 		
 		
 		

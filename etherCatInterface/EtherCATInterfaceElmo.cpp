@@ -311,27 +311,35 @@ driveStatus_ELMO EtherCATInterfaceElmo::getDriveStatusElmo(int driveNumber)
 {
 	uint16_t statusWord = getStatusWord(driveNumber);
 	if ( checkMaskedBits(statusWord, notReadyToSwitchOnValue, notReadyToSwitchOnMask) ) {
+		std:: cout << "drive: " << driveNumber << "   Status: notReadyToSwitchOn   statusWord: " << std::hex << statusWord << std::endl;
 		return driveStatus_ELMO::notReadyToSwitchOn;
 	}
 	if ( checkMaskedBits(statusWord, switchOnDisabledValue, switchOnDisabledMask) ) {
+		std:: cout << "drive: " << driveNumber << "   Status: switchOnDisabled   statusWord: " << std::hex << statusWord << std::endl;
 		return driveStatus_ELMO::switchOnDisabled;
 	}
 	if ( checkMaskedBits(statusWord, readyToSwitchOnValue, readyToSwitchOnMask) ) {
+		std:: cout << "drive: " << driveNumber << "   Status: readyToSwitchOn   statusWord: " << std::hex << statusWord << std::endl;
 		return driveStatus_ELMO::readyToSwitchOn;
 	}
 	if ( checkMaskedBits(statusWord, switchedOnValue, switchedOnMask) ) {
+		std:: cout << "drive: " << driveNumber << "   Status: switchedOn   statusWord: " << std::hex << statusWord << std::endl;
 		return driveStatus_ELMO::switchedOn;
 	}
 	if ( checkMaskedBits(statusWord, operationEnabledValue, operationEnabledMask) ) {
+		std:: cout << "drive: " << driveNumber << "   Status: operationEnabled   statusWord: " << std::hex << statusWord << std::endl;
 		return driveStatus_ELMO::operationEnabled;
 	}
 	if ( checkMaskedBits(statusWord, quickStopActiveValue, quickStopActiveMask) ) {
+		std:: cout << "drive: " << driveNumber << "   Status: quickStopActive   statusWord: " << std::hex << statusWord << std::endl;
 		return driveStatus_ELMO::quickStopActive;
 	}
 	if ( checkMaskedBits(statusWord, faultReactionActiveValue, faultReactionActiveMask) ) {
+		std:: cout << "drive: " << driveNumber << "   Status: faultReactionactive   statusWord: " << std::hex << statusWord << std::endl;
 		return driveStatus_ELMO::faultReactionactive;
 	}
 	if ( checkMaskedBits(statusWord, faultValue, faultMask) ) {
+		std:: cout << "drive: " << driveNumber << "   Status: fault   statusWord: " << std::hex << statusWord << std::endl;
 		return driveStatus_ELMO::fault;
 	}
 	
@@ -777,6 +785,9 @@ void EtherCATInterfaceElmo::setGainSchedulingManualIndex(int driveNumber, uint16
 //basic get functions:
 uint16_t EtherCATInterfaceElmo::getStatusWord(int driveNumber)
 {
+// 	uint16_t st = get16bit(io_statusWord, driveNumber);
+// 	std::cout << "IELMO: getStatusWord. driveNumber: " << driveNumber << "     status: 0x" << std::hex << st << std::endl;
+// 	return st;
 	return get16bit(io_statusWord, driveNumber);
 }
 
@@ -867,8 +878,12 @@ int32_t EtherCATInterfaceElmo::getPositionDemandValue_cnt(int driveNumber)
 }
 
 uint32_t EtherCATInterfaceElmo::getDigitalInputs(int driveNumber)
-{
-	return get32bit(io_digitalInputs, driveNumber);
+{	
+	auto inputs = get32bit(io_digitalInputs, driveNumber);
+	std::cout << "iBase: getDigitalInputs. driveNumber: " << driveNumber << "     inputs: " << std::hex << inputs << std::endl;
+// 	std::cout << etherCATStack->getInBuffer() << std::endl;
+	std::cout << std::endl;
+	return inputs;
 }
 
 int16_t EtherCATInterfaceElmo::getAnalogInput(int driveNumber)

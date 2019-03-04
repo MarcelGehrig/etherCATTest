@@ -28,6 +28,7 @@ static void signalHandler( int nSignal )
     std::cout << "signalHandler" << std::endl;
     etherCATStackPtr->stop();
     running = false;
+    std::cout << "signalHandler" << std::endl;
 }
 // 
 
@@ -60,7 +61,10 @@ int main(int argc, char **argv) {
 
 
 
-	while ( elmoDrives.initAllDrives() ) { sleep(0.001); };
+	while ( !elmoDrives.initAllDrives() and running ) { 
+		sleep(1); 
+		log.info() << "MAIN: initAllDrives";
+	};
 
 // 	while ( running ) {
 // 		log.info() << "loop";
@@ -70,11 +74,13 @@ int main(int argc, char **argv) {
 	auto cv = etherCATStack->getConditionalVariable();
 	auto m = etherCATStack->getMutex();
 	
+// 	elmoDrives.initAllDrives();
+	
 	int count;
-// 		elmoDrives.setDigitalOutput(0, 0xFFFFFFFF);
-// 		elmoDrives.setDigitalOutput(1, 0xFFFFFFFF);
-		elmoDrives.setDigitalOutput(0, 0);
-		elmoDrives.setDigitalOutput(1, 0);
+		elmoDrives.setDigitalOutput(0, 0xFFFFFFFF);
+		elmoDrives.setDigitalOutput(1, 0xFFFFFFFF);
+// 		elmoDrives.setDigitalOutput(0, 0);
+// 		elmoDrives.setDigitalOutput(1, 0);
 	
 	while (running) {
 		std::unique_lock<std::mutex> lk(*m);
@@ -88,12 +94,29 @@ int main(int argc, char **argv) {
 // 			elmoDrives.setDigitalOutput(0, 0x0);
 // 		}
 		
-		if (count%1000 == 0) {
-			log.info() << "loop: " << std::hex << elmoDrives.getDigitalInputs(0);
-			log.info() << "loop: " << std::hex << elmoDrives.getDigitalInputs(1);
+		
+		if (count%500 == 0) {
+			elmoDrives.setDigitalOutput(0, 0xFFFFFFFF);
+			elmoDrives.setDigitalOutput(1, 0xFFFFFFFF);
+			if (count%1000 == 0) {
+				elmoDrives.setDigitalOutput(0, 0);
+				elmoDrives.setDigitalOutput(1, 0);
+			}
+// 			log.info() << "getStatusWord 0: 0x" << std::hex << elmoDrives.getStatusWord(0);
+// 			log.info() << "getStatusWord 1: 0x" << std::hex << elmoDrives.getStatusWord(1);
+// 			log.info() << "getDriveStatus 0:" << elmoDrives.getDriveStatusElmo(0);
+// 			log.info() << "getDriveStatus 1:" << elmoDrives.getDriveStatusElmo(1);
+			log.info() << "loop DI0: " << std::hex << elmoDrives.getDigitalInputs(0);
+			log.info() << "loop DI1: " << std::hex << elmoDrives.getDigitalInputs(1);
+			log.info();
+			log.info();
+// 			log.info() << "loop: " << std::hex << elmoDrives.get(0);
+// 			log.info() << "loop: " << std::hex << elmoDrives.getStatusWord(1);
 // 		elmoDrives.setDigitalOutput(0, 0x0);
 // 		elmoDrives.setDigitalOutput(1, 0x0);
 		}
+		
+		
 		
 		count++;
 	}
