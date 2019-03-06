@@ -127,25 +127,27 @@ namespace etherCATInterface {
 		
 		
 		
-	// 	bool enableCapturingIndexPulse(std::vector<int> driveNumbers);
-	// 	bool enableCapturingIndexPulse(std::vector<int> driveNumbers, std::vector<int> touchProbes);
-	// 	bool enableCapturingIndexPulse(int driveNumber, int touchProbe=1);
-	// 	bool disableCapturingIndexPulse(int driveNumber, int touchProbe=1);
-	// // 		void waitForAllIndexPulses(std::array<int, numberOfWheels> driveNumbers, int pollingTimeUSec=1e5);
-	// // 		void waitForAllIndexPulses(std::array<int, numberOfWheels> driveNumbers, std::array<int, numberOfWheels> touchProbes, int pollingTimeUSec=1e5);
-	// // 		void waitForAllIndexPulses(int driveNumber, int touchProbe=1, int pollingTimeUSec=1e5);
-	// 	void setOffsetAtIndexPos(std::vector<int> driveNumbers, bool isAuxPos, std::vector<int> offsets);
-	// 	void setOffsetAtIndexPos(std::vector<int> driveNumbers, bool isAuxPos, std::vector<int> offsets, std::vector<int> touchProbes);
-	// 	void setOffsetAtIndexPos(int driveNumber, bool isAuxPos, int offset=0, int touchProbe=1);
-	// 	
-	// 	bool getIndexPulseIsCaptured(int driveNumber, int touchProbe=1);	// both pulses are captured
-	// 	bool getIndexPulsePositiveEdgeIsCaptured(int driveNumber, int touchProbe=1);
-	// 	bool getIndexPulseNegativeEdgeIsCaptured(int driveNumber, int touchProbe=1);
-	// 	bool getIndexPulseIsCapturedIsValid(int driveNumber, int touchProbe=1);
-	// 	int32_t getCapturedPosition(int driveNumber, int touchProbe=1);			// compensated for direction of rotation
-	// 	int32_t getCapturedPositionPositivePulse(int driveNumber, int touchProbe=1);
-	// 	int32_t getCapturedPositionNegativePulse(int driveNumber, int touchProbe=1);
-	// // 		bool isDirectionOfRotationPositive(int driveNumber, int touchProbe=1);
+		bool enableCapturingIndexPulse(std::vector<int> driveNumbers);
+		bool enableCapturingIndexPulse(std::vector<int> driveNumbers, std::vector<int> touchProbes);
+		bool enableCapturingIndexPulse(int driveNumber, int touchProbe=1);
+		bool disableCapturingIndexPulse(int driveNumber, int touchProbe=1);
+	// 		void waitForAllIndexPulses(std::array<int, numberOfWheels> driveNumbers, int pollingTimeUSec=1e5);
+	// 		void waitForAllIndexPulses(std::array<int, numberOfWheels> driveNumbers, std::array<int, numberOfWheels> touchProbes, int pollingTimeUSec=1e5);
+	// 		void waitForAllIndexPulses(int driveNumber, int touchProbe=1, int pollingTimeUSec=1e5);
+		void setOffsetAtIndexPos(std::vector<int> driveNumbers, bool isAuxPos, std::vector<int> offsets);
+		void setOffsetAtIndexPos(std::vector<int> driveNumbers, bool isAuxPos, std::vector<int> offsets, std::vector<int> touchProbes);
+		void setOffsetAtIndexPos(int driveNumber, bool isAuxPos, int offset=0, int touchProbe=1);
+		void setTouchProbeFunction(int driveNumber, touchProbeFunctionEnum_ELMO function);
+		
+		bool getTouchProbeIsEnabled(int driveNumber, int touchProbe=1);
+		bool getIndexPulseIsCaptured(int driveNumber, int touchProbe=1);	// both pulses are captured
+		bool getIndexPulsePositiveEdgeIsCaptured(int driveNumber, int touchProbe=1);
+		bool getIndexPulseNegativeEdgeIsCaptured(int driveNumber, int touchProbe=1);
+// 		bool getIndexPulseIsCapturedIsValid(int driveNumber, int touchProbe=1);
+		int32_t getCapturedPosition(int driveNumber, int touchProbe=1);			// compensated for direction of rotation
+		int32_t getCapturedPositionPositivePulse(int driveNumber, int touchProbe=1);
+		int32_t getCapturedPositionNegativePulse(int driveNumber, int touchProbe=1);
+	// 		bool isDirectionOfRotationPositive(int driveNumber, int touchProbe=1);
 		
 // 		touchProbeStateEnum touchProbeState[numberOfDrives];
 		
@@ -158,6 +160,8 @@ namespace etherCATInterface {
 		uint8_t* inBuffer;
 		uint8_t* outBuffer;
 		
+		
+		
 		struct drive {
 			int32_t posOffset		= 0;
 			int32_t auxPosOffset	= 0;
@@ -165,6 +169,9 @@ namespace etherCATInterface {
 			int32_t prevRawAuxPos	= 0;
 			int64_t absPos 			= 0;
 			int64_t absAuxPos 		= 0;
+			touchProbeStateEnum_ELMO touchProbeState = touchProbeStateEnum_ELMO::reset;
+			uint16_t touchProbeFunctionSet = 0x0;
+// 			int32_t standardTouchProbeIndex	= 1;
 		};
 		
 		drive drives[numberOfDrives];

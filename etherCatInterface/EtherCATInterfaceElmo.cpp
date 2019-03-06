@@ -311,35 +311,27 @@ driveStatus_ELMO EtherCATInterfaceElmo::getDriveStatusElmo(int driveNumber)
 {
 	uint16_t statusWord = getStatusWord(driveNumber);
 	if ( checkMaskedBits(statusWord, notReadyToSwitchOnValue, notReadyToSwitchOnMask) ) {
-		std:: cout << "drive: " << driveNumber << "   Status: notReadyToSwitchOn   statusWord: " << std::hex << statusWord << std::endl;
 		return driveStatus_ELMO::notReadyToSwitchOn;
 	}
 	if ( checkMaskedBits(statusWord, switchOnDisabledValue, switchOnDisabledMask) ) {
-		std:: cout << "drive: " << driveNumber << "   Status: switchOnDisabled   statusWord: " << std::hex << statusWord << std::endl;
 		return driveStatus_ELMO::switchOnDisabled;
 	}
 	if ( checkMaskedBits(statusWord, readyToSwitchOnValue, readyToSwitchOnMask) ) {
-		std:: cout << "drive: " << driveNumber << "   Status: readyToSwitchOn   statusWord: " << std::hex << statusWord << std::endl;
 		return driveStatus_ELMO::readyToSwitchOn;
 	}
 	if ( checkMaskedBits(statusWord, switchedOnValue, switchedOnMask) ) {
-		std:: cout << "drive: " << driveNumber << "   Status: switchedOn   statusWord: " << std::hex << statusWord << std::endl;
 		return driveStatus_ELMO::switchedOn;
 	}
 	if ( checkMaskedBits(statusWord, operationEnabledValue, operationEnabledMask) ) {
-		std:: cout << "drive: " << driveNumber << "   Status: operationEnabled   statusWord: " << std::hex << statusWord << std::endl;
 		return driveStatus_ELMO::operationEnabled;
 	}
 	if ( checkMaskedBits(statusWord, quickStopActiveValue, quickStopActiveMask) ) {
-		std:: cout << "drive: " << driveNumber << "   Status: quickStopActive   statusWord: " << std::hex << statusWord << std::endl;
 		return driveStatus_ELMO::quickStopActive;
 	}
 	if ( checkMaskedBits(statusWord, faultReactionActiveValue, faultReactionActiveMask) ) {
-		std:: cout << "drive: " << driveNumber << "   Status: faultReactionactive   statusWord: " << std::hex << statusWord << std::endl;
 		return driveStatus_ELMO::faultReactionactive;
 	}
 	if ( checkMaskedBits(statusWord, faultValue, faultMask) ) {
-		std:: cout << "drive: " << driveNumber << "   Status: fault   statusWord: " << std::hex << statusWord << std::endl;
 		return driveStatus_ELMO::fault;
 	}
 	
@@ -360,75 +352,75 @@ driveStatus_ELMO EtherCATInterfaceElmo::getDriveStatusElmo(int driveNumber)
 
 
 
-// //index pulse
-// // void homeWithIndexPulse(std::array< int, numberOfWheels > driveNumbers, std::array< int, numberOfWheels > offsets, bool auxPos)
-// // {
-// // 	std::array< int, numberOfWheels > touchProbes;
-// // // 	touchProbes.resize( driveNumbers.size() );
-// // 	std::fill( touchProbes.begin(), touchProbes.end(), 1 );		//allways use touchProbe 1
-// // 	return homeWithIndexPulse(driveNumbers, offsets, touchProbes);
-// // }
-// // 
-// // 
-// // void homeWithIndexPulse(std::array< int, numberOfWheels > driveNumbers, std::array< int, numberOfWheels > offsets, bool auxPos, std::array< int, numberOfWheels > touchProbes)
-// // {
-// // 	if ( (driveNumbers.size()!=offsets.size()) || (offsets.size()!=touchProbes.size()) ) {
-// // 		log.error() << "homeWithIndexPulse(...) all argument lists have to be of the same size";
-// // 		return;
-// // 	}
-// // 	
-// // 	//enable capturing for all drives
-// // 	enableCapturingIndexPulse(driveNumbers, touchProbes);
-// // 	
-// // 	//waiting for all pulses to be captured
-// // 	waitForAllIndexPulses(driveNumbers, touchProbes);
-// // 	
-// // 	//set offsets
-// // 	setOffsetAtIndexPos(driveNumbers, offsets, touchProbes);
-// // }
-// // 
-// // int32_t homeWithIndexPulse(int driveNumber, int offset, bool auxPos, int touchProbe)
-// // {
-// // 	//TODO check status of drive?
-// // 	enableCapturingIndexPulse(driveNumber, touchProbe);
-// // 	while ( !getIndexPulseIsCaptured(driveNumber, touchProbe) )	usleep(100);
-// // 	int32_t posOffset = static_cast<int32_t>( static_cast<int>(getCapturedPosition(driveNumber)) + offset );
-// // 	setPosOffset(driveNumber, posOffset);asdf	//	isAuxPos ? setPosAuxOffset(driveNumber, offs) : setPosOffset(driveNumber, offs);
-// // 	return posOffset;
-// // }
-// 
-// bool enableCapturingIndexPulse(std::vector< int > driveNumbers )
+// index pulse
+// void homeWithIndexPulse(std::array< int, numberOfWheels > driveNumbers, std::array< int, numberOfWheels > offsets, bool auxPos)
 // {
-// 	std::vector< int > touchProbes;
-// 	touchProbes.resize( driveNumbers.size() );
-// 	std::fill( touchProbes.begin(), touchProbes.end(), 1 );		//allways use touchProbe 1
-// 	return enableCapturingIndexPulse(driveNumbers, touchProbes);
-// 
+// 	return homeWithIndexPulse(driveNumbers, offsets, drives[drive);
 // }
 // 
-// bool enableCapturingIndexPulse(std::vector< int > driveNumbers, std::vector< int > touchProbes)
+// 
+// void homeWithIndexPulse(std::array< int, numberOfWheels > driveNumbers, std::array< int, numberOfWheels > offsets, bool auxPos, std::array< int, numberOfWheels > touchProbes)
 // {
-// 	if ( (driveNumbers.size()!=touchProbes.size()) ) {
-// 		log.error() << "enableCapturingIndexPulse(...) all argument vectors have to be of the same size";
-// 		return false;
+// 	if ( (driveNumbers.size()!=offsets.size()) || (offsets.size()!=touchProbes.size()) ) {
+// 		log.error() << "homeWithIndexPulse(...) all argument lists have to be of the same size";
+// 		return;
 // 	}
 // 	
-// 	bool allProbesReady = true;
-// 	for (	std::vector< int >::iterator itDriveNumbers=driveNumbers.begin(),
-// 			itTouchProbes=touchProbes.begin();
-// 			itDriveNumbers != driveNumbers.end();
-// 			++itDriveNumbers, ++itTouchProbes)
-// 	{
-// 			if ( !enableCapturingIndexPulse(*itDriveNumbers, *itTouchProbes) )	allProbesReady = false;
-// 	}
+// 	//enable capturing for all drives
+// 	enableCapturingIndexPulse(driveNumbers, touchProbes);
 // 	
-// 	return allProbesReady;
+// 	//waiting for all pulses to be captured
+// 	waitForAllIndexPulses(driveNumbers, touchProbes);
+// 	
+// 	//set offsets
+// 	setOffsetAtIndexPos(driveNumbers, offsets, touchProbes);
 // }
 // 
-// bool enableCapturingIndexPulse(int driveNumber, int touchProbe)
+// int32_t homeWithIndexPulse(int driveNumber, int offset, bool auxPos, int touchProbe)
 // {
+// 	//TODO check status of drive?
+// 	enableCapturingIndexPulse(driveNumber, touchProbe);
+// 	while ( !getIndexPulseIsCaptured(driveNumber, touchProbe) )	usleep(100);
+// 	int32_t posOffset = static_cast<int32_t>( static_cast<int>(getCapturedPosition(driveNumber)) + offset );
+// 	setPosOffset(driveNumber, posOffset);asdf	//	isAuxPos ? setPosAuxOffset(driveNumber, offs) : setPosOffset(driveNumber, offs);
+// 	return posOffset;
+// }
+
+bool EtherCATInterfaceElmo::enableCapturingIndexPulse(std::vector< int > driveNumbers )
+{
+	std::vector< int > touchProbes;
+	touchProbes.resize( driveNumbers.size() );
+	std::fill( touchProbes.begin(), touchProbes.end(), 1 );		//allways use touchProbe 1
+	return enableCapturingIndexPulse(driveNumbers, touchProbes);
+
+}
+
+bool EtherCATInterfaceElmo::enableCapturingIndexPulse(std::vector< int > driveNumbers, std::vector< int > touchProbes)
+{
+	if ( (driveNumbers.size()!=touchProbes.size()) ) {
+		std::cout << "enableCapturingIndexPulse(...) all argument vectors have to be of the same size" << std::endl;
+		return false;
+	}
+	
+	bool allProbesReady = true;
+	for (	std::vector< int >::iterator	itDriveNumbers=driveNumbers.begin(),
+											itTouchProbes=touchProbes.begin();
+			itDriveNumbers != driveNumbers.end();
+			++itDriveNumbers, ++itTouchProbes)
+	{
+			if ( !enableCapturingIndexPulse(*itDriveNumbers, *itTouchProbes) ) {
+				allProbesReady = false;
+			}
+	}
+	
+	return allProbesReady;
+}
+
+bool EtherCATInterfaceElmo::enableCapturingIndexPulse(int driveNumber, int touchProbe)
+{
+		std::cout << "enableCapturingIndexPulse is not implemented" << std::endl;
 // 	if ( touchProbe != 1 ) {
-// 		log.error() << "touchProbe " << touchProbe << "is not implemented";
+// 		std::cout << "touchProbe " << touchProbe << "is not implemented" << std::endl;
 // 		return false;
 // 	}
 // 	
@@ -456,130 +448,212 @@ driveStatus_ELMO EtherCATInterfaceElmo::getDriveStatusElmo(int driveNumber)
 // 			break;
 // 		default :
 // 			log.error() << "touchProbeStateEnum does not exist";
-// 	}
-// }
-// 
-// 
-// bool disableCapturingIndexPulse(int driveNumber, int touchProbe)
-// {
-// 	if ( touchProbe != 1 ) {
-// 		log.error() << "touchProbe " << touchProbe << "is not implemented";
-// 		return false;
-// 	}
-// 	
-// 	setTouchProbeFunction( driveNumber, 0x0000 );		// disable everything
-// 	if ( getTouchProbeStatus(driveNumber) == 0x0000 ) {	// touch probe is swithced off  -> stored values on elmo are reset 
-// 		touchProbeState[driveNumber] = touchProbeStateEnum::reset;
-// 		return true;
-// 	}
-// 	return false;
-// }
-// 
-// 
-// // void waitForAllIndexPulses(std::array< int, numberOfWheels > driveNumbers, int pollingTimeUSec)
-// // {
-// // 	std::array< int, numberOfWheels > touchProbes;
-// // // 	touchProbes.resize( driveNumbers.size() );
-// // 	std::fill( touchProbes.begin(), touchProbes.end(), 1 );		//allways use touchProbe 1
-// // 	return waitForAllIndexPulses(driveNumbers, touchProbes);
-// // 
-// // }
-// // 
-// // void waitForAllIndexPulses(std::array< int, numberOfWheels > driveNumbers, std::array< int, numberOfWheels > touchProbes, int pollingTimeUSec)
-// // {	
-// // 	bool allPulsesCaptured = false;
-// // 	while ( !allPulsesCaptured ) {
-// // 			for (	std::array< int, numberOfWheels >::iterator itDriveNumbers=driveNumbers.begin(),
-// // 					itTouchProbes=touchProbes.begin();
-// // 					itDriveNumbers != driveNumbers.end();
-// // 					++itDriveNumbers, ++itTouchProbes) {
-// // 						if ( getIndexPulseIsCaptured(*itDriveNumbers, *itTouchProbes) ) {
-// // 							allPulsesCaptured = true;
-// // 						}
-// // 						else {
-// // 							allPulsesCaptured = false;
-// // 							usleep(pollingTimeUSec);		// 0.1 sec
-// // 							break;
-// // 						}
-// // 					}
-// // 	}
-// // 
-// // }
-// // 
-// // void waitForAllIndexPulses(int driveNumber, int touchProbe, int pollingTimeUSec)
-// // {
-// // 	if ( !getIndexPulseIsCaptured(driveNumber, touchProbe) ) usleep(pollingTimeUSec);
-// // }
-// 
-// 
-// void setOffsetAtIndexPos(std::vector< int > driveNumbers, bool isAuxPos, std::vector< int > offsets)
-// {
-// 	std::vector< int > touchProbes;
+	}
+}
+
+
+bool disableCapturingIndexPulse(int driveNumber, int touchProbe)
+{
+	if ( touchProbe != 1 ) {
+		log.error() << "touchProbe " << touchProbe << "is not implemented";
+		return false;
+	}
+	
+	setTouchProbeFunction( driveNumber, 0x0000 );		// disable everything
+	if ( getTouchProbeStatus(driveNumber) == 0x0000 ) {	// touch probe is swithced off  -> stored values on elmo are reset 
+		touchProbeState[driveNumber] = touchProbeStateEnum::reset;
+		return true;
+	}
+	return false;
+}
+
+
+void waitForAllIndexPulses(std::array< int, numberOfWheels > driveNumbers, int pollingTimeUSec)
+{
+	std::array< int, numberOfWheels > touchProbes;
 // 	touchProbes.resize( driveNumbers.size() );
-// 	std::fill( touchProbes.begin(), touchProbes.end(), 1 );		//allways use touchProbe 1
-// 	return setOffsetAtIndexPos(driveNumbers, isAuxPos, offsets, touchProbes);
-// 
-// }
-// 
-// void setOffsetAtIndexPos(std::vector< int > driveNumbers, bool isAuxPos, std::vector< int > offsets, std::vector< int > touchProbes)
-// {
-// 	for (	std::vector< int >::iterator itDriveNumbers=driveNumbers.begin(),
-// 			itOffsets=offsets.begin(),
-// 			itTouchProbes=touchProbes.begin();
-// 			itDriveNumbers != driveNumbers.end();
-// 			++itDriveNumbers, ++itOffsets, ++itTouchProbes) {
-// 				setOffsetAtIndexPos(*itDriveNumbers, isAuxPos, *itOffsets, *itTouchProbes);
-// 	}
-// 
-// }
-// 
-// void setOffsetAtIndexPos(int driveNumber, bool isAuxPos, int offset, int touchProbe)
-// {
-// 	log.trace() << "Argument offset: " << offset;
-// 	log.trace() << "captured Position: " << getCapturedPosition(driveNumber, touchProbe);
-// 	int32_t offs = static_cast<int32_t>( - static_cast<int>( getCapturedPosition(driveNumber, touchProbe) ) + offset );
-// 	log.trace() << "setOffsetAtIndexPos(...) offs: " << offs;
-// 	isAuxPos ? setPosAuxOffset(driveNumber, offs) : setPosOffset(driveNumber, offs);
-// }
-// 
-// bool getIndexPulseIsCaptured(int driveNumber, int touchProbe)
-// {
-// 	if ( getIndexPulsePositiveEdgeIsCaptured(driveNumber, touchProbe) || getIndexPulseNegativeEdgeIsCaptured(driveNumber, touchProbe) ) {
-// 		return true;
-// 	}
-// 	
-// 	return false;
-// }
-// 
-// bool getIndexPulsePositiveEdgeIsCaptured(int driveNumber, int touchProbe)
-// {	
-// 	uint16_t touchProbeStatus = getTouchProbeStatus(driveNumber);
-// 	// 0x0060 both; 0x0040 negative edge; 0x0020 positive edge
-// 	if	( touchProbe == 1 ) {
-// 		if ( checkMaskedBits(touchProbeStatus, 0x0002, 0x0002) ) return true;
-// 	}
-// 	else if	( touchProbe == 2 ) {
-// 		if ( checkMaskedBits(touchProbeStatus, 0x0200, 0x0200) ) return true;
-// 	}
-// 	else	log.error() << "touchProbe " << touchProbe << " does not exists.";
-// 	return false;
-// }
-// 
-// bool getIndexPulseNegativeEdgeIsCaptured(int driveNumber, int touchProbe)
-// {
-// 	uint16_t touchProbeStatus = getTouchProbeStatus(driveNumber);
-// 	// 0x0060 both; 0x0040 negative edge; 0x0020 positive edge
-// 	if	( touchProbe == 1 ) {
-// 		if ( checkMaskedBits(touchProbeStatus, 0x0004, 0x0004) ) return true;
-// 	}
-// 	else if	( touchProbe == 2 ) {
-// 		if ( checkMaskedBits(touchProbeStatus, 0x0400, 0x0400) ) return true;
-// 	}
-// 	else	log.error() << "touchProbe " << touchProbe << " does not exists.";
-// 	return false;
-// 	
-// }
-// 
+	std::fill( touchProbes.begin(), touchProbes.end(), 1 );		//allways use touchProbe 1
+	return waitForAllIndexPulses(driveNumbers, touchProbes);
+
+}
+
+void waitForAllIndexPulses(std::array< int, numberOfWheels > driveNumbers, std::array< int, numberOfWheels > touchProbes, int pollingTimeUSec)
+{	
+	bool allPulsesCaptured = false;
+	while ( !allPulsesCaptured ) {
+			for (	std::array< int, numberOfWheels >::iterator itDriveNumbers=driveNumbers.begin(),
+					itTouchProbes=touchProbes.begin();
+					itDriveNumbers != driveNumbers.end();
+					++itDriveNumbers, ++itTouchProbes) {
+						if ( getIndexPulseIsCaptured(*itDriveNumbers, *itTouchProbes) ) {
+							allPulsesCaptured = true;
+						}
+						else {
+							allPulsesCaptured = false;
+							usleep(pollingTimeUSec);		// 0.1 sec
+							break;
+						}
+					}
+	}
+
+}
+
+void waitForAllIndexPulses(int driveNumber, int touchProbe, int pollingTimeUSec)
+{
+	if ( !getIndexPulseIsCaptured(driveNumber, touchProbe) ) usleep(pollingTimeUSec);
+}
+
+
+void setOffsetAtIndexPos(std::vector< int > driveNumbers, bool isAuxPos, std::vector< int > offsets)
+{
+	std::vector< int > touchProbes;
+	touchProbes.resize( driveNumbers.size() );
+	std::fill( touchProbes.begin(), touchProbes.end(), 1 );		//allways use touchProbe 1
+	return setOffsetAtIndexPos(driveNumbers, isAuxPos, offsets, touchProbes);
+
+}
+
+void setOffsetAtIndexPos(std::vector< int > driveNumbers, bool isAuxPos, std::vector< int > offsets, std::vector< int > touchProbes)
+{
+	for (	std::vector< int >::iterator itDriveNumbers=driveNumbers.begin(),
+			itOffsets=offsets.begin(),
+			itTouchProbes=touchProbes.begin();
+			itDriveNumbers != driveNumbers.end();
+			++itDriveNumbers, ++itOffsets, ++itTouchProbes) {
+				setOffsetAtIndexPos(*itDriveNumbers, isAuxPos, *itOffsets, *itTouchProbes);
+	}
+
+}
+
+void setOffsetAtIndexPos(int driveNumber, bool isAuxPos, int offset, int touchProbe)
+{
+	log.trace() << "Argument offset: " << offset;
+	log.trace() << "captured Position: " << getCapturedPosition(driveNumber, touchProbe);
+	int32_t offs = static_cast<int32_t>( - static_cast<int>( getCapturedPosition(driveNumber, touchProbe) ) + offset );
+	log.trace() << "setOffsetAtIndexPos(...) offs: " << offs;
+	isAuxPos ? setPosAuxOffset(driveNumber, offs) : setPosOffset(driveNumber, offs);
+}
+
+
+void EtherCATInterfaceElmo::setTouchProbeFunction(int driveNumber, touchProbeFunctionEnum_ELMO function)
+{
+	uint16_t valueToSet = drives[driveNumber].touchProbeFunctionSet;
+// 	uint16_t valueToSet = 0x0;
+	switch ( function ) {
+		case touchProbeFunctionEnum_ELMO::switchOffTouchProbe1:
+			valueToSet &= ~0x1;
+			break;
+		case touchProbeFunctionEnum_ELMO::enableTouchProbe1:
+			valueToSet |= 0x1;
+			break;
+		case touchProbeFunctionEnum_ELMO::triggerWithTouchProbe1Input:
+			valueToSet &= ~(0x1 << 2);
+			valueToSet &= ~(0x1 << 3);
+			break;
+		case touchProbeFunctionEnum_ELMO::triggerWitchZeroImpulsSignalOrPositioinEncoder1:
+			valueToSet |=  (0x1 << 2);
+			valueToSet &= ~(0x1 << 3);
+			break;
+		case touchProbeFunctionEnum_ELMO::touchProbeSourceAsDefinedInObject0x60D0SI01:
+			valueToSet &= ~(0x1 << 2);
+			valueToSet |=  (0x1 << 3);
+			break;
+		case touchProbeFunctionEnum_ELMO::switchOffSamplingAtThePositiveEdgeOfTouchProbe1:
+			valueToSet &= ~(0x1 << 4);
+			break;
+		case touchProbeFunctionEnum_ELMO::enableSamplingAtThePositiveEdgeOfTouchProbe1:
+			valueToSet |=  (0x1 << 4);
+			break;
+		case touchProbeFunctionEnum_ELMO::switchOffSamplingAtTheNegativeEdgeOfTouchProbe1:
+			valueToSet &= ~(0x1 << 5);
+			break;
+		case touchProbeFunctionEnum_ELMO::enableSamplingAtTheNegativeEdgeOfTouchProbe1:
+			valueToSet |=  (0x1 << 5);
+			break;
+		case touchProbeFunctionEnum_ELMO::switchOffTouchProbe2:
+			valueToSet &= ~(0x1 << 8);
+			break;
+		case touchProbeFunctionEnum_ELMO::enableTouchProbe2:
+			valueToSet |=  (0x1 << 8);
+			break;
+		case touchProbeFunctionEnum_ELMO::triggerWithTouchProbe2Input:
+			valueToSet &= ~(0x1 << 10);
+			valueToSet &= ~(0x1 << 11);
+			break;
+		case touchProbeFunctionEnum_ELMO::triggerWitchZeroImpulsSignalOrPositioinEncoder2:
+			valueToSet |=  (0x1 << 10);
+			valueToSet &= ~(0x1 << 11);
+			break;
+		case touchProbeFunctionEnum_ELMO::touchProbeSourceAsDefinedInObject0x60D0SI02:
+			valueToSet &= ~(0x1 << 10);
+			valueToSet |=  (0x1 << 11);
+			break;
+		case touchProbeFunctionEnum_ELMO::switchOffSamplingAtThePositiveEdgeOfTouchProbe2:
+			valueToSet &= ~(0x1 << 12);
+			break;
+		case touchProbeFunctionEnum_ELMO::enableSamplingAtThePositiveEdgeOfTouchProbe2:
+			valueToSet |=  (0x1 << 12);
+			break;
+		case touchProbeFunctionEnum_ELMO::switchOffSamplingAtTheNegativeEdgeOfTouchProbe2:
+			valueToSet &= ~(0x1 << 13);
+			break;
+		case touchProbeFunctionEnum_ELMO::enableSamplingAtTheNegativeEdgeOfTouchProbe2:
+			valueToSet |=  (0x1 << 13);
+			break;
+	}
+	
+}
+
+
+
+bool EtherCATInterfaceElmo::getTouchProbeIsEnabled(int driveNumber, int touchProbe)
+{
+	uint16_t touchProbeStatus = getTouchProbeStatus(driveNumber);
+	if	( touchProbe == 1 ) {
+		if ( checkMaskedBits(touchProbeStatus, touchProbe1EnabledValue, touchProbe1EnabledMask) ) return true;
+	}
+	else if	( touchProbe == 2 ) {
+		if ( checkMaskedBits(touchProbeStatus, touchProbe1EnabledValue, touchProbe1EnabledMask) ) return true;
+	}
+	else	log.error() << "touchProbe " << touchProbe << " does not exists.";
+	return false;
+}
+
+bool EtherCATInterfaceElmo::getIndexPulseIsCaptured(int driveNumber, int touchProbe)
+{
+	if ( getIndexPulsePositiveEdgeIsCaptured(driveNumber, touchProbe) || getIndexPulseNegativeEdgeIsCaptured(driveNumber, touchProbe) ) {
+		return true;
+	}
+	
+	return false;
+}
+
+bool EtherCATInterfaceElmo::getIndexPulsePositiveEdgeIsCaptured(int driveNumber, int touchProbe)
+{
+	uint16_t touchProbeStatus = getTouchProbeStatus(driveNumber);
+	if	( touchProbe == 1 ) {
+		if ( checkMaskedBits(touchProbeStatus, touchProbe1PositiveEdgeStoredValue, touchProbe1PositiveEdgeStoredMask) ) return true;
+	}
+	else if	( touchProbe == 2 ) {
+		if ( checkMaskedBits(touchProbeStatus, touchProbe2PositiveEdgeStoredValue, touchProbe2PositiveEdgeStoredMask) ) return true;
+	}
+	else	log.error() << "touchProbe " << touchProbe << " does not exists.";
+	return false;
+}
+
+bool EtherCATInterfaceElmo::getIndexPulseNegativeEdgeIsCaptured(int driveNumber, int touchProbe)
+{
+	uint16_t touchProbeStatus = getTouchProbeStatus(driveNumber);
+	if	( touchProbe == 1 ) {
+		if ( checkMaskedBits(touchProbeStatus, touchProbe1NegativeEdgeStoredValue, touchProbe1NegativeEdgeStoredMask) ) return true;
+	}
+	else if	( touchProbe == 2 ) {
+		if ( checkMaskedBits(touchProbeStatus, touchProbe2NegativeEdgeStoredValue, touchProbe2NegativeEdgeStoredMask) ) return true;
+	}
+	else	log.error() << "touchProbe " << touchProbe << " does not exists.";
+	return false;
+}
+
 // bool getIndexPulseIsCapturedIsValid(int driveNumber, int touchProbe)
 // {
 // 	if ( !getIndexPulseIsCaptured(driveNumber, touchProbe) ) {
@@ -591,7 +665,7 @@ driveStatus_ELMO EtherCATInterfaceElmo::getDriveStatusElmo(int driveNumber)
 // 		auto positiveEdgeValue = getCapturedPositionPositivePulse(driveNumber, touchProbe);
 // 		auto negativeEdgeValue = getCapturedPositionNegativePulse(driveNumber, touchProbe);
 // 		
-// 		//check if both physical index pulses are captured
+// 		check if both physical index pulses are captured
 // 		if ( abs( abs(positiveEdgeValue) - abs(negativeEdgeValue) ) < 32000 ) {	// 0/1
 // 			log.trace() << "Positve edge value ( " << positiveEdgeValue << " ) is to similar to negative edge value ( " << negativeEdgeValue 
 // 			<< " ). Difference: " << abs( abs(positiveEdgeValue) - abs(negativeEdgeValue) );
@@ -606,64 +680,42 @@ driveStatus_ELMO EtherCATInterfaceElmo::getDriveStatusElmo(int driveNumber)
 // 		return false;
 // 	}
 // }
-// 
-// int32_t getCapturedPosition(int driveNumber, int touchProbe)	// compensated for direction of rotation
-// {	
-// 
-// 	return getCapturedPositionPositivePulse(driveNumber, touchProbe);
-//   
-// // 	// Bastel aus Zeiten deffekter Magnetringe
-// // 	if ( !getIndexPulseIsCaptured(driveNumber, touchProbe) ) log.warn() << "isDirectionOfRotationPositive(...) index pulse is not captured";
-// // 	
-// // 	auto positiveEdgeValue = getCapturedPositionPositivePulse(driveNumber, touchProbe);
-// // 	auto negativeEdgeValue = getCapturedPositionNegativePulse(driveNumber, touchProbe);
-// // 
-// // 	if (abs( abs(positiveEdgeValue) - abs(negativeEdgeValue)) < 200000) {
-// // 		if (positiveEdgeValue < negativeEdgeValue  ) // positive
-// // 			return getCapturedPositionPositivePulse(driveNumber, touchProbe);
-// // 		else // negative
-// // 			return getCapturedPositionNegativePulse(driveNumber, touchProbe);
-// // 	} 
-// // 	else {
-// // 		if (positiveEdgeValue < negativeEdgeValue  ) // positive
-// // 			return getCapturedPositionNegativePulse(driveNumber, touchProbe);
-// // 		else // negative
-// // 			return getCapturedPositionPositivePulse(driveNumber, touchProbe);
-// // 	}
-// }
-// 
-// int32_t getCapturedPositionPositivePulse(int driveNumber, int touchProbe)
+
+int32_t EtherCATInterfaceElmo::getCapturedPosition(int driveNumber, int touchProbe)	// compensated for direction of rotation
+{
+	return getCapturedPositionPositivePulse(driveNumber, touchProbe);
+}
+
+int32_t EtherCATInterfaceElmo::getCapturedPositionPositivePulse(int driveNumber, int touchProbe)
+{
+	if	( touchProbe == 1 )		return getTouchProbePos1Positive(driveNumber);
+	else if	( touchProbe == 2 )	return getTouchProbePos2Positive(driveNumber);
+	else						std::cout << "touchProbe " << touchProbe << " does not exists." << std::endl;
+	return 0;
+}
+
+int32_t EtherCATInterfaceElmo::getCapturedPositionNegativePulse(int driveNumber, int touchProbe)
+{
+	if	( touchProbe == 1 )		return getTouchProbePos1Negative(driveNumber);
+	else if	( touchProbe == 2 )	std::cout << "No TouchProbePosition negative pulse for TouchProbe 2." << std::endl;
+	else						std::cout << "touchProbe " << touchProbe << " does not exists." << std::endl;
+	return 0;
+}
+
+// bool isDirectionOfRotationPositive(int driveNumber, int touchProbe)
 // {
-// 	int32_t position;
-// 	if	( touchProbe == 1 ) position = getTouchProbePos1Positive(driveNumber);
-// 	else if	( touchProbe == 2 ) position = getTouchProbePos2PosValue(driveNumber);
-// 	else	log.error() << "touchProbe " << touchProbe << " does not exists.";
-// 	return position;
+// 	if ( !getIndexPulseIsCaptured(driveNumber, touchProbe) ) log.warn() << "isDirectionOfRotationPositive(...) index pulse is not captured";
+// 	
+// 	auto positiveEdgeValue = getCapturedPositionPositivePulse(driveNumber, touchProbe);
+// 	auto negativeEdgeValue = getCapturedPositionNegativePulse(driveNumber, touchProbe);
+// 		
+// 	if (positiveEdgeValue < negativeEdgeValue  ) {			// positive direction of rotation
+// 		return true;
+// 	}
+// 	else if ( positiveEdgeValue > negativeEdgeValue  ) {	// negative direction of rotation
+// 		return false;
+// 	}
 // }
-// 
-// int32_t getCapturedPositionNegativePulse(int driveNumber, int touchProbe)
-// {
-// 	int32_t position;
-// 	if	( touchProbe == 1 ) position = getTouchProbePos1Negative(driveNumber);
-// 	else if	( touchProbe == 2 ) log.error() << "No TouchProbePosition negative pulse for TouchProbe 2.";
-// 	else	log.error() << "touchProbe " << touchProbe << " does not exists.";
-// 	return position;
-// }
-// 
-// // bool isDirectionOfRotationPositive(int driveNumber, int touchProbe)
-// // {
-// // 	if ( !getIndexPulseIsCaptured(driveNumber, touchProbe) ) log.warn() << "isDirectionOfRotationPositive(...) index pulse is not captured";
-// // 	
-// // 	auto positiveEdgeValue = getCapturedPositionPositivePulse(driveNumber, touchProbe);
-// // 	auto negativeEdgeValue = getCapturedPositionNegativePulse(driveNumber, touchProbe);
-// // 		
-// // 	if (positiveEdgeValue < negativeEdgeValue  ) {			// positive direction of rotation
-// // 		return true;
-// // 	}
-// // 	else if ( positiveEdgeValue > negativeEdgeValue  ) {	// negative direction of rotation
-// // 		return false;
-// // 	}
-// // }
 
 
 
@@ -686,6 +738,11 @@ void EtherCATInterfaceElmo::setModeOfOperation(int driveNumber, int8_t modeOfOpe
 void EtherCATInterfaceElmo::setTargetTorque(int driveNumber, int16_t targetTorque)
 {
 	set16bit(oo_targetTorque, driveNumber, targetTorque);
+}
+
+void EtherCATInterfaceElmo::setMaxTorque(int driveNumber, int16_t maxTorque)
+{
+	set16bit(oo_maxTorque, driveNumber, maxTorque);
 }
 
 void EtherCATInterfaceElmo::setMaxCurrent(int driveNumber, int16_t maxCurrent)
@@ -785,120 +842,113 @@ void EtherCATInterfaceElmo::setGainSchedulingManualIndex(int driveNumber, uint16
 //basic get functions:
 uint16_t EtherCATInterfaceElmo::getStatusWord(int driveNumber)
 {
-// 	uint16_t st = get16bit(io_statusWord, driveNumber);
-// 	std::cout << "IELMO: getStatusWord. driveNumber: " << driveNumber << "     status: 0x" << std::hex << st << std::endl;
-// 	return st;
-	return get16bit(io_statusWord, driveNumber);
+	return (uint16_t )get16bit(io_statusWord, driveNumber);
 }
 
 int8_t EtherCATInterfaceElmo::getModeOfOperationDisplay(int driveNumber)
 {
-	return get8bit(io_modeOfOperationDisplay, driveNumber);
+	return (int8_t)get8bit(io_modeOfOperationDisplay, driveNumber);
 }
 
 
 int32_t EtherCATInterfaceElmo::getPositionDemand_UU(int driveNumber)
 {
-	return get32bit(io_postionDemand_UU, driveNumber);
+	return (int32_t)get32bit(io_postionDemand_UU, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getActualPosition_counts(int driveNumber)
 {
-	return get32bit(io_actualPosition_counts, driveNumber);
+	return (int32_t)get32bit(io_actualPosition_counts, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getPositionActualValue(int driveNumber)
 {
-	return get32bit(io_positionActualValue, driveNumber);
+	return (int32_t)get32bit(io_positionActualValue, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getVelocitySensorActualValue(int driveNumber)
 {
-	return get32bit(io_velocitySensorActualValue, driveNumber);
+	return (int32_t)get32bit(io_velocitySensorActualValue, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getVelocityDemand(int driveNumber)
 {
-	return get32bit(io_velocityDemand, driveNumber);
+	return (int32_t)get32bit(io_velocityDemand, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getVelocityActualValue(int driveNumber)
 {
-	return get32bit(io_velocityActualValue, driveNumber);
+	return (int32_t)get32bit(io_velocityActualValue, driveNumber);
 }
 
 int16_t EtherCATInterfaceElmo::getTorqueDemandValue(int driveNumber)
 {
-	return get16bit(io_torqueDemandValue, driveNumber);
+	return (int16_t)get16bit(io_torqueDemandValue, driveNumber);
 }
 
 int16_t EtherCATInterfaceElmo::getTorqueActualValue(int driveNumber)
 {
-	return get16bit(io_torqueActualValue, driveNumber);
+	return (int16_t)get16bit(io_torqueActualValue, driveNumber);
 }
 
 uint16_t EtherCATInterfaceElmo::getTouchProbeStatus(int driveNumber)
 {
-	return get16bit(io_touchProbeStatus, driveNumber);
+	return (uint16_t)get16bit(io_touchProbeStatus, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getTouchProbePos1Positive(int driveNumber)
 {
-	return get32bit(io_touchProbePos1Positive, driveNumber);
+	return (int32_t)get32bit(io_touchProbePos1Positive, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getTouchProbePos1Negative(int driveNumber)
 {
-	return get32bit(io_touchProbePos1Negative, driveNumber);
+	return (int32_t)get32bit(io_touchProbePos1Negative, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getTouchProbePos2Positive(int driveNumber)
 {
-	return get32bit(io_touchProbePos2Positive, driveNumber);
+	return (int32_t)get32bit(io_touchProbePos2Positive, driveNumber);
 }
 
 uint32_t EtherCATInterfaceElmo::getDCLinkCircuitVoltage(int driveNumber)
 {
-	return get32bit(io_DCLinkCircuitVoltage, driveNumber);
+	return (uint32_t)get32bit(io_DCLinkCircuitVoltage, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getPositionFollowingError(int driveNumber)
 {
-	return get32bit(io_positionFollowingError, driveNumber);
+	return (int32_t)get32bit(io_positionFollowingError, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getControllEffort(int driveNumber)
 {
-	return get32bit(io_controllEffort, driveNumber);
+	return (int32_t)get32bit(io_controllEffort, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getPositionDemandValue_cnt(int driveNumber)
 {
-	return get32bit(io_positionDemandValue_cnt, driveNumber);
+	return (int32_t)get32bit(io_positionDemandValue_cnt, driveNumber);
 }
 
 uint32_t EtherCATInterfaceElmo::getDigitalInputs(int driveNumber)
-{	
-	auto inputs = get32bit(io_digitalInputs, driveNumber);
-	std::cout << "iBase: getDigitalInputs. driveNumber: " << driveNumber << "     inputs: " << std::hex << inputs << std::endl;
-// 	std::cout << etherCATStack->getInBuffer() << std::endl;
-	std::cout << std::endl;
-	return inputs;
+{
+	return (uint32_t)get32bit(io_digitalInputs, driveNumber);;
 }
 
 int16_t EtherCATInterfaceElmo::getAnalogInput(int driveNumber)
 {
-	return get16bit(io_analogInput, driveNumber);
+	return (int16_t)get16bit(io_analogInput, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::getAuxilaryPositionActualValue(int driveNumber)
 {
-	return get32bit(io_auxilaryPositionActualValue, driveNumber);
+	return (int32_t)get32bit(io_auxilaryPositionActualValue, driveNumber);
 }
 
 int16_t EtherCATInterfaceElmo::getCurrentActualValue(int driveNumber)
 {
-	return get16bit(io_currentActualValue, driveNumber);
+	return (int16_t)get16bit(io_currentActualValue, driveNumber);
 }
 
 

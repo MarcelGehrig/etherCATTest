@@ -123,13 +123,6 @@ namespace etherCATInterface {
 		faultReactionactive,
 		fault
 	};
-	
-	enum touchProbeStateEnum_ELMO {
-		  reset,
-		  enableProbe,
-		  enableSampling,
-		  enabled
-	  };
 
 	static constexpr uint16_t notReadyToSwitchOnValue =		0x0000;
 	static constexpr uint16_t notReadyToSwitchOnMask =		0x004f;
@@ -147,7 +140,53 @@ namespace etherCATInterface {
 	static constexpr uint16_t faultReactionActiveMask =		0x004f;
 	static constexpr uint16_t faultValue =					0x0008;
 	static constexpr uint16_t faultMask =					0x0048;
+	
+	
+	enum touchProbeStateEnum_ELMO {
+		  reset,
+		  enableProbe,
+		  enableSampling,
+		  enabled
+	  };
 
+	static constexpr uint16_t touchProbe1EnabledValue				= 0x0001;
+	static constexpr uint16_t touchProbe1EnabledMask				= 0x0001;
+	static constexpr uint16_t touchProbe1PositiveEdgeStoredValue	= 0x0002;
+	static constexpr uint16_t touchProbe1PositiveEdgeStoredMask		= 0x0002;
+	static constexpr uint16_t touchProbe1NegativeEdgeStoredValue	= 0x0004;
+	static constexpr uint16_t touchProbe1NegativeEdgeStoredMask		= 0x0004;
+	static constexpr uint16_t touchProbe2EnabledValue				= 0x0100;
+	static constexpr uint16_t touchProbe2EnabledMask				= 0x0100;
+	static constexpr uint16_t touchProbe2PositiveEdgeStoredValue	= 0x0200;
+	static constexpr uint16_t touchProbe2PositiveEdgeStoredMask		= 0x0200;
+	static constexpr uint16_t touchProbe2NegativeEdgeStoredValue	= 0x0400;
+	static constexpr uint16_t touchProbe2NegativeEdgeStoredMask		= 0x0400;
+	
+	enum touchProbeFunctionEnum_ELMO {
+		switchOffTouchProbe1,
+		enableTouchProbe1,
+		triggerWithTouchProbe1Input,
+		triggerWitchZeroImpulsSignalOrPositioinEncoder1,
+		touchProbeSourceAsDefinedInObject0x60D0SI01,
+		switchOffSamplingAtThePositiveEdgeOfTouchProbe1,
+		enableSamplingAtThePositiveEdgeOfTouchProbe1,
+		switchOffSamplingAtTheNegativeEdgeOfTouchProbe1,
+		enableSamplingAtTheNegativeEdgeOfTouchProbe1,
+		switchOffTouchProbe2,
+		enableTouchProbe2,
+		triggerWithTouchProbe2Input,
+		triggerWitchZeroImpulsSignalOrPositioinEncoder2,
+		touchProbeSourceAsDefinedInObject0x60D0SI02,
+		switchOffSamplingAtThePositiveEdgeOfTouchProbe2,
+		enableSamplingAtThePositiveEdgeOfTouchProbe2,
+		switchOffSamplingAtTheNegativeEdgeOfTouchProbe2,
+		enableSamplingAtTheNegativeEdgeOfTouchProbe2
+	};
+		
+		
+		
+		
+		
 
 	// switch to different set of gains for velocity/torque 
 	static constexpr int gainSchedulingManualIndex_position =	-1;		// chair 1

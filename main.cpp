@@ -59,11 +59,18 @@ int main(int argc, char **argv) {
 	//   chairEtherCAT.initElmoDrives();
 	//   signal(SIGINT, signalHandler);  
 
+	
+	
+	auto cv = etherCATStack->getConditionalVariable();
+	auto m = etherCATStack->getMutex();
+	auto cv2 = etherCATStack->getConditionalVariable2();
+	auto m2 = etherCATStack->getMutex2();
 
 
 	while ( !elmoDrives.initAllDrives() and running ) { 
 		sleep(1); 
 		log.info() << "MAIN: initAllDrives";
+		cv->notify_one();
 	};
 
 // 	while ( running ) {
@@ -71,54 +78,70 @@ int main(int argc, char **argv) {
 // 		sleep(1);
 // 	};
 	
-	auto cv = etherCATStack->getConditionalVariable();
-	auto m = etherCATStack->getMutex();
-	
 // 	elmoDrives.initAllDrives();
 	
-	int count;
+	int count = 0;
 		elmoDrives.setDigitalOutput(0, 0xFFFFFFFF);
 		elmoDrives.setDigitalOutput(1, 0xFFFFFFFF);
 // 		elmoDrives.setDigitalOutput(0, 0);
 // 		elmoDrives.setDigitalOutput(1, 0);
 	
+	int delay = 0;
+	
+// 	etherCATStack->wait = true;
 	while (running) {
 		std::unique_lock<std::mutex> lk(*m);
 		cv->wait(lk);
 		lk.unlock();
 		
-// 		if (elmoDrives.getDigitalInputs(1) == 0) {
-// 			elmoDrives.setDigitalOutput(0, 0x1);
+// 		if ( count == 10000 ) {
+// 			log.info() << "AAAAAAA: start waiting";
+// 			etherCATStack->wait = true;
+// 			cv2->notify_one();
 // 		}
-// 		else {
-// 			elmoDrives.setDigitalOutput(0, 0x0);
-// 		}
+// 		
+		if ( count%200 == 0 ) {
+					log.info() << "                               position: " << elmoDrives.getPositionActualValue(0);
+		}
 		
-		
-		if (count%500 == 0) {
-			elmoDrives.setDigitalOutput(0, 0xFFFFFFFF);
-			elmoDrives.setDigitalOutput(1, 0xFFFFFFFF);
-			if (count%1000 == 0) {
-				elmoDrives.setDigitalOutput(0, 0);
-				elmoDrives.setDigitalOutput(1, 0);
+		if ( count%500 == 0 ) {
+			log.info() << "delay: " << delay;
+			delay = 0;
+			if ( elmoDrives.getDigitalInputs(1) == 0x3f0000 ) {
+				elmoDrives.setDigitalOutput(0, 0xFFFFFFFF);
 			}
-// 			log.info() << "getStatusWord 0: 0x" << std::hex << elmoDrives.getStatusWord(0);
-// 			log.info() << "getStatusWord 1: 0x" << std::hex << elmoDrives.getStatusWord(1);
-// 			log.info() << "getDriveStatus 0:" << elmoDrives.getDriveStatusElmo(0);
-// 			log.info() << "getDriveStatus 1:" << elmoDrives.getDriveStatusElmo(1);
-			log.info() << "loop DI0: " << std::hex << elmoDrives.getDigitalInputs(0);
+			else {
+				elmoDrives.setDigitalOutput(0, 0x0);
+			}
 			log.info() << "loop DI1: " << std::hex << elmoDrives.getDigitalInputs(1);
-			log.info();
-			log.info();
-// 			log.info() << "loop: " << std::hex << elmoDrives.get(0);
-// 			log.info() << "loop: " << std::hex << elmoDrives.getStatusWord(1);
-// 		elmoDrives.setDigitalOutput(0, 0x0);
-// 		elmoDrives.setDigitalOutput(1, 0x0);
+		}
+		
+		if ( elmoDrives.getDigitalInputs(1) == 0x3f0000 ) {
+			delay++;
 		}
 		
 		
 		
+// 		if (count%500 == 0) {
+// 			elmoDrives.setDigitalOutput(0, 0xFFFFFFFF);
+// 			elmoDrives.setDigitalOutput(1, 0xFFFFFFFF);
+// 			if (count%1000 == 0) {
+// 				elmoDrives.setDigitalOutput(0, 0);
+// 				elmoDrives.setDigitalOutput(1, 0);
+// 			}
+// 			log.info() << "loop DI0: " << std::hex << elmoDrives.getDigitalInputs(0);
+// 			log.info() << "loop DI1: " << std::hex << elmoDrives.getDigitalInputs(1);
+// 			log.info();
+// 			log.info();
+// 		}
+		
+		
+		
+		
+		
+		
 		count++;
+		cv2->notify_one();
 	}
 
 	//   sleep(5);
