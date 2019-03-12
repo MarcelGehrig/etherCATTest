@@ -24,6 +24,8 @@ add_executable(ethercattest
 
 add_executable(eeros_ethercattest 
 								main_eeros.cpp
+								MyControlSystem.cpp
+								MySafetyProperties.cpp
 								etherCatInterface/EtherCATInterfaceBase.cpp
 								etherCatInterface/EtherCATInterfaceElmo.cpp
 )

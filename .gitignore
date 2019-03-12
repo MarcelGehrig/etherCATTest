@@ -1,2 +1,4 @@
-/build
+/build*
 dcmlog0.*
+*.swp
+.kdev4
