@@ -10,12 +10,12 @@ namespace etherCATInterface {
 		
 	// Output Offsets (oo) PDOs (output from master) [in Byte]
 	// Elmo: GoldLine "EtherCAT Application Manual.pdf"     p. 21
-	static constexpr int oo_controlWord				= 8;
-	static constexpr int oo_modeOfOperation			= -1;
-	static constexpr int oo_targetTorque			= -1;
+	static constexpr int oo_controlWord				= 0;
+	static constexpr int oo_modeOfOperation			= 2;
+	static constexpr int oo_targetTorque			= 4;
 	static constexpr int oo_maxTorque				= -1;
 	static constexpr int oo_maxCurrent				= -1;
-	static constexpr int oo_targetPostition			= 0;
+	static constexpr int oo_targetPostition			= 6;
 	static constexpr int oo_maxProfileVelocity		= -1;
 	static constexpr int oo_profileVelocity			= -1;
 	static constexpr int oo_endVelocity				= -1;
@@ -25,11 +25,11 @@ namespace etherCATInterface {
 	static constexpr int oo_positionOffset			= -1;
 	static constexpr int oo_velocityOffset			= -1;
 	static constexpr int oo_torqueOffset			= -1;
-	static constexpr int oo_touchProbeFunction		= -1;
+	static constexpr int oo_touchProbeFunction		= 10;
 	static constexpr int oo_interpolatedDataRecord_1		= -1;
 	static constexpr int oo_interpolatedDataRecord_2		= -1;
-	static constexpr int oo_targetVelocity			= -1;
-	static constexpr int oo_digitalOutput			= 4;
+	static constexpr int oo_targetVelocity			= 12;
+	static constexpr int oo_digitalOutput			= 16;
 	static constexpr int oo_polarity				= -1;
 	
 	static constexpr int oo_gainSchedlingManualIndex = -1;
@@ -37,28 +37,83 @@ namespace etherCATInterface {
 	
 	// Input Offsets (io) PDOs [in Byte]
 	// Elmo: GoldLine "EtherCAT Application Manual.pdf"     p. 23
-	static constexpr int io_statusWord					= 8;
-	static constexpr int io_modeOfOperationDisplay		= -1;
+	static constexpr int io_statusWord					= 0;
+	static constexpr int io_modeOfOperationDisplay		= 2;
 	static constexpr int io_postionDemand_UU			= -1;
 	static constexpr int io_actualPosition_counts		= -1;
-	static constexpr int io_positionActualValue			= 0;
+	static constexpr int io_positionActualValue			= 4;
 	static constexpr int io_velocitySensorActualValue	= -1;
 	static constexpr int io_velocityDemand				= -1;
-	static constexpr int io_velocityActualValue			= -1;
+	static constexpr int io_velocityActualValue			= 8;
 	static constexpr int io_torqueDemandValue			= -1;
-	static constexpr int io_torqueActualValue			= -1;
-	static constexpr int io_touchProbeStatus			= -1;
-	static constexpr int io_touchProbePos1Positive		= -1;
-	static constexpr int io_touchProbePos1Negative		= -1;
-	static constexpr int io_touchProbePos2Positive		= -1;
+	static constexpr int io_torqueActualValue			= 12;
+	static constexpr int io_touchProbeStatus			= 14;
+	static constexpr int io_touchProbePos1Positive		= 16;
+	static constexpr int io_touchProbePos1Negative		= 20;
+	static constexpr int io_touchProbePos2Positive		= 24;
 	static constexpr int io_DCLinkCircuitVoltage		= -1;
 	static constexpr int io_positionFollowingError		= -1;
 	static constexpr int io_controllEffort				= -1;
 	static constexpr int io_positionDemandValue_cnt		= -1;
-	static constexpr int io_digitalInputs				= 4;
+	static constexpr int io_digitalInputs				= 28;
 	static constexpr int io_analogInput					= -1;
 	static constexpr int io_auxilaryPositionActualValue	= -1;
 	static constexpr int io_currentActualValue			= -1;
+	
+// 	// Configurations offsets in PDOs (ENI files)
+// 	// //////////////////////////////////////////
+// 		
+// 	// Output Offsets (oo) PDOs (output from master) [in Byte]
+// 	// Elmo: GoldLine "EtherCAT Application Manual.pdf"     p. 21
+// 	static constexpr int oo_controlWord				= 8;
+// 	static constexpr int oo_modeOfOperation			= -1;
+// 	static constexpr int oo_targetTorque			= -1;
+// 	static constexpr int oo_maxTorque				= -1;
+// 	static constexpr int oo_maxCurrent				= -1;
+// 	static constexpr int oo_targetPostition			= 0;
+// 	static constexpr int oo_maxProfileVelocity		= -1;
+// 	static constexpr int oo_profileVelocity			= -1;
+// 	static constexpr int oo_endVelocity				= -1;
+// 	static constexpr int oo_profileAcceleration		= -1;
+// 	static constexpr int oo_profileDeceleration		= -1;
+// 	static constexpr int oo_torqueSlope				= -1;
+// 	static constexpr int oo_positionOffset			= -1;
+// 	static constexpr int oo_velocityOffset			= -1;
+// 	static constexpr int oo_torqueOffset			= -1;
+// 	static constexpr int oo_touchProbeFunction		= -1;
+// 	static constexpr int oo_interpolatedDataRecord_1		= -1;
+// 	static constexpr int oo_interpolatedDataRecord_2		= -1;
+// 	static constexpr int oo_targetVelocity			= -1;
+// 	static constexpr int oo_digitalOutput			= 4;
+// 	static constexpr int oo_polarity				= -1;
+// 	
+// 	static constexpr int oo_gainSchedlingManualIndex = -1;
+// 	
+// 	
+// 	// Input Offsets (io) PDOs [in Byte]
+// 	// Elmo: GoldLine "EtherCAT Application Manual.pdf"     p. 23
+// 	static constexpr int io_statusWord					= 8;
+// 	static constexpr int io_modeOfOperationDisplay		= -1;
+// 	static constexpr int io_postionDemand_UU			= -1;
+// 	static constexpr int io_actualPosition_counts		= -1;
+// 	static constexpr int io_positionActualValue			= 0;
+// 	static constexpr int io_velocitySensorActualValue	= -1;
+// 	static constexpr int io_velocityDemand				= -1;
+// 	static constexpr int io_velocityActualValue			= -1;
+// 	static constexpr int io_torqueDemandValue			= -1;
+// 	static constexpr int io_torqueActualValue			= -1;
+// 	static constexpr int io_touchProbeStatus			= -1;
+// 	static constexpr int io_touchProbePos1Positive		= -1;
+// 	static constexpr int io_touchProbePos1Negative		= -1;
+// 	static constexpr int io_touchProbePos2Positive		= -1;
+// 	static constexpr int io_DCLinkCircuitVoltage		= -1;
+// 	static constexpr int io_positionFollowingError		= -1;
+// 	static constexpr int io_controllEffort				= -1;
+// 	static constexpr int io_positionDemandValue_cnt		= -1;
+// 	static constexpr int io_digitalInputs				= 4;
+// 	static constexpr int io_analogInput					= -1;
+// 	static constexpr int io_auxilaryPositionActualValue	= -1;
+// 	static constexpr int io_currentActualValue			= -1;
 	
 
 	// Configurations for Elmo drives

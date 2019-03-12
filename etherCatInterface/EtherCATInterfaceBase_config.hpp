@@ -8,8 +8,8 @@ namespace etherCATInterface {
 	// Configurations for network
 	// ///////////////////////////
 	static constexpr int numberOfDrives = 2;
-	static constexpr int bytesPerPDOFrameTx = 10;	// eni.xml --> <EtherCATConfig> <Config> <ProcessImage> <Outputs> <ByteSize>
-	static constexpr int bytesPerPDOFrameRx = 10;	// eni.xml --> <EtherCATConfig> <Config> <ProcessImage> <Inputs> <ByteSize>
+	static constexpr int bytesPerPDOFrameTx = 32;	// eni.xml --> <EtherCATConfig> <Config> <ProcessImage> <Outputs> <ByteSize>
+	static constexpr int bytesPerPDOFrameRx = 32;	// eni.xml --> <EtherCATConfig> <Config> <ProcessImage> <Inputs> <ByteSize>
 	static constexpr int bytesPerSlaveTx = bytesPerPDOFrameTx / numberOfDrives;
 	static constexpr int bytesPerSlaveRx = bytesPerPDOFrameRx / numberOfDrives;
 	
