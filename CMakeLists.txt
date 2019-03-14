@@ -22,13 +22,13 @@ add_executable(ethercattest
 								etherCatInterface/EtherCATInterfaceElmo.cpp
 )
 
-add_executable(eeros_ethercattest 
-								main_eeros.cpp
-								MyControlSystem.cpp
-								MySafetyProperties.cpp
-								etherCatInterface/EtherCATInterfaceBase.cpp
-								etherCatInterface/EtherCATInterfaceElmo.cpp
-)
+# add_executable(eeros_ethercattest 
+# 								main_eeros.cpp
+# 								MyControlSystem.cpp
+# 								MySafetyProperties.cpp
+# 								etherCatInterface/EtherCATInterfaceBase.cpp
+# 								etherCatInterface/EtherCATInterfaceElmo.cpp
+# )
 
 target_link_libraries(ethercattest eeros ucl ecmasterlib ${CMAKE_DL_LIBS})
 target_link_libraries(eeros_ethercattest eeros ucl ecmasterlib ${CMAKE_DL_LIBS})

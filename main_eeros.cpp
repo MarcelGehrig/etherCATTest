@@ -30,12 +30,12 @@ static constexpr double dt = 0.001;
 
 static void signalHandler( int nSignal )
 {
-    std::cout << "signalHandler" << std::endl;
+	std::cout << "signalHandler" << std::endl;
 	SafetySystem::exitHandler();
 	Sequencer::instance().abort();
-    etherCATStackPtr->stop();
-    running = false;
-    std::cout << "signalHandler" << std::endl;
+	etherCATStackPtr->stop();
+	running = false;
+	std::cout << "signalHandler" << std::endl;
 }
 // 
 
@@ -66,8 +66,8 @@ int main(int argc, char **argv) {
 	
 	// HAL
 	// ////////////////////////////////////////////////////////////////////////
-	HAL& hal = HAL::instance();
-	hal.readConfigFromFile(&argc, argv);
+// 	HAL& hal = HAL::instance();
+// 	hal.readConfigFromFile(&argc, argv);
 	
 	// Control system
 	// ////////////////////////////////////////////////////////////////////////
