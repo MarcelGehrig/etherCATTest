@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
 	// ////////////////////////////////////////////////////////////////////////
 	MySafetyProperties properties(controlSys, dt);
 	SafetySystem safetySys(properties, dt);
-	controlSys.timedomain.registerSafetyEvent(safetySys, properties.doEmergency);
+//	controlSys.timedomain.registerSafetyEvent(safetySys, properties.doEmergency);
 	
 	// Sequencer
 	// ////////////////////////////////////////////////////////////////////////
@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
 	auto &executor = eeros::Executor::instance();
 	executor.syncWithEtherCATSTack(etherCATStack);
 	executor.setMainTask(safetySys);
-	safetySys.triggerEvent(properties.doSystemOn);
+	safetySys.triggerEvent(properties.initDrives);
 	
 	executor.run();
 	

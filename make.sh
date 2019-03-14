@@ -9,4 +9,4 @@ install_dir="$(dirname $script_dir)/installx86"
 
 cd $build_dir 
 make
-make install
+#make install
