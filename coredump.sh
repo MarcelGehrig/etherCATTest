@@ -1,4 +1,4 @@
 #!/bin/bash
 
 
-sudo gdb ./build/ethercattest ./core
+sudo gdb ./buildx86/ethercattest ./core

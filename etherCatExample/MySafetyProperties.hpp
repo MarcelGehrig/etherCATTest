@@ -6,6 +6,8 @@
 #include <eeros/hal/HAL.hpp>
 #include "MyControlSystem.hpp"
 
+#include "../etherCatInterface/EtherCATInterfaceElmo.hpp"
+
 class MySafetyProperties : public eeros::safety::SafetyProperties {
 	
 public:

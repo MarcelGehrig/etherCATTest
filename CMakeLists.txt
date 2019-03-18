@@ -23,9 +23,9 @@ add_executable(ethercattest
 )
 
  add_executable(eeros_ethercattest 
- 								main_eeros.cpp
- 								MyControlSystem.cpp
- 								MySafetyProperties.cpp
+ 								etherCatExample/main_eeros.cpp
+ 								etherCatExample/MyControlSystem.cpp
+ 								etherCatExample/MySafetyProperties.cpp
  								etherCatInterface/EtherCATInterfaceBase.cpp
  								etherCatInterface/EtherCATInterfaceElmo.cpp
  )
@@ -33,3 +33,5 @@ add_executable(ethercattest
 target_link_libraries(ethercattest eeros ucl ecmasterlib ${CMAKE_DL_LIBS})
 target_link_libraries(eeros_ethercattest eeros ucl ecmasterlib ${CMAKE_DL_LIBS})
 add_subdirectory(etherCatInterface)
+
+add_subdirectory(etherCatExample)

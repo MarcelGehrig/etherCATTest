@@ -24,7 +24,7 @@ Install Directory=file:///home/mgehrig2/git_repos/installx86
 
 [CMake][CMake Build Directory 2]
 Build Directory Path=file:///home/ubuntu/projects/etherCATTest/buildx86
-Build Type=
+Build Type=\sRelWithDebInfo
 CMake Binary=file:///usr/bin/cmake
 Environment Profile=
 Extra Arguments=

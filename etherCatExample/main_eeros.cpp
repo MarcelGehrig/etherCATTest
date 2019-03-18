@@ -12,7 +12,7 @@
 
 #include <EtherCATMain.hpp>
 
-#include "etherCatInterface/EtherCATInterfaceElmo.hpp"
+#include "../etherCatInterface/EtherCATInterfaceElmo.hpp"
 
 using namespace etherCATInterface;
 using namespace eeros::control;
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
 	
 	// Control system
 	// ////////////////////////////////////////////////////////////////////////
-	MyControlSystem controlSys(dt, etherCATStack, &elmoDrives);
+	MyControlSystem controlSys(dt, elmoDrives, numberOfDrivesTotal, log);
 	
 	// Safety system
 	// ////////////////////////////////////////////////////////////////////////
@@ -79,12 +79,13 @@ int main(int argc, char **argv) {
 	SafetySystem safetySys(properties, dt);
 //	controlSys.timedomain.registerSafetyEvent(safetySys, properties.doEmergency);
 	
-	// Sequencer
-	// ////////////////////////////////////////////////////////////////////////
-	auto& sequencer = Sequencer::instance();
-	MainSequence mainSequence("Main Sequence", sequencer, safetySys, properties, controlSys, 3.14/10);
-	sequencer.addSequence(mainSequence);
-	mainSequence.start();
+// 	// Sequencer
+// 	// ////////////////////////////////////////////////////////////////////////
+// 	auto& sequencer = Sequencer::instance();
+// // 	MainSequence mainSequence("Main Sequence", sequencer, safetySys, properties, controlSys, elmoDrives);
+// 	MainSequence mainSequence("Main Sequence", sequencer);
+// 	sequencer.addSequence(mainSequence);
+// 	mainSequence.start();
 	
 	
 	// Executor
@@ -96,7 +97,7 @@ int main(int argc, char **argv) {
 	
 	executor.run();
 	
-	mainSequence.waitAndTerminate();
+// 	mainSequence.waitAndTerminate();
 	
 	
 	
