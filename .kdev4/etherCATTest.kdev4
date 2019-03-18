@@ -2,8 +2,8 @@
 BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\x18\x00e\x00t\x00h\x00e\x00r\x00C\x00A\x00T\x00T\x00e\x00s\x00t)
 
 [CMake]
-Build Directory Count=2
-Current Build Directory Index=1
+Build Directory Count=3
+Current Build Directory Index=2
 ProjectRootRelative=./
 
 [CMake][CMake Build Directory 0]
@@ -21,6 +21,14 @@ CMake Binary=file:///usr/bin/cmake
 Environment Profile=
 Extra Arguments=
 Install Directory=file:///home/mgehrig2/git_repos/installx86
+
+[CMake][CMake Build Directory 2]
+Build Directory Path=file:///home/ubuntu/projects/etherCATTest/buildx86
+Build Type=
+CMake Binary=file:///usr/bin/cmake
+Environment Profile=
+Extra Arguments=
+Install Directory=file:///home/ubuntu/installx86
 
 [CustomDefinesAndIncludes][ProjectPath0]
 Defines=\x00\x00\x00\x00

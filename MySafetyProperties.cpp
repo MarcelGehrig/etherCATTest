@@ -8,11 +8,12 @@
 #include <unistd.h>
 // #include <iostream>
 // #include <vector>
-// #include <initializer_list>
+#include <initializer_list>
 
 using namespace eeros;
 using namespace eeros::hal;
 using namespace eeros::safety;
+
 
 MySafetyProperties::MySafetyProperties(MyControlSystem& controlSys, double dt) : 
 	controlSys(controlSys),
@@ -21,7 +22,7 @@ MySafetyProperties::MySafetyProperties(MyControlSystem& controlSys, double dt) :
 	slReadyToSwitchOn("Drives are ready to switch on"),
 	slEnabled("Drives are enabled and ready to move"),
 	slMoving("System is moving"),
-	slFaul("At least one drive is in fault state"),
+	slFault("At least one drive is in fault state"),
 // 	slEmergency("Emergency state"),
 // 	slSystemOn("System is ready, power off"),
 // 	slStartingControl("System is starting control system"),
@@ -33,7 +34,8 @@ MySafetyProperties::MySafetyProperties(MyControlSystem& controlSys, double dt) :
 	startMoving("Starting to move"),
 	disableDrives("Disabeling drives"),
 	switchOff("Switching off system"),
-	restartDrives("Restarting drives")
+	restartDrives("Restarting drives"),
+	recoverFromFault("Recovering from drive Fault")
 
 // 	doSystemOn("Switch System on"),
 // 	doSystemOff("Switch System off"),
@@ -121,35 +123,35 @@ MySafetyProperties::MySafetyProperties(MyControlSystem& controlSys, double dt) :
 	});
 	
 	
-	slSystemOn.setLevelAction([&](SafetyContext* privateContext) {
-		controlSys.timedomain.stop();
-		// you may want to check here for a user input
-		privateContext->triggerEvent(startControl); 
-	});
-	
-	slStartingControl.setLevelAction([&,dt](SafetyContext* privateContext) {
-		controlSys.timedomain.start();
-		if(slStartingControl.getNofActivations() * dt > 2){	// wait 2s
-			privateContext->triggerEvent(startControlDone);
-		}
-	});
-	
-	slStoppingControl.setLevelAction([&](SafetyContext* privateContext) {
-		controlSys.timedomain.stop();
-		privateContext->triggerEvent(stopControlDone);
-	});
-	
-	slPowerOn.setLevelAction([&](SafetyContext* privateContext) {
-		if(ready->get()){	// check if drive is ready
-			privateContext->triggerEvent(startMoving);
-		}
-	});
+// 	slSystemOn.setLevelAction([&](SafetyContext* privateContext) {
+// 		controlSys.timedomain.stop();
+// 		// you may want to check here for a user input
+// 		privateContext->triggerEvent(startControl); 
+// 	});
+// 	
+// 	slStartingControl.setLevelAction([&,dt](SafetyContext* privateContext) {
+// 		controlSys.timedomain.start();
+// 		if(slStartingControl.getNofActivations() * dt > 2){	// wait 2s
+// 			privateContext->triggerEvent(startControlDone);
+// 		}
+// 	});
+// 	
+// 	slStoppingControl.setLevelAction([&](SafetyContext* privateContext) {
+// 		controlSys.timedomain.stop();
+// 		privateContext->triggerEvent(stopControlDone);
+// 	});
+// 	
+// 	slPowerOn.setLevelAction([&](SafetyContext* privateContext) {
+// 		if(ready->get()){	// check if drive is ready
+// 			privateContext->triggerEvent(startMoving);
+// 		}
+// 	});
 		
 	// Define entry level
 	setEntryLevel(slOff);
 	
 	exitFunction = ([&](SafetyContext* privateContext){
-		privateContext->triggerEvent(abort);
+		privateContext->triggerEvent(disableDrives);
 	});
 	
 }

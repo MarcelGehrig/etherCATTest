@@ -1,10 +1,10 @@
 #ifndef SAFETYPROPERTIES_HPP_
 #define SAFETYPROPERTIES_HPP_
 
-#include "MyControlSystem.hpp"
 
 #include <eeros/safety/SafetyProperties.hpp>
 #include <eeros/hal/HAL.hpp>
+#include "MyControlSystem.hpp"
 
 class MySafetyProperties : public eeros::safety::SafetyProperties {
 	
@@ -46,11 +46,11 @@ public:
 	
 protected:
 	// critical outputs
-// 	eeros::hal::Output<bool>* enable;
-// 	
-// 	// critical inputs
-// 	eeros::hal::Input<bool>* emergency;
-// 	eeros::hal::Input<bool>* ready;
+	eeros::hal::Output<bool>* enable;
+	
+	// critical inputs
+	eeros::hal::Input<bool>* emergency;
+	eeros::hal::Input<bool>* ready;
 		
 	MyControlSystem& controlSys;
 };

@@ -92,7 +92,7 @@ int main(int argc, char **argv) {
 	auto &executor = eeros::Executor::instance();
 	executor.syncWithEtherCATSTack(etherCATStack);
 	executor.setMainTask(safetySys);
-	safetySys.triggerEvent(properties.initDrives);
+// 	safetySys.triggerEvent(properties.initDrives);
 	
 	executor.run();
 	
