@@ -15,8 +15,8 @@ using namespace eeros::hal;
 using namespace eeros::safety;
 
 
-MySafetyProperties::MySafetyProperties(MyControlSystem& controlSys, double dt) : 
-	controlSys(controlSys),
+MySafetyProperties::MySafetyProperties(MyControlSystem& CS, double dt) : 
+	CS(CS),
 	// ############ Define Levels ############
 	slOff("Software is off"),
 	slReadyToSwitchOn("Drives are ready to switch on"),
@@ -124,20 +124,20 @@ MySafetyProperties::MySafetyProperties(MyControlSystem& controlSys, double dt) :
 	
 	
 // 	slSystemOn.setLevelAction([&](SafetyContext* privateContext) {
-// 		controlSys.timedomain.stop();
+// 		CS.timedomain.stop();
 // 		// you may want to check here for a user input
 // 		privateContext->triggerEvent(startControl); 
 // 	});
 // 	
 // 	slStartingControl.setLevelAction([&,dt](SafetyContext* privateContext) {
-// 		controlSys.timedomain.start();
+// 		CS.timedomain.start();
 // 		if(slStartingControl.getNofActivations() * dt > 2){	// wait 2s
 // 			privateContext->triggerEvent(startControlDone);
 // 		}
 // 	});
 // 	
 // 	slStoppingControl.setLevelAction([&](SafetyContext* privateContext) {
-// 		controlSys.timedomain.stop();
+// 		CS.timedomain.stop();
 // 		privateContext->triggerEvent(stopControlDone);
 // 	});
 // 	

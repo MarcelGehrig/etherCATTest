@@ -73,18 +73,18 @@ int main(int argc, char **argv) {
 	
 	// Control system
 	// ////////////////////////////////////////////////////////////////////////
-	MyControlSystem controlSys(dt, elmoDrives, numberOfDrivesTotal, log);
+	MyControlSystem CS(dt, elmoDrives, numberOfDrivesTotal, log);
 	
 	// Safety system
 	// ////////////////////////////////////////////////////////////////////////
-	MySafetyProperties properties(controlSys, dt);
-	SafetySystem safetySys(properties, dt);
-//	controlSys.timedomain.registerSafetyEvent(safetySys, properties.doEmergency);
+	MySafetyProperties properties(CS, dt);
+	SafetySystem SS(properties, dt);
+//	CS.timedomain.registerSafetyEvent(SS, properties.doEmergency);
 	
 // 	// Sequencer
 	// ////////////////////////////////////////////////////////////////////////
 	auto& sequencer = Sequencer::instance();
-	MainSequence mainSequence("Main Sequence", sequencer, safetySys, properties, controlSys, elmoDrives);
+	MainSequence mainSequence("Main Sequence", sequencer, SS, properties, CS, elmoDrives);
 // 	MainSequence mainSequence("Main Sequence", sequencer);
 	sequencer.addSequence(mainSequence);
 	mainSequence.start();
@@ -94,8 +94,8 @@ int main(int argc, char **argv) {
 	// ////////////////////////////////////////////////////////////////////////
 	auto &executor = eeros::Executor::instance();
 	executor.syncWithEtherCATSTack(etherCATStack);
-	executor.setMainTask(safetySys);
-// 	safetySys.triggerEvent(properties.initDrives);
+	executor.setMainTask(SS);
+// 	SS.triggerEvent(properties.initDrives);
 	
 // 	executor.run();
 	

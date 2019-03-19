@@ -11,7 +11,7 @@
 class MySafetyProperties : public eeros::safety::SafetyProperties {
 	
 public:
-	MySafetyProperties(MyControlSystem& controlSys, double ts);
+	MySafetyProperties(MyControlSystem& CS, double ts);
 	virtual ~MySafetyProperties();
 	
 	// Name all levels
@@ -54,7 +54,7 @@ protected:
 	eeros::hal::Input<bool>* emergency;
 	eeros::hal::Input<bool>* ready;
 		
-	MyControlSystem& controlSys;
+	MyControlSystem& CS;
 };
 
 #endif // SAFETYPROPERTIES_HPP_

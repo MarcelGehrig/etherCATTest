@@ -13,6 +13,7 @@
 namespace global {
 	
 	eeros::logger::Logger* log;
+	MyControlSystem* CS;
 	
 }
 

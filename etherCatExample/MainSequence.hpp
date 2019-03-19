@@ -48,9 +48,9 @@ public:
 static int i3 = 0;
 class InitDrives : public Step {
 public:
-	InitDrives(std::string name, Sequencer& sequencer, BaseSequence* caller, SafetySystem& safetySys, MyControlSystem& controlSys, EtherCATInterfaceElmo& elmoDrives) : 
+	InitDrives(std::string name, Sequencer& sequencer, BaseSequence* caller, SafetySystem& SS, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives) : 
 		Step(name, sequencer, caller),
-		safetySys(safetySys),
+		SS(SS),
 		elmoDrives(elmoDrives)
 		{ }
 // 	int operator() (double pos) { this->pos = pos; return start();}
@@ -80,7 +80,7 @@ public:
 	}
 	
 private:
-	SafetySystem& safetySys;
+	SafetySystem& SS;
 	EtherCATInterfaceElmo& elmoDrives;
 	double pos;
 // 	MyControlSystem& cs;
@@ -88,9 +88,9 @@ private:
 
 class showEncoder : public Step {
 public:
-	showEncoder(std::string name, Sequencer& sequencer, BaseSequence* caller, SafetySystem& safetySys, MyControlSystem& controlSys, EtherCATInterfaceElmo& elmoDrives) : 
+	showEncoder(std::string name, Sequencer& sequencer, BaseSequence* caller, SafetySystem& SS, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives) : 
 		Step(name, sequencer, caller),
-		safetySys(safetySys),
+		SS(SS),
 		elmoDrives(elmoDrives)
 	{ }
 	
@@ -103,7 +103,7 @@ public:
 	}
 
 private:
-	SafetySystem& safetySys;
+	SafetySystem& SS;
 	EtherCATInterfaceElmo& elmoDrives;
 	int drive;
 // 	double pos;
@@ -114,32 +114,32 @@ private:
 
 class MainSequence : public Sequence {
 public:
-// 	MainSequence(std::string name, Sequencer& seq, SafetySystem& safetySys, MySafetyProperties& safetyProp, MyControlSystem& cs, double angle) : 
-// 	MainSequence(std::string name, Sequencer& sequencer, SafetySystem& safetySys, MySafetyProperties& safetyProp, MyControlSystem& controlSys, EtherCATInterfaceElmo& elmoDrives) : 
+// 	MainSequence(std::string name, Sequencer& seq, SafetySystem& SS, MySafetyProperties& safetyProp, MyControlSystem& cs, double angle) : 
+// 	MainSequence(std::string name, Sequencer& sequencer, SafetySystem& SS, MySafetyProperties& safetyProp, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives) : 
 // 					Sequence(name, seq),
-// 					safetySys(safetySys),
+// 					SS(SS),
 // 					safetyProp(safetyProp),
-// 					controlSys(controlSys),
+// 					CS(CS),
 // 					elmoDrives(elmoDrives),
-// // 					step_initDrives("initDrives", seq, this, safetySys, controlSys, elmoDrives),
-// 					move("move", seq, this, controlSys)
+// // 					step_initDrives("initDrives", seq, this, SS, CS, elmoDrives),
+// 					move("move", seq, this, CS)
 // 					{
-// // 					step_initDrives("initDrives", seq, this, safetySys, controlSys, elmoDrives) {
+// // 					step_initDrives("initDrives", seq, this, SS, CS, elmoDrives) {
 // 		log.info() << "Sequence created: " << name;
 // 	}
 	
 // 	MainSequence(std::string name, Sequencer& sequencer) :
-	MainSequence(std::string name, Sequencer& sequencer, SafetySystem& safetySys, MySafetyProperties& safetyProp, MyControlSystem& controlSys, EtherCATInterfaceElmo& elmoDrives) :  
+	MainSequence(std::string name, Sequencer& sequencer, SafetySystem& SS, MySafetyProperties& safetyProp, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives) :  
 					Sequence(name, sequencer),
-					safetySys(safetySys),
+					SS(SS),
 					safetyProp(safetyProp),
-					controlSys(controlSys),
+					CS(CS),
 					elmoDrives(elmoDrives),
-					step_initDrives("initDrives", sequencer, this, safetySys, controlSys, elmoDrives),
+					step_initDrives("initDrives", sequencer, this, SS, CS, elmoDrives),
 					logInfo("logInfo", sequencer, this),
-					move("move", sequencer, this, controlSys)
+					move("move", sequencer, this, CS)
 					{
-// 					step_initDrives("initDrives", seq, this, safetySys, controlSys, elmoDrives) {
+// 					step_initDrives("initDrives", seq, this, SS, CS, elmoDrives) {
 		log.info() << "Sequence created: " << name;
 	}
 	
@@ -154,14 +154,14 @@ public:
 		sleep(1);
 // 		showEncoder(1);
 		
-// 		while(safetySys.getCurrentLevel() < safetyProp.slMoving);
+// 		while(SS.getCurrentLevel() < safetyProp.slMoving);
 // 	
 // 		angle = 0;
 // 		while (Sequencer::running) {
 // 			angle += 6.28 / 10;
 // // 			move(angle);
 // 			sleep(1);
-// 			log.info() << "enc =  " << controlSys.enc.getOut().getSignal().getValue();
+// 			log.info() << "enc =  " << CS.enc.getOut().getSignal().getValue();
 // 		}
 	}
 private:
@@ -169,8 +169,8 @@ private:
 	Move move;
 	LogInfo logInfo;
 	double angle;
-	SafetySystem& safetySys;
-	MyControlSystem& controlSys;
+	SafetySystem& SS;
+	MyControlSystem& CS;
 	MySafetyProperties& safetyProp;
 	EtherCATInterfaceElmo& elmoDrives;
 };
