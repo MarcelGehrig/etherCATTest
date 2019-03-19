@@ -14,7 +14,7 @@ MyControlSystem::MyControlSystem(double ts, EtherCATInterfaceElmo& elmoDrives, i
 // 		demux.getIn().connect(getEncoders.getOutPosition());
 // 		printNumber.getIn().connect(demux.getOut(0));
 // 		demux.getIn().connect(getEncoders.getOutPosition());
-		printNumber.getIn().connect(getEncoders.getOutPosition());
+// 		printNumber.getIn().connect(getEncoders.getOutPosition());
 	
 // 	setpoint.getOut().getSignal().setName("phi_desired");
 // 
@@ -62,9 +62,9 @@ MyControlSystem::MyControlSystem(double ts, EtherCATInterfaceElmo& elmoDrives, i
 // 	timedomain.addBlock(invMotConst);
 // 	timedomain.addBlock(dac);
 
-	timedomain.addBlock(getEncoders);
+// 	timedomain.addBlock(getEncoders);
 // 	timedomain.addBlock(demux);
-	timedomain.addBlock(printNumber);
+// 	timedomain.addBlock(printNumber);
 	
 	eeros::Executor::instance().add(timedomain);
 }

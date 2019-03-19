@@ -81,8 +81,6 @@ uint16_t EtherCATInterfaceBase::get16bit(uint32_t offsetInByte, uint32_t driveNu
 
 uint32_t EtherCATInterfaceBase::get32bit(uint32_t offsetInByte, uint32_t driveNumber)
 {
-// 	std::cout << "BASE: get32bit driveNumber: " << driveNumber << "   offset: 0x" << std::hex << offsetInByte  << std::endl;
-// 	sleep(1);
 	if(checkOffset(offsetInByte)) {
 		return (uint32_t)etherCATStack->getFrmDWord(inBuffer + driveNumber*bytesPerPDOFrameTx + offsetInByte);
 	}

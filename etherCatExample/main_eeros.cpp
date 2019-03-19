@@ -9,6 +9,7 @@
 #include "MySafetyProperties.hpp"
 #include "MyControlSystem.hpp"
 #include "MainSequence.hpp"
+#include "globalConfig.hpp"
 
 #include <EtherCATMain.hpp>
 
@@ -47,6 +48,7 @@ int main(int argc, char **argv) {
 	StreamLogWriter w(std::cout);
 	Logger log;
 	log.set(w);
+	global::log = &log;
 
 	log.info() << "Hello, EEROS";
 
@@ -58,10 +60,10 @@ int main(int argc, char **argv) {
 	sleep(9);
 	EtherCATInterfaceElmo elmoDrives = EtherCATInterfaceElmo( etherCATStack );
 	bool allDrivesAreSwitchedOn = false;
-	while (!allDrivesAreSwitchedOn) {
-		allDrivesAreSwitchedOn = elmoDrives.switchOnAllDrives();
-		usleep(1e6);	
-	}
+// 	while (!allDrivesAreSwitchedOn) {
+// 		allDrivesAreSwitchedOn = elmoDrives.switchOnAllDrives();
+// 		usleep(1e6);	
+// 	}
 	//   signal(SIGINT, signalHandler);  
 	
 	// HAL
@@ -80,12 +82,12 @@ int main(int argc, char **argv) {
 //	controlSys.timedomain.registerSafetyEvent(safetySys, properties.doEmergency);
 	
 // 	// Sequencer
-// 	// ////////////////////////////////////////////////////////////////////////
-// 	auto& sequencer = Sequencer::instance();
-// // 	MainSequence mainSequence("Main Sequence", sequencer, safetySys, properties, controlSys, elmoDrives);
+	// ////////////////////////////////////////////////////////////////////////
+	auto& sequencer = Sequencer::instance();
+	MainSequence mainSequence("Main Sequence", sequencer, safetySys, properties, controlSys, elmoDrives);
 // 	MainSequence mainSequence("Main Sequence", sequencer);
-// 	sequencer.addSequence(mainSequence);
-// 	mainSequence.start();
+	sequencer.addSequence(mainSequence);
+	mainSequence.start();
 	
 	
 	// Executor
@@ -95,10 +97,13 @@ int main(int argc, char **argv) {
 	executor.setMainTask(safetySys);
 // 	safetySys.triggerEvent(properties.initDrives);
 	
-	executor.run();
+// 	executor.run();
 	
-// 	mainSequence.waitAndTerminate();
+	log.info()<< "waiting for mainSequence to finish";
 	
+	mainSequence.waitAndTerminate();
+	
+	log.info()<< "main_eeros finished";
 	
 	
 	return 0;

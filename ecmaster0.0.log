@@ -7,6 +7,6 @@ Full command line: -f "10_ENI_2Elmo_1000ms_extended.xml"-i8254x 1 1 -perf -v 0 -
 000003 : Calibrate tsc measurement... done: 3392 MHz
 003004 : EC-Master V2.9.2.13 (Protected) for Linux_x64 Copyright acontis technologies GmbH @ 2018
 003004 : OsGetLinkLayerRegFunc: try to load '/home/ubuntu/projects/etherCATTest/libemllI8254x.so'
-003005 : PCI: device 00:19.0 found
-007307 : Unlicensed version, stop sending ethernet frames after 60 minutes!
-007382 : prepare
+003004 : PCI: device 00:19.0 found
+007231 : Unlicensed version, stop sending ethernet frames after 60 minutes!
+007305 : prepare

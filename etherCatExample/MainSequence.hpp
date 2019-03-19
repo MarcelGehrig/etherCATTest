@@ -7,6 +7,7 @@
 #include <eeros/safety/SafetySystem.hpp>
 #include "MySafetyProperties.hpp"
 #include "MyControlSystem.hpp"
+#include "globalConfig.hpp"
 #include <unistd.h>
 
 
@@ -19,8 +20,9 @@ using namespace eeros::logger;
 
 class Move : public Step {
 public:
-	Move(std::string name, Sequencer& sequencer, BaseSequence* caller, MyControlSystem& cs) : Step(name, sequencer, caller), cs(cs) { }
-	int operator() (double pos) {this->pos = pos; return Step::start();}
+	Move(std::string name, Sequencer& sequencer, BaseSequence* caller, MyControlSystem& cs) : 
+		Step(name, sequencer, caller), cs(cs) { }
+	int operator() (double pos) {this->pos = pos; return start();}
 	int action() {
 // 		cs.setpoint.setValue(pos);
 		sleep(1);
@@ -29,17 +31,52 @@ public:
 	MyControlSystem& cs;
 };
 
-class initDrives : public Step {
+class LogInfo : public Step {
 public:
-	initDrives(std::string name, Sequencer& sequencer, BaseSequence* caller, SafetySystem& safetySys, MyControlSystem& controlSys, EtherCATInterfaceElmo& elmoDrives) : 
+	LogInfo(std::string name, Sequencer& sequencer, BaseSequence* caller) : 
+		Step(name, sequencer, caller) { }
+	int operator() (std::string message0, std::string message1="", std::string message2="", std::string message3="") {
+		this->message = message0 + message1 + message2 + message3;
+		return start();		
+	}
+	int action() {
+		global::log->info() << message;
+	}
+	std::string message;
+};
+
+static int i3 = 0;
+class InitDrives : public Step {
+public:
+	InitDrives(std::string name, Sequencer& sequencer, BaseSequence* caller, SafetySystem& safetySys, MyControlSystem& controlSys, EtherCATInterfaceElmo& elmoDrives) : 
 		Step(name, sequencer, caller),
 		safetySys(safetySys),
 		elmoDrives(elmoDrives)
 		{ }
-// 	int operator() (double pos) { this->pos = pos;}
-	int action() {	}
+// 	int operator() (double pos) { this->pos = pos; return start();}
+	int action() {	
+		global::log->info() << "Initializing drives:";
+// 		sleep (10);
+// 		elmoDrives.initAllDrives();
+// 		global::log->info() << "Initializing drives:";
+// 		global::log->info() << "Initializing drives:" << elmoDrives.getPos(0);
+// 		sleep (10);
+	}
 	bool checkExitCondition() {
-		return elmoDrives.initAllDrives();
+// 		if (i3 == 1 ) return true;
+// 		else i3++;
+// 		global::log->info() << "Initializing drives:" << elmoDrives.getPos(0);
+// 		global::log->info() << "Initializing drives:" << elmoDrives.getPos(1);
+// 		return true;
+		if (elmoDrives.initAllDrives()) {
+			global::log->info() << "Drives initialized";
+			return true;
+		}
+// 		if (elmoDrives.getPos(0)) {
+// // 			global::log->info() << "Drives initialized";
+// 			return true;
+// 		}
+		return false;
 	}
 	
 private:
@@ -57,7 +94,7 @@ public:
 		elmoDrives(elmoDrives)
 	{ }
 	
-	int operator() (int drive) {this->drive = drive;}
+	int operator() (int drive) {this->drive = drive; return start();}
 	
 	int action() {	}
 	
@@ -91,14 +128,16 @@ public:
 // 		log.info() << "Sequence created: " << name;
 // 	}
 	
-	MainSequence(std::string name, Sequencer& sequencer) : 
-					Sequence(name, seq),
+// 	MainSequence(std::string name, Sequencer& sequencer) :
+	MainSequence(std::string name, Sequencer& sequencer, SafetySystem& safetySys, MySafetyProperties& safetyProp, MyControlSystem& controlSys, EtherCATInterfaceElmo& elmoDrives) :  
+					Sequence(name, sequencer),
 					safetySys(safetySys),
 					safetyProp(safetyProp),
 					controlSys(controlSys),
 					elmoDrives(elmoDrives),
-// 					step_initDrives("initDrives", seq, this, safetySys, controlSys, elmoDrives),
-					move("move", seq, this, controlSys)
+					step_initDrives("initDrives", sequencer, this, safetySys, controlSys, elmoDrives),
+					logInfo("logInfo", sequencer, this),
+					move("move", sequencer, this, controlSys)
 					{
 // 					step_initDrives("initDrives", seq, this, safetySys, controlSys, elmoDrives) {
 		log.info() << "Sequence created: " << name;
@@ -107,9 +146,12 @@ public:
 	
 	
 	int action() {
-		sleep(5);
-		move(1);
-// 		step_initDrives();
+// 		sleep(5);
+// 		move(1);
+		step_initDrives();
+		logInfo("pos0: ", std::to_string(elmoDrives.getPos(0)));
+		logInfo("MainSequence finished");
+		sleep(1);
 // 		showEncoder(1);
 		
 // 		while(safetySys.getCurrentLevel() < safetyProp.slMoving);
@@ -123,8 +165,9 @@ public:
 // 		}
 	}
 private:
-// 	initDrives step_initDrives;
+	InitDrives step_initDrives;
 	Move move;
+	LogInfo logInfo;
 	double angle;
 	SafetySystem& safetySys;
 	MyControlSystem& controlSys;
