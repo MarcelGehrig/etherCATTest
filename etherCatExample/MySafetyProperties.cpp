@@ -15,46 +15,28 @@ using namespace eeros::hal;
 using namespace eeros::safety;
 
 
-MySafetyProperties::MySafetyProperties(MyControlSystem& CS, double dt) : 
+MySafetyProperties::MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives, double dt) : 
 	CS(CS),
+	elmoDrives(elmoDrives),
 	// ############ Define Levels ############
 	slOff("Software is off"),
-	slReadyToSwitchOn("Drives are ready to switch on"),
-	slEnabled("Drives are enabled and ready to move"),
-	slMoving("System is moving"),
-	slFault("At least one drive is in fault state"),
-// 	slEmergency("Emergency state"),
-// 	slSystemOn("System is ready, power off"),
-// 	slStartingControl("System is starting control system"),
-// 	slStoppingControl("System is stopping control system"),
-// 	slPowerOn("Power is on, motors are controlled"),
+	slEmergency("Emergency state"),
+	slDrivesDisabled("Drives are disabled"),
+	slDrivesEnabled("Drives are enabled and ready to move"),
 	
-	initDrives("Initializing drives"),
-	enableDrives("Enabeling drives"),
-	startMoving("Starting to move"),
+	switchOff("Switching off"),
+	doEmergency("Emergency"),
 	disableDrives("Disabeling drives"),
-	switchOff("Switching off system"),
-	restartDrives("Restarting drives"),
-	recoverFromFault("Recovering from drive Fault")
+	enableDrives("Enabeling drives")
 
-// 	doSystemOn("Switch System on"),
-// 	doSystemOff("Switch System off"),
-// 	startControl("Start Control"),
-// 	stopControl("Stop Control"),
-// 	startControlDone("Control started"),
-// 	stopControlDone("Control stopped"),
-// 	startMoving("Start moving"),
-// 	stopMoving("Stop moving"),
-// 	doEmergency("Emergency"),
-// 	resetEmergency("Reset emergency"),
 // 	abort("abort")
 	{
 // 	HAL& hal = HAL::instance();
 
 	// ############ Define critical outputs ############
-// 	enable = hal.getLogicOutput("enable");
+// 	safetyTorqueOff = hal.getLogicOutput("safetyTorqueOff");
 	
-// 	criticalOutputs = { enable };
+// 	criticalOutputs = { safetyTorqueOff };
 	
 	// ############ Define critical inputs ############
 // 	emergency = hal.getLogicInput("emergency");
@@ -63,22 +45,20 @@ MySafetyProperties::MySafetyProperties(MyControlSystem& CS, double dt) :
 // 	criticalInputs = { emergency, ready };
 	
 	addLevel(slOff);
-	addLevel(slReadyToSwitchOn);
-	addLevel(slEnabled);
-	addLevel(slMoving);
-	addLevel(slMoving);
-	addLevel(slFault);
+	addLevel(slEmergency);
+	addLevel(slDrivesDisabled);
+	addLevel(slDrivesEnabled);
+// 	addLevel(slMoving);
+// 	addLevel(slMoving);
+// 	addLevel(slFault);
 	
-	slOff			.addEvent(initDrives,		slReadyToSwitchOn,	kPublicEvent  );
-	slFault		.addEvent(recoverFromFault,	slReadyToSwitchOn,	kPublicEvent  );
-	slReadyToSwitchOn	.addEvent(enableDrives,		slEnabled,			kPublicEvent  );
-	slReadyToSwitchOn	.addEvent(switchOff,		slOff,			kPublicEvent  );
-	slEnabled		.addEvent(startMoving,		slMoving,			kPublicEvent  );
-	slEnabled		.addEvent(disableDrives,	slReadyToSwitchOn,	kPublicEvent  );
-	slMoving		.addEvent(disableDrives,	slReadyToSwitchOn,	kPublicEvent  );
+	slDrivesDisabled	.addEvent(enableDrives,		slDrivesEnabled,		kPublicEvent  );
+	slDrivesEnabled		.addEvent(disableDrives,	slDrivesDisabled,		kPublicEvent  );
 	
 	
 	// Add events to multiple levels
+	addEventToLevelAndAbove(slEmergency,		doEmergency,		slEmergency,	kPrivateEvent);
+	addEventToLevelAndAbove(slEmergency,		switchOff,			slOff,			kPublicEvent);
 // 	addEventToLevelAndAbove(slMoving, doEmergency, slEmergency, kPublicEvent);
 // 	addEventToLevelAndAbove(slEmergency, abort, slStoppingControl, kPublicEvent);
 		
@@ -92,35 +72,36 @@ MySafetyProperties::MySafetyProperties(MyControlSystem& CS, double dt) :
 // 	slPowerOn		.setInputActions( { check(emergency, true , doEmergency), ignore(ready) });
 // 	slMoving		.setInputActions( { check(emergency, true , doEmergency), check(ready, true, doEmergency) });
 	
-// 	slOff			.setOutputActions( { set(enable, false) } );;
-// 	slEmergency		.setOutputActions( { set(enable, false) } );;
-// 	slSystemOn		.setOutputActions( { set(enable, false) } );;
-// 	slStartingControl	.setOutputActions( { set(enable, false) } );;
-// 	slStoppingControl	.setOutputActions( { set(enable, false) } );;
-// 	slPowerOn		.setOutputActions( { set(enable, true) } );;
-// 	slMoving		.setOutputActions( { set(enable, true) } );;
+// 	slOff			.setOutputActions( { set(safetyTorqueOff, false) } );;
+// 	slEmergency		.setOutputActions( { set(safetyTorqueOff, false) } );;
+// 	slSystemOn		.setOutputActions( { set(safetyTorqueOff, false) } );;
+// 	slStartingControl	.setOutputActions( { set(safetyTorqueOff, false) } );;
+// 	slStoppingControl	.setOutputActions( { set(safetyTorqueOff, false) } );;
+// 	slPowerOn		.setOutputActions( { set(safetyTorqueOff, true) } );;
+// 	slMoving		.setOutputActions( { set(safetyTorqueOff, true) } );;
+	
 	
 	// Define and add level functions
 	/////////////////////////////////////////////////////////////// 
 	slOff.setLevelAction([&](SafetyContext* privateContext) {
+		Executor::stop();
+	});
+// 	
+// 	slFault.setLevelAction([&](SafetyContext* privateContext) {
+// // 		Executor::stop();
+// 	});
+	
+	slDrivesDisabled.setLevelAction([&](SafetyContext* privateContext) {
 // 		Executor::stop();
 	});
 	
-	slFault.setLevelAction([&](SafetyContext* privateContext) {
+	slDrivesEnabled.setLevelAction([&](SafetyContext* privateContext) {
 // 		Executor::stop();
 	});
 	
-	slReadyToSwitchOn.setLevelAction([&](SafetyContext* privateContext) {
-// 		Executor::stop();
-	});
-	
-	slEnabled.setLevelAction([&](SafetyContext* privateContext) {
-// 		Executor::stop();
-	});
-	
-	slMoving.setLevelAction([&](SafetyContext* privateContext) {
-// 		Executor::stop();
-	});
+// 	slMoving.setLevelAction([&](SafetyContext* privateContext) {
+// // 		Executor::stop();
+// 	});
 	
 	
 // 	slSystemOn.setLevelAction([&](SafetyContext* privateContext) {
@@ -148,7 +129,7 @@ MySafetyProperties::MySafetyProperties(MyControlSystem& CS, double dt) :
 // 	});
 		
 	// Define entry level
-	setEntryLevel(slOff);
+	setEntryLevel(slDrivesDisabled);
 	
 	exitFunction = ([&](SafetyContext* privateContext){
 		privateContext->triggerEvent(disableDrives);

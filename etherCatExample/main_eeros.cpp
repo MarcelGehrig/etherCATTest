@@ -6,9 +6,9 @@
 #include <eeros/logger/StreamLogWriter.hpp>
 #include <eeros/sequencer/Sequencer.hpp>
 #include <eeros/hal/HAL.hpp>
+#include "MainSequence.hpp"
 #include "MySafetyProperties.hpp"
 #include "MyControlSystem.hpp"
-#include "MainSequence.hpp"
 #include "globalConfig.hpp"
 
 #include <EtherCATMain.hpp>
@@ -55,10 +55,16 @@ int main(int argc, char **argv) {
 
 	// EtherCAT
 	// ////////////////////////////////////////////////////////////////////////
+// 	struct config {
+// 		std::string::string eni = "asdf";
+// 		
+// 	};
 	ecmasterlib::EtherCATMain* etherCATStack = ecmasterlib::EtherCATMain::createInstance(argc, argv, byteSizePerSlave*numberOfDrivesTotal);
+	global::etherCATStack = etherCATStack;
 	signal(SIGINT, signalHandler);
 	sleep(9);
 	EtherCATInterfaceElmo elmoDrives = EtherCATInterfaceElmo( etherCATStack );
+	global::elmoDrives = &elmoDrives;
 	bool allDrivesAreSwitchedOn = false;
 // 	while (!allDrivesAreSwitchedOn) {
 // 		allDrivesAreSwitchedOn = elmoDrives.switchOnAllDrives();
@@ -74,17 +80,23 @@ int main(int argc, char **argv) {
 	// Control system
 	// ////////////////////////////////////////////////////////////////////////
 	MyControlSystem CS(dt, elmoDrives, numberOfDrivesTotal, log);
+	global::CS = &CS;
 	
 	// Safety system
 	// ////////////////////////////////////////////////////////////////////////
-	MySafetyProperties properties(CS, dt);
+	MySafetyProperties properties(CS, elmoDrives, dt);
+	global::safetyProperties = &properties;
 	SafetySystem SS(properties, dt);
+	global::SS = &SS;
 //	CS.timedomain.registerSafetyEvent(SS, properties.doEmergency);
 	
 // 	// Sequencer
 	// ////////////////////////////////////////////////////////////////////////
 	auto& sequencer = Sequencer::instance();
-	MainSequence mainSequence("Main Sequence", sequencer, SS, properties, CS, elmoDrives);
+	global::sequencer = &sequencer;
+	MainSequence mainSequence("MainSequence", sequencer, SS, properties, CS, elmoDrives);
+// 	MainSequence mainSequence("MainSequence");
+// 	global::mainSequence = &mainSequence;
 // 	MainSequence mainSequence("Main Sequence", sequencer);
 	sequencer.addSequence(mainSequence);
 	mainSequence.start();
@@ -97,9 +109,7 @@ int main(int argc, char **argv) {
 	executor.setMainTask(SS);
 // 	SS.triggerEvent(properties.initDrives);
 	
-// 	executor.run();
-	
-	log.info()<< "waiting for mainSequence to finish";
+	executor.run();
 	
 	mainSequence.waitAndTerminate();
 	

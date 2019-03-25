@@ -46,6 +46,7 @@ public:
 
 	eeros::control::TimeDomain timedomain;
 	
+	
 private:
 	EtherCATInterfaceElmo& elmoDrives;
 	int numberOfDrivesTotal;

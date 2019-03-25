@@ -1,9 +1,11 @@
 #ifndef ETHERCAT_EXAMPLES_SEQUENCER_MAINSEQUENCE_HPP_
 #define ETHERCAT_EXAMPLES_SEQUENCER_MAINSEQUENCE_HPP_
 
+#include <eeros/core/Executor.hpp>
 #include <eeros/sequencer/Sequencer.hpp>
 #include <eeros/sequencer/Sequence.hpp>
 #include <eeros/sequencer/Step.hpp>
+#include <eeros/sequencer/Wait.hpp>
 #include <eeros/safety/SafetySystem.hpp>
 #include "MySafetyProperties.hpp"
 #include "MyControlSystem.hpp"
@@ -21,7 +23,7 @@ using namespace eeros::logger;
 class Move : public Step {
 public:
 	Move(std::string name, Sequencer& sequencer, BaseSequence* caller, MyControlSystem& cs) : 
-		Step(name, sequencer, caller), cs(cs) { }
+		Step(name, this), cs(cs) { }
 	int operator() (double pos) {this->pos = pos; return start();}
 	int action() {
 // 		cs.setpoint.setValue(pos);
@@ -34,7 +36,7 @@ public:
 class LogInfo : public Step {
 public:
 	LogInfo(std::string name, Sequencer& sequencer, BaseSequence* caller) : 
-		Step(name, sequencer, caller) { }
+		Step(name, this) { }
 	int operator() (std::string message0, std::string message1="", std::string message2="", std::string message3="") {
 		this->message = message0 + message1 + message2 + message3;
 		return start();		
@@ -49,7 +51,7 @@ static int i3 = 0;
 class InitDrives : public Step {
 public:
 	InitDrives(std::string name, Sequencer& sequencer, BaseSequence* caller, SafetySystem& SS, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives) : 
-		Step(name, sequencer, caller),
+		Step(name, this),
 		SS(SS),
 		elmoDrives(elmoDrives)
 		{ }
@@ -89,7 +91,7 @@ private:
 class showEncoder : public Step {
 public:
 	showEncoder(std::string name, Sequencer& sequencer, BaseSequence* caller, SafetySystem& SS, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives) : 
-		Step(name, sequencer, caller),
+		Step(name, this),
 		SS(SS),
 		elmoDrives(elmoDrives)
 	{ }
@@ -135,6 +137,7 @@ public:
 					safetyProp(safetyProp),
 					CS(CS),
 					elmoDrives(elmoDrives),
+					wait("waiting1", this),
 					step_initDrives("initDrives", sequencer, this, SS, CS, elmoDrives),
 					logInfo("logInfo", sequencer, this),
 					move("move", sequencer, this, CS)
@@ -149,9 +152,11 @@ public:
 // 		sleep(5);
 // 		move(1);
 		step_initDrives();
-		logInfo("pos0: ", std::to_string(elmoDrives.getPos(0)));
-		logInfo("MainSequence finished");
-		sleep(1);
+		global::log->info() << "pos0: " << std::to_string(elmoDrives.getPos(0));
+		global::log->info() << "MainSequence finished";
+		
+		wait(5);
+// 		sleep(1);
 // 		showEncoder(1);
 		
 // 		while(SS.getCurrentLevel() < safetyProp.slMoving);
@@ -163,8 +168,11 @@ public:
 // 			sleep(1);
 // 			log.info() << "enc =  " << CS.enc.getOut().getSignal().getValue();
 // 		}
+// 		eeros::Executor::stop();
+		SS.triggerEvent(safetyProp.switchOff);
 	}
 private:
+	Wait wait;
 	InitDrives step_initDrives;
 	Move move;
 	LogInfo logInfo;

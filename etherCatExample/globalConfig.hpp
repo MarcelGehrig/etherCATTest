@@ -12,9 +12,16 @@
 
 namespace global {
 	
-	eeros::logger::Logger* log;
-	MyControlSystem* CS;
+// 	class MainSequence;
 	
+	eeros::logger::Logger* log;
+	ecmasterlib::EtherCATMain* etherCATStack;
+	EtherCATInterfaceElmo* elmoDrives;
+	MyControlSystem* CS;
+	MySafetyProperties* safetyProperties;
+	eeros::safety::SafetySystem* SS;
+	eeros::sequencer::Sequencer* sequencer;
+// 	MainSequence* mainSequence;
 }
 
 #endif	// EEROS_ETHERCAT_EXAMPLE_GLOBAL_CHOFING_HPP_

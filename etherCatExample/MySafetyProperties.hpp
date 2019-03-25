@@ -11,50 +11,37 @@
 class MySafetyProperties : public eeros::safety::SafetyProperties {
 	
 public:
-	MySafetyProperties(MyControlSystem& CS, double ts);
+	MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives, double ts);
 	virtual ~MySafetyProperties();
 	
 	// Name all levels
-	eeros::safety::SafetyLevel slFault;
+// 	eeros::safety::SafetyLevel slFault;
 	eeros::safety::SafetyLevel slOff;
-	eeros::safety::SafetyLevel slReadyToSwitchOn;
-	eeros::safety::SafetyLevel slEnabled;
-	eeros::safety::SafetyLevel slMoving;
+	eeros::safety::SafetyLevel slEmergency;
+	eeros::safety::SafetyLevel slDrivesDisabled;
+	eeros::safety::SafetyLevel slDrivesEnabled;
 	
-// 	eeros::safety::SafetyLevel slEmergency;
 // 	eeros::safety::SafetyLevel slSystemOn;
 // 	eeros::safety::SafetyLevel slStartingControl;
 	
 	// Define all possible events
-	eeros::safety::SafetyEvent initDrives;
-	eeros::safety::SafetyEvent enableDrives;
-	eeros::safety::SafetyEvent startMoving;
-	eeros::safety::SafetyEvent disableDrives;
+// 	eeros::safety::SafetyEvent fault;
 	eeros::safety::SafetyEvent switchOff;
-	eeros::safety::SafetyEvent restartDrives;
-	eeros::safety::SafetyEvent recoverFromFault;
+	eeros::safety::SafetyEvent doEmergency;
+	eeros::safety::SafetyEvent disableDrives;
+	eeros::safety::SafetyEvent enableDrives;
 	
-// 	eeros::safety::SafetyEvent doSystemOn;
-// 	eeros::safety::SafetyEvent doSystemOff;
-// 	eeros::safety::SafetyEvent startControl;
-// 	eeros::safety::SafetyEvent stopControl;
-// 	eeros::safety::SafetyEvent startControlDone;
-// 	eeros::safety::SafetyEvent stopControlDone;
-// 	eeros::safety::SafetyEvent startMoving;
-// 	eeros::safety::SafetyEvent stopMoving;
-// 	eeros::safety::SafetyEvent doEmergency;
-// 	eeros::safety::SafetyEvent resetEmergency;	
-// 	eeros::safety::SafetyEvent abort;
 	
 protected:
 	// critical outputs
-	eeros::hal::Output<bool>* enable;
+	eeros::hal::Output<bool>* safetyTorqueOff;
 	
 	// critical inputs
 	eeros::hal::Input<bool>* emergency;
-	eeros::hal::Input<bool>* ready;
+// 	eeros::hal::Input<bool>* ready;
 		
 	MyControlSystem& CS;
+	EtherCATInterfaceElmo& elmoDrives;
 };
 
 #endif // SAFETYPROPERTIES_HPP_
