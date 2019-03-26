@@ -17,22 +17,28 @@ public:
 	
 // 	block_printNumber(Logger& log, std::string prefix) : block_printNumber(log, prefix, "") {}
 		
-	block_printNumber(Logger& log, std::string prefix="", std::string suffix="", int divider=0) : 
+	block_printNumber(Logger& log, std::string prefix="", std::string suffix="", int divider=0, bool enabled=true) : 
 		log(log),
 		prefix(prefix),
 		suffix(suffix),
 		divider(divider),
+		enabled(enabled),
 		counter(1)
 	{}
 
 	virtual void run() {
-		if ( divider==0 or counter%divider==0 ) {
-			log.info() << prefix  << this->in.getSignal().getValue() << suffix;
-// 			this->get
-			counter = 0;
+		if ( enabled ) {
+			if ( divider==0 or counter%divider==0 ) {
+				log.info() << prefix  << this->in.getSignal().getValue() << suffix;
+	// 			this->get
+				counter = 0;
+			}
+			counter++;
 		}
-		counter++;
 	}
+	
+	void enable() { enabled = true; };
+	void disable() { enabled = false; };
 
 
 protected:
@@ -44,6 +50,8 @@ private:
 	Logger& log;
 	int divider;
 	int counter;
+	
+	bool enabled;
 // 	template <typename S>
 // 	typename std::enable_if<!elementWise,S>::type calculateResults(S value) {
 // 		return gain * value;

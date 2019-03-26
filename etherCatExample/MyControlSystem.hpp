@@ -43,6 +43,9 @@ public:
 // 	eeros::control::Gain<> inertia;
 // 	eeros::control::Gain<> invMotConst;
 // 	eeros::control::PeripheralOutput<double> dac;
+	
+	void enableMonitoring();
+	void disableMonitoring();
 
 	eeros::control::TimeDomain timedomain;
 	

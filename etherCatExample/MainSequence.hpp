@@ -103,10 +103,12 @@ public:
 	
 	int action() {
 		step_initDrives();
-		global::log->info() << "pos0: " << std::to_string(elmoDrives.getPos(0));
-		global::log->info() << "MainSequence finished";
+		wait(3);
+		CS.enableMonitoring();
+// 		global::log->info() << "pos0: " << std::to_string(elmoDrives.getPos(0));
 		
 		wait(3);
+		global::log->info() << "MainSequence finished";
 		
 		SS.triggerEvent(safetyProp.switchOff);
 	}

@@ -7,14 +7,14 @@ MyControlSystem::MyControlSystem(double ts, EtherCATInterfaceElmo& elmoDrives, i
 	elmoDrives(elmoDrives),
 	numberOfDrivesTotal(numberOfDrivesTotal),
 	getEncoders(elmoDrives, numberOfDrivesTotal),
-	printNumber(log, "Encoder: ", "", 1000),
+	printNumber(log, "Encoder: ", "", 200, false),
 	log(log),
 	timedomain("Main time domain", ts, true) 
 	{
 // 		demux.getIn().connect(getEncoders.getOutPosition());
 // 		printNumber.getIn().connect(demux.getOut(0));
 // 		demux.getIn().connect(getEncoders.getOutPosition());
-// 		printNumber.getIn().connect(getEncoders.getOutPosition());
+		printNumber.getIn().connect(getEncoders.getOutPosition());
 	
 // 	setpoint.getOut().getSignal().setName("phi_desired");
 // 
@@ -62,11 +62,22 @@ MyControlSystem::MyControlSystem(double ts, EtherCATInterfaceElmo& elmoDrives, i
 // 	timedomain.addBlock(invMotConst);
 // 	timedomain.addBlock(dac);
 
-// 	timedomain.addBlock(getEncoders);
+	timedomain.addBlock(getEncoders);
 // 	timedomain.addBlock(demux);
-// 	timedomain.addBlock(printNumber);
+	timedomain.addBlock(printNumber);
 	
 	eeros::Executor::instance().add(timedomain);
 }
+
+void MyControlSystem::enableMonitoring()
+{
+	printNumber.enable();
+}
+
+void MyControlSystem::disableMonitoring()
+{
+	printNumber.disable();
+}
+
 
 MyControlSystem::~MyControlSystem() { }
