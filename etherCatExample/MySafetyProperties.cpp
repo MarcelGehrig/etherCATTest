@@ -84,7 +84,16 @@ MySafetyProperties::MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElm
 	// Define and add level functions
 	/////////////////////////////////////////////////////////////// 
 	slOff.setLevelAction([&](SafetyContext* privateContext) {
+		elmoDrives.disableAllDrives();
 		Executor::stop();
+	});
+	
+	slEmergency.setLevelAction([&](SafetyContext* privateContext) {
+		//quick stop
+// 		int driveNumber;
+		for (int driveNumber = 0; driveNumber < numberOfDrives; driveNumber++ ) {
+			elmoDrives.setControlWord(driveNumber, quickStop);
+		}
 	});
 // 	
 // 	slFault.setLevelAction([&](SafetyContext* privateContext) {

@@ -119,6 +119,7 @@ namespace etherCATInterface {
 	// Configurations for Elmo drives
 	// //////////////////////////////
 	
+	// Drive modes
 	enum driveModeOfOperation_ELMO {
 		CANEncoderMode,
 		profilePosition,
@@ -143,18 +144,17 @@ namespace etherCATInterface {
 	static constexpr int16_t dmoov_cyclicSynchronousTorque		= 10;
 	
 	
-	    
-	 
-	  enum controlWordCommand_ELMO {
+	// Control words 
+	enum controlWordCommand_ELMO {
 		shutdown,			//0x06
-		switchOn,			//0X07
+		switchOn,			//0X07 -> prepares drive to enable
 		switchOnAndEnable,	//0x0F
 		disableVoltage,		//0x00
 		quickStop,			//0x02
 		disableOperation,	//0x07
-		enableOperation,	//0x0F
+		enableOperation,	//0x0F	-> enables drive
 		faultReset			//0X80
-	  };
+	};
 	  
 	// Control World Commands (cwc)
 	static constexpr uint16_t cwc_shutdown			= 0x06;
@@ -197,6 +197,7 @@ namespace etherCATInterface {
 	static constexpr uint16_t faultMask =					0x0048;
 	
 	
+	// Touch probe status
 	enum touchProbeStateEnum_ELMO {
 		  reset,
 		  enableProbe,

@@ -55,10 +55,6 @@ int main(int argc, char **argv) {
 
 	// EtherCAT
 	// ////////////////////////////////////////////////////////////////////////
-// 	struct config {
-// 		std::string::string eni = "asdf";
-// 		
-// 	};
 	ecmasterlib::EtherCATMain* etherCATStack = ecmasterlib::EtherCATMain::createInstance(argc, argv, byteSizePerSlave*numberOfDrivesTotal);
 	global::etherCATStack = etherCATStack;
 	signal(SIGINT, signalHandler);
@@ -66,11 +62,6 @@ int main(int argc, char **argv) {
 	EtherCATInterfaceElmo elmoDrives = EtherCATInterfaceElmo( etherCATStack );
 	global::elmoDrives = &elmoDrives;
 	bool allDrivesAreSwitchedOn = false;
-// 	while (!allDrivesAreSwitchedOn) {
-// 		allDrivesAreSwitchedOn = elmoDrives.switchOnAllDrives();
-// 		usleep(1e6);	
-// 	}
-	//   signal(SIGINT, signalHandler);  
 	
 	// HAL
 	// ////////////////////////////////////////////////////////////////////////
