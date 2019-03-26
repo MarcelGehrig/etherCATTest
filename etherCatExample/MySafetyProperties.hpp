@@ -20,6 +20,8 @@ public:
 	eeros::safety::SafetyLevel slEmergency;
 	eeros::safety::SafetyLevel slDrivesDisabled;
 	eeros::safety::SafetyLevel slDrivesEnabled;
+	eeros::safety::SafetyLevel slHoming;
+	eeros::safety::SafetyLevel slMoving;
 	
 // 	eeros::safety::SafetyLevel slSystemOn;
 // 	eeros::safety::SafetyLevel slStartingControl;
@@ -30,6 +32,8 @@ public:
 	eeros::safety::SafetyEvent doEmergency;
 	eeros::safety::SafetyEvent disableDrives;
 	eeros::safety::SafetyEvent enableDrives;
+	eeros::safety::SafetyEvent doHoming;
+	eeros::safety::SafetyEvent startMoving;
 	
 	
 protected:

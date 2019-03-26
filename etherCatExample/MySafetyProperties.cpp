@@ -23,11 +23,15 @@ MySafetyProperties::MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElm
 	slEmergency("Emergency state"),
 	slDrivesDisabled("Drives are disabled"),
 	slDrivesEnabled("Drives are enabled and ready to move"),
+	slHoming("Homing"),
+	slMoving("Drives are moving"),
 	
 	switchOff("Switching off"),
-	doEmergency("Emergency"),
+	doEmergency("Emergency activated"),
 	disableDrives("Disabeling drives"),
-	enableDrives("Enabeling drives")
+	enableDrives("Enabeling drives"),
+	doHoming("Start homing"),
+	startMoving("Drives start moving")
 
 // 	abort("abort")
 	{
@@ -48,17 +52,21 @@ MySafetyProperties::MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElm
 	addLevel(slEmergency);
 	addLevel(slDrivesDisabled);
 	addLevel(slDrivesEnabled);
-// 	addLevel(slMoving);
+	addLevel(slHoming);
+	addLevel(slMoving);
 // 	addLevel(slMoving);
 // 	addLevel(slFault);
 	
 	slDrivesDisabled	.addEvent(enableDrives,		slDrivesEnabled,		kPublicEvent  );
-	slDrivesEnabled		.addEvent(disableDrives,	slDrivesDisabled,		kPublicEvent  );
+	slDrivesEnabled		.addEvent(doHoming,			slHoming,				kPublicEvent  );
+	slDrivesEnabled		.addEvent(startMoving,		slMoving,				kPublicEvent  );
+	slHoming			.addEvent(startMoving,		slMoving,				kPublicEvent  );
 	
 	
 	// Add events to multiple levels
-	addEventToLevelAndAbove(slEmergency,		doEmergency,		slEmergency,	kPrivateEvent);
-	addEventToLevelAndAbove(slEmergency,		switchOff,			slOff,			kPublicEvent);
+	addEventToLevelAndAbove(slOff,				doEmergency,		slEmergency,		kPublicEvent);
+	addEventToLevelAndAbove(slEmergency,		switchOff,			slOff,				kPublicEvent);
+	addEventToLevelAndAbove(slDrivesEnabled,	disableDrives,		slDrivesDisabled,	kPublicEvent);
 // 	addEventToLevelAndAbove(slMoving, doEmergency, slEmergency, kPublicEvent);
 // 	addEventToLevelAndAbove(slEmergency, abort, slStoppingControl, kPublicEvent);
 		
@@ -92,7 +100,13 @@ MySafetyProperties::MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElm
 		//quick stop
 // 		int driveNumber;
 		for (int driveNumber = 0; driveNumber < numberOfDrives; driveNumber++ ) {
-			elmoDrives.setControlWord(driveNumber, quickStop);
+			if ( elmoDrives.getIsDriveEnabled(driveNumber) ) {
+				// quickStop is only available if drive is enabled
+				elmoDrives.setControlWord(driveNumber, quickStop);
+			}
+			else {
+				//TODO set DIO for STO
+			}
 		}
 	});
 // 	
