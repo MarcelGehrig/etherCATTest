@@ -42,11 +42,11 @@ public:
 		elmoDrives(elmoDrives)
 		{ }
 	int action() {	
-		global::log->info() << "Initializing drives:";
+// 		log.info() << "Initializing drives:";
 	}
 	bool checkExitCondition() {
 		if (elmoDrives.initAllDrives()) {
-			global::log->info() << "Drives initialized";
+			log.info() << "Drives initialized";
 			return true;
 		}
 		return false;
@@ -87,28 +87,41 @@ private:
 
 class MainSequence : public Sequence {
 public:
-	MainSequence(std::string name, Sequencer& sequencer, SafetySystem& SS, MySafetyProperties& safetyProp, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives) :  
+	MainSequence(std::string name, Sequencer& sequencer, SafetySystem& SS, MySafetyProperties& safetyProp, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives, Logger& log) :  
+// 	MainSequence(std::string name, Sequencer& sequencer, SafetySystem& SS, MySafetyProperties& safetyProp, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives) :  
 					Sequence(name, sequencer),
 					SS(SS),
 					safetyProp(safetyProp),
 					CS(CS),
+					log(log),
 					elmoDrives(elmoDrives),
 					wait("waiting1", this),
 					step_initDrives("initDrives", sequencer, this, SS, CS, elmoDrives)
 					{
-		global::log->info() << "Sequence created: " << name;
+		log.info() << "Sequence created: " << name;
 	}
 	
 	
 	
 	int action() {
+		// Initialize signal checkers
+		CS.positionChecker.registerSafetyEvent(SS, safetyProp.doEmergency);
+		CS.positionChecker.setActiveLevel(safetyProp.slDrivesDisabled);
+		CS.positionChecker.reset();
+		
 		step_initDrives();
 		wait(3);
 		CS.enableMonitoring();
 // 		global::log->info() << "pos0: " << std::to_string(elmoDrives.getPos(0));
 		
-		wait(3);
-		global::log->info() << "MainSequence finished";
+		for(int i=0; i<10; i++) {
+			log.info() << SS.getCurrentLevel();
+			wait(1);
+		}
+		
+		
+		wait(30);
+		log.info() << "MainSequence finished";
 		
 		SS.triggerEvent(safetyProp.switchOff);
 	}
@@ -118,6 +131,7 @@ private:
 	double angle;
 	SafetySystem& SS;
 	MyControlSystem& CS;
+	Logger& log;
 	MySafetyProperties& safetyProp;
 	EtherCATInterfaceElmo& elmoDrives;
 };

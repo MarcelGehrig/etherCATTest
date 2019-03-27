@@ -15,9 +15,11 @@ using namespace eeros::hal;
 using namespace eeros::safety;
 
 
-MySafetyProperties::MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives, double dt) : 
+// MySafetyProperties::MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives, double dt) : 
+MySafetyProperties::MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives, double dt, Logger& log) : 
 	CS(CS),
 	elmoDrives(elmoDrives),
+	log(log),
 	// ############ Define Levels ############
 	slOff("Software is off"),
 	slEmergency("Emergency state"),
@@ -97,6 +99,7 @@ MySafetyProperties::MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElm
 	});
 	
 	slEmergency.setLevelAction([&](SafetyContext* privateContext) {
+		if (slEmergency.getNofActivations() == 1) { log.info() << "slEmergency"; };
 		//quick stop
 // 		int driveNumber;
 		for (int driveNumber = 0; driveNumber < numberOfDrives; driveNumber++ ) {
@@ -109,53 +112,29 @@ MySafetyProperties::MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElm
 			}
 		}
 	});
-// 	
-// 	slFault.setLevelAction([&](SafetyContext* privateContext) {
-// // 		Executor::stop();
-// 	});
 	
 	slDrivesDisabled.setLevelAction([&](SafetyContext* privateContext) {
-// 		Executor::stop();
+		elmoDrives.disableAllDrives();
 	});
 	
 	slDrivesEnabled.setLevelAction([&](SafetyContext* privateContext) {
-// 		Executor::stop();
+		// check max speed and acceleration with signal checker
 	});
 	
-// 	slMoving.setLevelAction([&](SafetyContext* privateContext) {
-// // 		Executor::stop();
-// 	});
+	slHoming.setLevelAction([&](SafetyContext* privateContext) {
+		// check max speed and acceleration with signal checker
+	});
+	
+	slMoving.setLevelAction([&](SafetyContext* privateContext) {
+		// check max speed and acceleration with signal checker
+	});
 	
 	
-// 	slSystemOn.setLevelAction([&](SafetyContext* privateContext) {
-// 		CS.timedomain.stop();
-// 		// you may want to check here for a user input
-// 		privateContext->triggerEvent(startControl); 
-// 	});
-// 	
-// 	slStartingControl.setLevelAction([&,dt](SafetyContext* privateContext) {
-// 		CS.timedomain.start();
-// 		if(slStartingControl.getNofActivations() * dt > 2){	// wait 2s
-// 			privateContext->triggerEvent(startControlDone);
-// 		}
-// 	});
-// 	
-// 	slStoppingControl.setLevelAction([&](SafetyContext* privateContext) {
-// 		CS.timedomain.stop();
-// 		privateContext->triggerEvent(stopControlDone);
-// 	});
-// 	
-// 	slPowerOn.setLevelAction([&](SafetyContext* privateContext) {
-// 		if(ready->get()){	// check if drive is ready
-// 			privateContext->triggerEvent(startMoving);
-// 		}
-// 	});
-		
 	// Define entry level
 	setEntryLevel(slDrivesDisabled);
 	
 	exitFunction = ([&](SafetyContext* privateContext){
-		privateContext->triggerEvent(disableDrives);
+		privateContext->triggerEvent(switchOff);
 	});
 	
 }

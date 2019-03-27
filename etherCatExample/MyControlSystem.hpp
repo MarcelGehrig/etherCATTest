@@ -9,6 +9,7 @@
 // #include <eeros/control/PeripheralOutput.hpp>
 #include <eeros/control/TimeDomain.hpp>
 #include <eeros/control/DeMux.hpp>
+#include <eeros/control/SignalChecker.hpp>
 
 #include "../etherCatInterface/EtherCATInterfaceElmo.hpp"
 
@@ -30,7 +31,9 @@ public:
 	block_printNumber<double> printNumber;
 	
 	//TODO numberOfDrivesTotal
-// 	eeros::control::DeMux<2, double> demux;
+	eeros::control::DeMux<2, double> demux;
+	
+	eeros::control::SignalChecker<> positionChecker;
 	
 // 	eeros::control::Constant<> setpoint;
 // 	eeros::control::PeripheralInput<double> enc;

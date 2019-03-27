@@ -18,7 +18,7 @@ namespace global {
 	ecmasterlib::EtherCATMain* etherCATStack;
 	EtherCATInterfaceElmo* elmoDrives;
 	MyControlSystem* CS;
-	MySafetyProperties* safetyProperties;
+// 	MySafetyProperties* safetyProperties;
 	eeros::safety::SafetySystem* SS;
 	eeros::sequencer::Sequencer* sequencer;
 // 	MainSequence* mainSequence;

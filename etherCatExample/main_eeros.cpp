@@ -75,8 +75,9 @@ int main(int argc, char **argv) {
 	
 	// Safety system
 	// ////////////////////////////////////////////////////////////////////////
-	MySafetyProperties properties(CS, elmoDrives, dt);
-	global::safetyProperties = &properties;
+	MySafetyProperties properties(CS, elmoDrives, dt, log);
+// 	MySafetyProperties properties(CS, elmoDrives, dt);
+// 	global::safetyProperties = &properties;
 	SafetySystem SS(properties, dt);
 	global::SS = &SS;
 //	CS.timedomain.registerSafetyEvent(SS, properties.doEmergency);
@@ -85,7 +86,7 @@ int main(int argc, char **argv) {
 	// ////////////////////////////////////////////////////////////////////////
 	auto& sequencer = Sequencer::instance();
 	global::sequencer = &sequencer;
-	MainSequence mainSequence("MainSequence", sequencer, SS, properties, CS, elmoDrives);
+	MainSequence mainSequence("MainSequence", sequencer, SS, properties, CS, elmoDrives, log);
 // 	MainSequence mainSequence("MainSequence");
 // 	global::mainSequence = &mainSequence;
 // 	MainSequence mainSequence("Main Sequence", sequencer);

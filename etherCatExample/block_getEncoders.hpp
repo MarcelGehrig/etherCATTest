@@ -16,8 +16,8 @@ using namespace etherCATInterface;
 // namespace movingchair {
 	
 //TODO numberOfDrivesTotal
-// typedef eeros::math::Matrix< 2 , 1 , double >	typeGetPosition;
-typedef double	typeGetPosition;
+typedef eeros::math::Matrix< 2 , 1 , double >	typeGetPosition;
+// typedef double	typeGetPosition;
 // typedef eeros::math::Matrix< numberOfDrivesTotal , 1 , uint16_t >	typeGetStatusWord;
 // typedef eeros::math::Matrix< numberOfDrivesTotal , 1 , double >		typeGetPosition;
 // // 	typedef eeros::math::Matrix< numberOfDrivesTotal  , 1 , int64_t >		typeGetPositionAux;
@@ -28,10 +28,12 @@ typedef double	typeGetPosition;
 class block_getEncoders : public Block {
 public:
 	block_getEncoders(EtherCATInterfaceElmo& elmoDrives, int numberOfDrivesTotal) :
-		elmoDrives(elmoDrives)
+		elmoDrives(elmoDrives),
+		numberOfDrivesTotal(numberOfDrivesTotal)
 	{
 // 		this->statusWord.getSignal().clear();
 		this->position.getSignal().clear();
+// 		this->position.getSignal().clear();
 // 		this->positionAux.getSignal().clear();
 // 		this->velocity.getSignal().clear();
 // 		this->torque.getSignal().clear();
@@ -39,23 +41,25 @@ public:
 	
 	virtual void run() {
 		//statusWord, position, velocity and torque
-// 		for ( int i = 0; i < numberOfDrivesTotal; i++ ) {
-// // 			statusWordValue(i) = movingChairEtherCAT.getStatus(i);
-// // 				positionValue(i) = movingChairEtherCAT.getPos(i);
-// 			positionValue(i) = static_cast<double>( elmoDrives.getPos(i) ); 
-// // 			velocityValue(i) = static_cast<double>( movingChairEtherCAT.getVel(i)); //TEST
-// // 			torqueValue(i) = static_cast<double>( movingChairEtherCAT.getTorque(i)); // TEST
-// // 				positionAuxValue(i) = movingChairEtherCAT.getPosAux(i);
-// // 			positionAuxValue(i) = static_cast<double>( movingChairEtherCAT.getPosAux(i) );
-// 		}
+		for ( int i = 0; i < numberOfDrivesTotal; i++ ) {
+// 			statusWordValue(i) = movingChairEtherCAT.getStatus(i);
+// 				positionValue(i) = movingChairEtherCAT.getPos(i);
+			positionValue(i) = static_cast<double>( elmoDrives.getPos(i) ); 
+// 			velocityValue(i) = static_cast<double>( movingChairEtherCAT.getVel(i)); //TEST
+// 			torqueValue(i) = static_cast<double>( movingChairEtherCAT.getTorque(i)); // TEST
+// 				positionAuxValue(i) = movingChairEtherCAT.getPosAux(i);
+// 			positionAuxValue(i) = static_cast<double>( movingChairEtherCAT.getPosAux(i) );
+		}
 		
 		//set outputs
 		auto timestamp = eeros::System::getTimeNs();
 // 		statusWord.getSignal().setValue(statusWordValue);
 // 		statusWord.getSignal().setTimestamp(timestamp);
-		position.getSignal().setValue(elmoDrives.getPos(0));
-// 		position.getSignal().setValue(positionValue);
+		
+// 		position.getSignal().setValue(elmoDrives.getPos(0));
+		position.getSignal().setValue(positionValue);
 		position.getSignal().setTimestamp(timestamp);
+		
 // 		positionAux.getSignal().setValue(positionAuxValue);
 // 		positionAux.getSignal().setTimestamp(timestamp);
 // 		velocity.getSignal().setValue(velocityValue);

@@ -5,13 +5,15 @@
 #include <eeros/safety/SafetyProperties.hpp>
 #include <eeros/hal/HAL.hpp>
 #include "MyControlSystem.hpp"
+// #include "globalConfig.hpp"
 
 #include "../etherCatInterface/EtherCATInterfaceElmo.hpp"
 
 class MySafetyProperties : public eeros::safety::SafetyProperties {
 	
 public:
-	MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives, double ts);
+	MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives, double ts, Logger& log);
+// 	MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives, double ts);
 	virtual ~MySafetyProperties();
 	
 	// Name all levels
@@ -46,6 +48,7 @@ protected:
 		
 	MyControlSystem& CS;
 	EtherCATInterfaceElmo& elmoDrives;
+	Logger& log;
 };
 
 #endif // SAFETYPROPERTIES_HPP_

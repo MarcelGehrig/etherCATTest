@@ -1,5 +1,6 @@
 #include "MyControlSystem.hpp"
 #include <eeros/core/Executor.hpp>
+#include <float.h>
 
 using namespace eeros::control;
 
@@ -9,12 +10,19 @@ MyControlSystem::MyControlSystem(double ts, EtherCATInterfaceElmo& elmoDrives, i
 	getEncoders(elmoDrives, numberOfDrivesTotal),
 	printNumber(log, "Encoder: ", "", 200, false),
 	log(log),
+// 	positionChecker(-DBL_MAX, 10000),
+	positionChecker(0, 10000),
 	timedomain("Main time domain", ts, true) 
 	{
+		demux.getIn().connect(getEncoders.getOutPosition());
+		printNumber.getIn().connect(demux.getOut(0));
+		
+		// Signal checker
+		positionChecker.setName("signal checker position");
+		positionChecker.getIn().connect(demux.getOut(0));
+		
 // 		demux.getIn().connect(getEncoders.getOutPosition());
-// 		printNumber.getIn().connect(demux.getOut(0));
-// 		demux.getIn().connect(getEncoders.getOutPosition());
-		printNumber.getIn().connect(getEncoders.getOutPosition());
+// 		printNumber.getIn().connect(getEncoders.getOutPosition());
 	
 // 	setpoint.getOut().getSignal().setName("phi_desired");
 // 
@@ -63,8 +71,9 @@ MyControlSystem::MyControlSystem(double ts, EtherCATInterfaceElmo& elmoDrives, i
 // 	timedomain.addBlock(dac);
 
 	timedomain.addBlock(getEncoders);
-// 	timedomain.addBlock(demux);
+	timedomain.addBlock(demux);
 	timedomain.addBlock(printNumber);
+	timedomain.addBlock(positionChecker);
 	
 	eeros::Executor::instance().add(timedomain);
 }
