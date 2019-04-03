@@ -108,7 +108,8 @@ public:
 		CS.positionChecker.registerSafetyEvent(SS, safetyProp.doEmergency);
 		CS.positionChecker.setActiveLevel(safetyProp.slDrivesDisabled);
 		CS.positionChecker.reset();
-		
+// 		CS.positionChecker.setLimits();
+		//TODO
 		step_initDrives();
 		wait(3);
 		CS.enableMonitoring();

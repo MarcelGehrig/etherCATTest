@@ -11,7 +11,7 @@ MyControlSystem::MyControlSystem(double ts, EtherCATInterfaceElmo& elmoDrives, i
 	printNumber(log, "Encoder: ", "", 200, false),
 	log(log),
 // 	positionChecker(-DBL_MAX, 10000),
-	positionChecker(0, 10000),
+	positionChecker(-10, 10000),
 	timedomain("Main time domain", ts, true) 
 	{
 		demux.getIn().connect(getEncoders.getOutPosition());

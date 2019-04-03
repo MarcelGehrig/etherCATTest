@@ -25,8 +25,6 @@ using namespace eeros::hal;
 
 bool running = true;
 ecmasterlib::EtherCATMain* etherCATStackPtr;
-static constexpr int byteSizePerSlave = 32;
-static constexpr int numberOfDrivesTotal = 2;
 static constexpr double dt = 0.001;
 
 static void signalHandler( int nSignal )
@@ -48,19 +46,18 @@ int main(int argc, char **argv) {
 	StreamLogWriter w(std::cout);
 	Logger log;
 	log.set(w);
-	global::log = &log;
 
 	log.info() << "Hello, EEROS";
 
 
 	// EtherCAT
 	// ////////////////////////////////////////////////////////////////////////
-	ecmasterlib::EtherCATMain* etherCATStack = ecmasterlib::EtherCATMain::createInstance(argc, argv, byteSizePerSlave*numberOfDrivesTotal);
-	global::etherCATStack = etherCATStack;
+	ecmasterlib::EtherCATMain* etherCATStack = ecmasterlib::EtherCATMain::createInstance(argc, argv, global::byteSizePerSlave*global::numberOfDrivesTotal);
+// 	global::etherCATStackPtr = etherCATStack;
 	signal(SIGINT, signalHandler);
 	sleep(9);
 	EtherCATInterfaceElmo elmoDrives = EtherCATInterfaceElmo( etherCATStack );
-	global::elmoDrives = &elmoDrives;
+// 	global::elmoDrivesPtr = &elmoDrives;
 	bool allDrivesAreSwitchedOn = false;
 	
 	// HAL
@@ -70,8 +67,7 @@ int main(int argc, char **argv) {
 	
 	// Control system
 	// ////////////////////////////////////////////////////////////////////////
-	MyControlSystem CS(dt, elmoDrives, numberOfDrivesTotal, log);
-	global::CS = &CS;
+	MyControlSystem CS(dt, elmoDrives, global::numberOfDrivesTotal, log);
 	
 	// Safety system
 	// ////////////////////////////////////////////////////////////////////////
@@ -79,13 +75,11 @@ int main(int argc, char **argv) {
 // 	MySafetyProperties properties(CS, elmoDrives, dt);
 // 	global::safetyProperties = &properties;
 	SafetySystem SS(properties, dt);
-	global::SS = &SS;
 //	CS.timedomain.registerSafetyEvent(SS, properties.doEmergency);
 	
 // 	// Sequencer
 	// ////////////////////////////////////////////////////////////////////////
 	auto& sequencer = Sequencer::instance();
-	global::sequencer = &sequencer;
 	MainSequence mainSequence("MainSequence", sequencer, SS, properties, CS, elmoDrives, log);
 // 	MainSequence mainSequence("MainSequence");
 // 	global::mainSequence = &mainSequence;
