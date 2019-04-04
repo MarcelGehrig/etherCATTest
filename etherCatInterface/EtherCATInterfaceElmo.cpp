@@ -124,7 +124,7 @@ bool EtherCATInterfaceElmo::isAllDrivesEnabled()
 
 int64_t EtherCATInterfaceElmo::getPos(int driveNumber)
 {
-	int32_t rawPos = getPositionActualValue(driveNumber);
+	int32_t rawPos = ll_getPositionActualValue(driveNumber);
 	int32_t diff = rawPos - drives[driveNumber].prevRawPos;
 	drives[driveNumber].prevRawPos = rawPos;
 	drives[driveNumber].absPos += static_cast<int64_t>(diff);
@@ -133,7 +133,7 @@ int64_t EtherCATInterfaceElmo::getPos(int driveNumber)
 
 int64_t EtherCATInterfaceElmo::getPosAux(int driveNumber)
 {
-	int32_t rawAuxPos = getAuxilaryPositionActualValue(driveNumber);
+	int32_t rawAuxPos = ll_getAuxilaryPositionActualValue(driveNumber);
 	int32_t diff = rawAuxPos - drives[driveNumber].prevRawAuxPos;
 	drives[driveNumber].prevRawAuxPos = rawAuxPos;
 	drives[driveNumber].absAuxPos += static_cast<int64_t>(diff);
@@ -146,21 +146,21 @@ int64_t EtherCATInterfaceElmo::getPosAux(int driveNumber)
 void EtherCATInterfaceElmo::setControlWord(int driveNumber, controlWordCommand_ELMO word)
 {
 	switch(word) {
-		case controlWordCommand_ELMO::shutdown :			setControlWord(driveNumber, cwc_shutdown);
+		case controlWordCommand_ELMO::shutdown :			ll_setControlWord(driveNumber, cwc_shutdown);
 			break;
-		case controlWordCommand_ELMO::switchOn :			setControlWord(driveNumber, cwc_switchOn);
+		case controlWordCommand_ELMO::switchOn :			ll_setControlWord(driveNumber, cwc_switchOn);
 			break;
-		case controlWordCommand_ELMO::switchOnAndEnable :	setControlWord(driveNumber, cwc_switchOnAndEnable);
+		case controlWordCommand_ELMO::switchOnAndEnable :	ll_setControlWord(driveNumber, cwc_switchOnAndEnable);
 			break;
-		case controlWordCommand_ELMO::disableVoltage :		setControlWord(driveNumber, cwc_switchOnAndEnable);
+		case controlWordCommand_ELMO::disableVoltage :		ll_setControlWord(driveNumber, cwc_switchOnAndEnable);
 			break;
-		case controlWordCommand_ELMO::quickStop :			setControlWord(driveNumber, cwc_quickStop);
+		case controlWordCommand_ELMO::quickStop :			ll_setControlWord(driveNumber, cwc_quickStop);
 			break;
-		case controlWordCommand_ELMO::disableOperation :	setControlWord(driveNumber, cwc_disableOperation);
+		case controlWordCommand_ELMO::disableOperation :	ll_setControlWord(driveNumber, cwc_disableOperation);
 			break;
-		case controlWordCommand_ELMO::enableOperation :		setControlWord(driveNumber, cwc_enableOperation);
+		case controlWordCommand_ELMO::enableOperation :		ll_setControlWord(driveNumber, cwc_enableOperation);
 			break;
-		case controlWordCommand_ELMO::faultReset :			setControlWord(driveNumber, cwc_faultReset);
+		case controlWordCommand_ELMO::faultReset :			ll_setControlWord(driveNumber, cwc_faultReset);
 			break;
 		default :
 			break;
@@ -191,12 +191,12 @@ void EtherCATInterfaceElmo::disableAllDrives()
 
 void EtherCATInterfaceElmo::disableVelocityControl(int driveNumber)
 {
-	setGainSchedulingManualIndex(driveNumber, 2);
+	ll_setGainSchedulingManualIndex(driveNumber, 2);
 }
 
 void EtherCATInterfaceElmo::enableVelocityControl(int driveNumber)
 {
-	setGainSchedulingManualIndex(driveNumber, 1);
+	ll_setGainSchedulingManualIndex(driveNumber, 1);
 }
 
 
@@ -218,7 +218,7 @@ void EtherCATInterfaceElmo::enableDrive(int driveNumber)
 // 		s << "EnableDrive(" << driveNumber << ") with status: 0x" << std::hex << getStatusWord(driveNumber) << "not possible. It needs to be in state 'switched on'";
 // 		logError(s);
 	}
-	else setControlWord(driveNumber, cwc_enableOperation);
+	else ll_setControlWord(driveNumber, cwc_enableOperation);
 }
 
 void EtherCATInterfaceElmo::setModeOfOperation(int driveNumber, driveModeOfOperation_ELMO mode, bool scheduleGainIndex)
@@ -226,55 +226,55 @@ void EtherCATInterfaceElmo::setModeOfOperation(int driveNumber, driveModeOfOpera
 	int index;
 	switch(mode) {
 		case driveModeOfOperation_ELMO::CANEncoderMode :
-			setModeOfOperation(driveNumber, dmoov_CANEncoderMode);
+			ll_setModeOfOperation(driveNumber, dmoov_CANEncoderMode);
 			break;
 		case driveModeOfOperation_ELMO::profilePosition :
 			if ( scheduleGainIndex and (gainSchedulingManualIndex_position >= 0) ) {
-				setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_position);
+				ll_setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_position);
 			}
-			setModeOfOperation(driveNumber, dmoov_profilePosition); 
+			ll_setModeOfOperation(driveNumber, dmoov_profilePosition); 
 			break;
 		case driveModeOfOperation_ELMO::profileVelocity :
 			if ( scheduleGainIndex and (gainSchedulingManualIndex_velocity >= 0) ) {
-				setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_velocity);
+				ll_setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_velocity);
 			}
-			setModeOfOperation(driveNumber, dmoov_profileVelocity); 
+			ll_setModeOfOperation(driveNumber, dmoov_profileVelocity); 
 			break;
 		case driveModeOfOperation_ELMO::profileTorque :
 			if ( scheduleGainIndex and (gainSchedulingManualIndex_torque >= 0) ) {
-				setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_torque);
+				ll_setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_torque);
 			}
-			setModeOfOperation(driveNumber, dmoov_profileTorque); 
+			ll_setModeOfOperation(driveNumber, dmoov_profileTorque); 
 			break;
 		case driveModeOfOperation_ELMO::homing :
 			if ( scheduleGainIndex and (gainSchedulingManualIndex_homing >= 0) ) {
-				setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_homing);
+				ll_setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_homing);
 			}
-			setModeOfOperation(driveNumber, dmoov_homing); 
+			ll_setModeOfOperation(driveNumber, dmoov_homing); 
 			break;
 		case driveModeOfOperation_ELMO::interpolatedPosition :
 			if ( scheduleGainIndex and (gainSchedulingManualIndex_position >= 0) ) {
-				setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_position);
+				ll_setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_position);
 			}
-			setModeOfOperation(driveNumber, dmoov_interpolatedPosition); 
+			ll_setModeOfOperation(driveNumber, dmoov_interpolatedPosition); 
 			break;
 		case driveModeOfOperation_ELMO::cyclicSynchronousPosition :
 			if ( scheduleGainIndex and (gainSchedulingManualIndex_position >= 0) ) {
-				setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_position);
+				ll_setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_position);
 			}
-			setModeOfOperation(driveNumber, dmoov_cyclicSynchronousPosition); 
+			ll_setModeOfOperation(driveNumber, dmoov_cyclicSynchronousPosition); 
 			break;
 		case driveModeOfOperation_ELMO::cyclicSynchronousVelocity :
 			if ( scheduleGainIndex and (gainSchedulingManualIndex_velocity >= 0) ) {
-				setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_velocity);
+				ll_setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_velocity);
 			}
-			setModeOfOperation(driveNumber, dmoov_cyclicSynchronousVelocity); 
+			ll_setModeOfOperation(driveNumber, dmoov_cyclicSynchronousVelocity); 
 			break;
 		case driveModeOfOperation_ELMO::cyclicSynchronousTorque :
 			if ( scheduleGainIndex and (gainSchedulingManualIndex_torque >= 0) ) {
-				setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_torque);
+				ll_setGainSchedulingManualIndex(driveNumber, gainSchedulingManualIndex_torque);
 			}
-			setModeOfOperation(driveNumber, dmoov_cyclicSynchronousTorque); 
+			ll_setModeOfOperation(driveNumber, dmoov_cyclicSynchronousTorque); 
 			break;
 		default : 
 			break;
@@ -284,7 +284,7 @@ void EtherCATInterfaceElmo::setModeOfOperation(int driveNumber, driveModeOfOpera
 
 bool EtherCATInterfaceElmo::getIsDriveEnabled(int driveNumber)
 {
-	return checkMaskedBits(getStatusWord(driveNumber), operationEnabledValue, operationEnabledMask);
+	return checkMaskedBits(ll_getStatusWord(driveNumber), operationEnabledValue, operationEnabledMask);
 }
 
 bool EtherCATInterfaceElmo::getIsDriveReady(int driveNumber)
@@ -294,12 +294,12 @@ bool EtherCATInterfaceElmo::getIsDriveReady(int driveNumber)
 
 bool EtherCATInterfaceElmo::getIsDriveSwitchedOn(int driveNumber)
 {
-	return checkMaskedBits( getStatusWord(driveNumber), switchedOnValue, switchedOnMask);
+	return checkMaskedBits( ll_getStatusWord(driveNumber), switchedOnValue, switchedOnMask);
 }
 
 driveModeOfOperation_ELMO EtherCATInterfaceElmo::getDriveModeElmo(int driveNumber)
 {
-	int8_t modeOfOperation = getModeOfOperationDisplay(driveNumber);
+	int8_t modeOfOperation = ll_getModeOfOperationDisplay(driveNumber);
 	switch( modeOfOperation ) {
 		case dmoov_CANEncoderMode:				return driveModeOfOperation_ELMO::CANEncoderMode;
 		case dmoov_profilePosition:				return driveModeOfOperation_ELMO::profilePosition;
@@ -325,7 +325,7 @@ bool EtherCATInterfaceElmo::checkDriveStatus(int driveNumber, driveStatus_ELMO d
 
 driveStatus_ELMO EtherCATInterfaceElmo::getDriveStatusElmo(int driveNumber)
 {
-	uint16_t statusWord = getStatusWord(driveNumber);
+	uint16_t statusWord = ll_getStatusWord(driveNumber);
 	if ( checkMaskedBits(statusWord, notReadyToSwitchOnValue, notReadyToSwitchOnMask) ) {
 		return driveStatus_ELMO::notReadyToSwitchOn;
 	}
@@ -627,7 +627,7 @@ void EtherCATInterfaceElmo::setTouchProbeFunction(int driveNumber, touchProbeFun
 	
 	std::cout << "ELMO: valueSet: " << std::hex << valueToSet << std::endl;
 	drives[driveNumber].touchProbeFunctionSet = valueToSet;
-	setTouchProbeFunction(driveNumber, valueToSet);
+	ll_setTouchProbeFunction(driveNumber, valueToSet);
 }
 
 
@@ -635,7 +635,7 @@ void EtherCATInterfaceElmo::setTouchProbeFunction(int driveNumber, touchProbeFun
 bool EtherCATInterfaceElmo::getTouchProbeIsEnabled(int driveNumber, int touchProbe)
 {
 // 	std::cout << "ELMO: getTouchProbeIsEnabled: driveNumber: " << driveNumber << "   touchProbe: " << touchProbe << std::endl;
-	uint16_t touchProbeStatus = getTouchProbeStatus(driveNumber);
+	uint16_t touchProbeStatus = ll_getTouchProbeStatus(driveNumber);
 	if	( touchProbe == 1 ) {
 		if ( checkMaskedBits(touchProbeStatus, touchProbe1EnabledValue, touchProbe1EnabledMask) ) return true;
 	}
@@ -657,7 +657,7 @@ bool EtherCATInterfaceElmo::getIndexPulseIsCaptured(int driveNumber, int touchPr
 
 bool EtherCATInterfaceElmo::getIndexPulsePositiveEdgeIsCaptured(int driveNumber, int touchProbe)
 {
-	uint16_t touchProbeStatus = getTouchProbeStatus(driveNumber);
+	uint16_t touchProbeStatus = ll_getTouchProbeStatus(driveNumber);
 	if	( touchProbe == 1 ) {
 		if ( checkMaskedBits(touchProbeStatus, touchProbe1PositiveEdgeStoredValue, touchProbe1PositiveEdgeStoredMask) ) return true;
 	}
@@ -670,7 +670,7 @@ bool EtherCATInterfaceElmo::getIndexPulsePositiveEdgeIsCaptured(int driveNumber,
 
 bool EtherCATInterfaceElmo::getIndexPulseNegativeEdgeIsCaptured(int driveNumber, int touchProbe)
 {
-	uint16_t touchProbeStatus = getTouchProbeStatus(driveNumber);
+	uint16_t touchProbeStatus = ll_getTouchProbeStatus(driveNumber);
 	if	( touchProbe == 1 ) {
 		if ( checkMaskedBits(touchProbeStatus, touchProbe1NegativeEdgeStoredValue, touchProbe1NegativeEdgeStoredMask) ) return true;
 	}
@@ -715,15 +715,15 @@ int32_t EtherCATInterfaceElmo::getCapturedPosition(int driveNumber, int touchPro
 
 int32_t EtherCATInterfaceElmo::getCapturedPositionPositivePulse(int driveNumber, int touchProbe)
 {
-	if	( touchProbe == 1 )		return getTouchProbePos1Positive(driveNumber);
-	else if	( touchProbe == 2 )	return getTouchProbePos2Positive(driveNumber);
+	if	( touchProbe == 1 )		return ll_getTouchProbePos1Positive(driveNumber);
+	else if	( touchProbe == 2 )	return ll_getTouchProbePos2Positive(driveNumber);
 	else						std::cout << "touchProbe " << touchProbe << " does not exists." << std::endl;
 	return 0;
 }
 
 int32_t EtherCATInterfaceElmo::getCapturedPositionNegativePulse(int driveNumber, int touchProbe)
 {
-	if	( touchProbe == 1 )		return getTouchProbePos1Negative(driveNumber);
+	if	( touchProbe == 1 )		return ll_getTouchProbePos1Negative(driveNumber);
 	else if	( touchProbe == 2 )	std::cout << "No TouchProbePosition negative pulse for TouchProbe 2." << std::endl;
 	else						std::cout << "touchProbe " << touchProbe << " does not exists." << std::endl;
 	return 0;
@@ -752,113 +752,113 @@ int32_t EtherCATInterfaceElmo::getCapturedPositionNegativePulse(int driveNumber,
 // ////////////////////////////////////////////////////////////////////
 
 //basic set functions:
-void EtherCATInterfaceElmo::setControlWord(int driveNumber, uint16_t controlWord)
+void EtherCATInterfaceElmo::ll_setControlWord(int driveNumber, uint16_t controlWord)
 {
 	set16bit(oo_controlWord, driveNumber, controlWord);
 }
 
-void EtherCATInterfaceElmo::setModeOfOperation(int driveNumber, int8_t modeOfOperation)
+void EtherCATInterfaceElmo::ll_setModeOfOperation(int driveNumber, int8_t modeOfOperation)
 {
 	set8bit(oo_modeOfOperation, driveNumber, modeOfOperation);
 }
 
-void EtherCATInterfaceElmo::setTargetTorque(int driveNumber, int16_t targetTorque)
+void EtherCATInterfaceElmo::ll_setTargetTorque(int driveNumber, int16_t targetTorque)
 {
 	set16bit(oo_targetTorque, driveNumber, targetTorque);
 }
 
-void EtherCATInterfaceElmo::setMaxTorque(int driveNumber, int16_t maxTorque)
+void EtherCATInterfaceElmo::ll_setMaxTorque(int driveNumber, int16_t maxTorque)
 {
 	set16bit(oo_maxTorque, driveNumber, maxTorque);
 }
 
-void EtherCATInterfaceElmo::setMaxCurrent(int driveNumber, int16_t maxCurrent)
+void EtherCATInterfaceElmo::ll_setMaxCurrent(int driveNumber, int16_t maxCurrent)
 {
 	set16bit(oo_maxCurrent, driveNumber, maxCurrent);
 }
 
-void EtherCATInterfaceElmo::setTargetPosition(int driveNumber, int32_t targetPosition)
+void EtherCATInterfaceElmo::ll_setTargetPosition(int driveNumber, int32_t targetPosition)
 {
 	set32bit(oo_targetPostition, driveNumber, targetPosition);
 }
 
-void EtherCATInterfaceElmo::setMaxProfileVelocity(int driveNumber, uint32_t maxProfileVelocity)
+void EtherCATInterfaceElmo::ll_setMaxProfileVelocity(int driveNumber, uint32_t maxProfileVelocity)
 {
 	set32bit(oo_maxProfileVelocity, driveNumber, maxProfileVelocity);
 }
 
-void EtherCATInterfaceElmo::setProfileVelocity(int driveNumber, uint32_t profileVelocity)
+void EtherCATInterfaceElmo::ll_setProfileVelocity(int driveNumber, uint32_t profileVelocity)
 {
 	set32bit(oo_profileVelocity, driveNumber, profileVelocity);
 }
 
-void EtherCATInterfaceElmo::setEndVelocity(int driveNumber, uint32_t endVelocity)
+void EtherCATInterfaceElmo::ll_setEndVelocity(int driveNumber, uint32_t endVelocity)
 {
 	set32bit(oo_endVelocity, driveNumber, endVelocity);
 }
 
-void EtherCATInterfaceElmo::setProfileAcceleration(int driveNumber, uint32_t profileAcceleration)
+void EtherCATInterfaceElmo::ll_setProfileAcceleration(int driveNumber, uint32_t profileAcceleration)
 {
 	set32bit(oo_profileAcceleration, driveNumber, profileAcceleration);
 }
 
-void EtherCATInterfaceElmo::setProfileDeceleration(int driveNumber, uint32_t profileDeceleration)
+void EtherCATInterfaceElmo::ll_setProfileDeceleration(int driveNumber, uint32_t profileDeceleration)
 {
 	set32bit(oo_profileDeceleration, driveNumber, profileDeceleration);
 }
 
-void EtherCATInterfaceElmo::setTorqueSlope(int driveNumber, uint32_t torqueSlope)
+void EtherCATInterfaceElmo::ll_setTorqueSlope(int driveNumber, uint32_t torqueSlope)
 {
 	set32bit(oo_torqueSlope, driveNumber, torqueSlope);
 }
 
-void EtherCATInterfaceElmo::setPositionOffset(int driveNumber, int32_t positionOffset)
+void EtherCATInterfaceElmo::ll_setPositionOffset(int driveNumber, int32_t positionOffset)
 {
 	set32bit(oo_positionOffset, driveNumber, positionOffset);
 }
 
-void EtherCATInterfaceElmo::setVelocityOffset(int driveNumber, int32_t velocityOffset)
+void EtherCATInterfaceElmo::ll_setVelocityOffset(int driveNumber, int32_t velocityOffset)
 {
 	set32bit(oo_velocityOffset, driveNumber, velocityOffset);
 }
 
-void EtherCATInterfaceElmo::setTorqueOffset(int driveNumber, int16_t torqueOffset)
+void EtherCATInterfaceElmo::ll_setTorqueOffset(int driveNumber, int16_t torqueOffset)
 {
 	set16bit(oo_torqueOffset, driveNumber, torqueOffset);
 }
 
-void EtherCATInterfaceElmo::setTouchProbeFunction(int driveNumber, uint16_t touchProbeFunction)
+void EtherCATInterfaceElmo::ll_setTouchProbeFunction(int driveNumber, uint16_t touchProbeFunction)
 {
 // 	std::cout << "Elmo: setTouchProbeFunction: driveNumber: " << driveNumber << "   value: 0x" << std::hex << touchProbeFunction << std::endl;
 	set16bit(oo_touchProbeFunction, driveNumber, touchProbeFunction);
 }
 
-void EtherCATInterfaceElmo::setInterpolatedDataRecord1(int driveNumber, int32_t interpolatedDataRecord1)
+void EtherCATInterfaceElmo::ll_setInterpolatedDataRecord1(int driveNumber, int32_t interpolatedDataRecord1)
 {
 	set32bit(oo_interpolatedDataRecord_1, driveNumber, interpolatedDataRecord1);
 }
 
-void EtherCATInterfaceElmo::setInterpolatedDataRecord2(int driveNumber, int32_t interpolatedDataRecord2)
+void EtherCATInterfaceElmo::ll_setInterpolatedDataRecord2(int driveNumber, int32_t interpolatedDataRecord2)
 {
 	set32bit(oo_interpolatedDataRecord_2, driveNumber, interpolatedDataRecord2);
 }
 
-void EtherCATInterfaceElmo::setTargetVelocity(int driveNumber, int32_t targetVelocity)
+void EtherCATInterfaceElmo::ll_setTargetVelocity(int driveNumber, int32_t targetVelocity)
 {
 	set32bit(oo_targetVelocity, driveNumber, targetVelocity);
 }
 
-void EtherCATInterfaceElmo::setDigitalOutput(int driveNumber, uint32_t digitalOutput)
+void EtherCATInterfaceElmo::ll_setDigitalOutput(int driveNumber, uint32_t digitalOutput)
 {
 	set32bit(oo_digitalOutput, driveNumber, digitalOutput);
 }
 
-void EtherCATInterfaceElmo::setPolarity(int driveNumber, uint8_t polarity)
+void EtherCATInterfaceElmo::ll_setPolarity(int driveNumber, uint8_t polarity)
 {
 	set8bit(oo_polarity, driveNumber, polarity);
 }
 
-void EtherCATInterfaceElmo::setGainSchedulingManualIndex(int driveNumber, uint16_t index)
+void EtherCATInterfaceElmo::ll_setGainSchedulingManualIndex(int driveNumber, uint16_t index)
 {
 	set16bit(oo_gainSchedlingManualIndex, driveNumber, index);
 }
@@ -868,114 +868,112 @@ void EtherCATInterfaceElmo::setGainSchedulingManualIndex(int driveNumber, uint16
 //TODO casting signed/unsigned?
 
 //basic get functions:
-uint16_t EtherCATInterfaceElmo::getStatusWord(int driveNumber)
+uint16_t EtherCATInterfaceElmo::ll_getStatusWord(int driveNumber)
 {
 	return (uint16_t )get16bit(io_statusWord, driveNumber);
 }
 
-int8_t EtherCATInterfaceElmo::getModeOfOperationDisplay(int driveNumber)
+int8_t EtherCATInterfaceElmo::ll_getModeOfOperationDisplay(int driveNumber)
 {
 	return (int8_t)get8bit(io_modeOfOperationDisplay, driveNumber);
 }
 
-
-int32_t EtherCATInterfaceElmo::getPositionDemand_UU(int driveNumber)
+int32_t EtherCATInterfaceElmo::ll_getPositionDemand_UU(int driveNumber)
 {
 	return (int32_t)get32bit(io_postionDemand_UU, driveNumber);
 }
 
-int32_t EtherCATInterfaceElmo::getActualPosition_counts(int driveNumber)
+int32_t EtherCATInterfaceElmo::ll_getActualPosition_counts(int driveNumber)
 {
 	return (int32_t)get32bit(io_actualPosition_counts, driveNumber);
 }
 
-int32_t EtherCATInterfaceElmo::getPositionActualValue(int driveNumber)
+int32_t EtherCATInterfaceElmo::ll_getPositionActualValue(int driveNumber)
 {
 	return (int32_t)get32bit(io_positionActualValue, driveNumber);
 }
 
-int32_t EtherCATInterfaceElmo::getVelocitySensorActualValue(int driveNumber)
+int32_t EtherCATInterfaceElmo::ll_getVelocitySensorActualValue(int driveNumber)
 {
 	return (int32_t)get32bit(io_velocitySensorActualValue, driveNumber);
 }
 
-int32_t EtherCATInterfaceElmo::getVelocityDemand(int driveNumber)
+int32_t EtherCATInterfaceElmo::ll_getVelocityDemand(int driveNumber)
 {
 	return (int32_t)get32bit(io_velocityDemand, driveNumber);
 }
 
-int32_t EtherCATInterfaceElmo::getVelocityActualValue(int driveNumber)
+int32_t EtherCATInterfaceElmo::ll_getVelocityActualValue(int driveNumber)
 {
 	return (int32_t)get32bit(io_velocityActualValue, driveNumber);
 }
 
-int16_t EtherCATInterfaceElmo::getTorqueDemandValue(int driveNumber)
+int16_t EtherCATInterfaceElmo::ll_getTorqueDemandValue(int driveNumber)
 {
 	return (int16_t)get16bit(io_torqueDemandValue, driveNumber);
 }
 
-int16_t EtherCATInterfaceElmo::getTorqueActualValue(int driveNumber)
+int16_t EtherCATInterfaceElmo::ll_getTorqueActualValue(int driveNumber)
 {
 	return (int16_t)get16bit(io_torqueActualValue, driveNumber);
 }
 
-uint16_t EtherCATInterfaceElmo::getTouchProbeStatus(int driveNumber)
+uint16_t EtherCATInterfaceElmo::ll_getTouchProbeStatus(int driveNumber)
 {
-// 	std::cout << "ELMO: getTouchProbeStatus: driveNumber: " << driveNumber  << std::endl;
 	return (uint16_t)get16bit(io_touchProbeStatus, driveNumber);
 }
 
-int32_t EtherCATInterfaceElmo::getTouchProbePos1Positive(int driveNumber)
+int32_t EtherCATInterfaceElmo::ll_getTouchProbePos1Positive(int driveNumber)
 {
 	return (int32_t)get32bit(io_touchProbePos1Positive, driveNumber);
 }
 
-int32_t EtherCATInterfaceElmo::getTouchProbePos1Negative(int driveNumber)
+int32_t EtherCATInterfaceElmo::ll_getTouchProbePos1Negative(int driveNumber)
 {
 	return (int32_t)get32bit(io_touchProbePos1Negative, driveNumber);
 }
 
-int32_t EtherCATInterfaceElmo::getTouchProbePos2Positive(int driveNumber)
+int32_t EtherCATInterfaceElmo::ll_getTouchProbePos2Positive(int driveNumber)
 {
 	return (int32_t)get32bit(io_touchProbePos2Positive, driveNumber);
 }
 
-uint32_t EtherCATInterfaceElmo::getDCLinkCircuitVoltage(int driveNumber)
+uint32_t EtherCATInterfaceElmo::ll_getDCLinkCircuitVoltage(int driveNumber)
 {
 	return (uint32_t)get32bit(io_DCLinkCircuitVoltage, driveNumber);
 }
 
-int32_t EtherCATInterfaceElmo::getPositionFollowingError(int driveNumber)
+int32_t EtherCATInterfaceElmo::ll_getPositionFollowingError(int driveNumber)
 {
 	return (int32_t)get32bit(io_positionFollowingError, driveNumber);
 }
 
-int32_t EtherCATInterfaceElmo::getControllEffort(int driveNumber)
+int32_t EtherCATInterfaceElmo::ll_getControllEffort(int driveNumber)
 {
 	return (int32_t)get32bit(io_controllEffort, driveNumber);
 }
 
-int32_t EtherCATInterfaceElmo::getPositionDemandValue_cnt(int driveNumber)
+int32_t EtherCATInterfaceElmo::ll_getPositionDemandValue_cnt(int driveNumber)
 {
 	return (int32_t)get32bit(io_positionDemandValue_cnt, driveNumber);
 }
 
-uint32_t EtherCATInterfaceElmo::getDigitalInputs(int driveNumber)
+uint32_t EtherCATInterfaceElmo::ll_getDigitalInputs(int driveNumber)
 {
 	return (uint32_t)get32bit(io_digitalInputs, driveNumber);;
 }
 
-int16_t EtherCATInterfaceElmo::getAnalogInput(int driveNumber)
+int16_t EtherCATInterfaceElmo::ll_getAnalogInput(int driveNumber)
 {
 	return (int16_t)get16bit(io_analogInput, driveNumber);
 }
 
-int32_t EtherCATInterfaceElmo::getAuxilaryPositionActualValue(int driveNumber)
+int32_t EtherCATInterfaceElmo::ll_getAuxilaryPositionActualValue(int driveNumber)
 {
 	return (int32_t)get32bit(io_auxilaryPositionActualValue, driveNumber);
 }
 
-int16_t EtherCATInterfaceElmo::getCurrentActualValue(int driveNumber)
+int16_t EtherCATInterfaceElmo::ll_getCurrentActualValue(int driveNumber)
 {
 	return (int16_t)get16bit(io_currentActualValue, driveNumber);
 }

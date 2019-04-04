@@ -59,29 +59,29 @@ namespace etherCATInterface {
 		// ////////////////////////////////////////////////////////////////////
 		
 		// low level set functions:
-		void setControlWord(int driveNumber, uint16_t controlWord);
-		void setModeOfOperation(int driveNumber, int8_t modeOfOperation);
-		void setTargetTorque(int driveNumber, int16_t targetTorque);
-		void setMaxTorque(int driveNumber, int16_t maxTorque);
-		void setMaxCurrent(int driveNumber, int16_t maxCurrent);
-		void setTargetPosition(int driveNumber, int32_t targetPosition);
-		void setMaxProfileVelocity(int driveNumber, uint32_t maxProfileVelocity);
-		void setProfileVelocity(int driveNumber, uint32_t profileVelocity);
-		void setEndVelocity(int driveNumber, uint32_t endVelocity);
-		void setProfileAcceleration(int driveNumber, uint32_t profileAcceleration);
-		void setProfileDeceleration(int driveNumber, uint32_t profileDeceleration);
-		void setTorqueSlope(int driveNumber, uint32_t torqueSlope);
-		void setPositionOffset(int driveNumber, int32_t positionOffset);
-		void setVelocityOffset(int driveNumber, int32_t velocityOffset);
-		void setTorqueOffset(int driveNumber, int16_t torqueOffset);
-		void setTouchProbeFunction(int driveNumber, uint16_t touchProbeFunction);
-		void setInterpolatedDataRecord1(int driveNumber, int32_t interpolatedDataRecord1);
-		void setInterpolatedDataRecord2(int driveNumber, int32_t interpolatedDataRecord2);
-		void setTargetVelocity(int driveNumber, int32_t targetVelocity);
-		void setDigitalOutput(int driveNumber, uint32_t digitalOutput);
-		void setPolarity(int driveNumber, uint8_t polarity);
+		void ll_setControlWord(int driveNumber, uint16_t controlWord);
+		void ll_setModeOfOperation(int driveNumber, int8_t modeOfOperation);
+		void ll_setTargetTorque(int driveNumber, int16_t targetTorque);
+		void ll_setMaxTorque(int driveNumber, int16_t maxTorque);
+		void ll_setMaxCurrent(int driveNumber, int16_t maxCurrent);
+		void ll_setTargetPosition(int driveNumber, int32_t targetPosition);
+		void ll_setMaxProfileVelocity(int driveNumber, uint32_t maxProfileVelocity);
+		void ll_setProfileVelocity(int driveNumber, uint32_t profileVelocity);
+		void ll_setEndVelocity(int driveNumber, uint32_t endVelocity);
+		void ll_setProfileAcceleration(int driveNumber, uint32_t profileAcceleration);
+		void ll_setProfileDeceleration(int driveNumber, uint32_t profileDeceleration);
+		void ll_setTorqueSlope(int driveNumber, uint32_t torqueSlope);
+		void ll_setPositionOffset(int driveNumber, int32_t positionOffset);
+		void ll_setVelocityOffset(int driveNumber, int32_t velocityOffset);
+		void ll_setTorqueOffset(int driveNumber, int16_t torqueOffset);
+		void ll_setTouchProbeFunction(int driveNumber, uint16_t touchProbeFunction);
+		void ll_setInterpolatedDataRecord1(int driveNumber, int32_t interpolatedDataRecord1);
+		void ll_setInterpolatedDataRecord2(int driveNumber, int32_t interpolatedDataRecord2);
+		void ll_setTargetVelocity(int driveNumber, int32_t targetVelocity);
+		void ll_setDigitalOutput(int driveNumber, uint32_t digitalOutput);
+		void ll_setPolarity(int driveNumber, uint8_t polarity);
 		
-		void setGainSchedulingManualIndex(int driveNumber, uint16_t index);
+		void ll_setGainSchedulingManualIndex(int driveNumber, uint16_t index);
 		
 	// 	void setControlWord(int driveNumber, uint16_t word);
 	// 	void setModeOfOperation(int driveNumber, int8_t mode);
@@ -101,28 +101,28 @@ namespace etherCATInterface {
 		
 		
 		// low level get functions:
-		uint16_t getStatusWord(int driveNumber);
-		int8_t getModeOfOperationDisplay(int driveNumber);
-		int32_t getPositionDemand_UU(int driveNumber);
-		int32_t getActualPosition_counts(int driveNumber);
-		int32_t getPositionActualValue(int driveNumber);
-		int32_t getVelocitySensorActualValue(int driveNumber);
-		int32_t getVelocityDemand(int driveNumber);
-		int32_t getVelocityActualValue(int driveNumber);
-		int16_t getTorqueDemandValue(int driveNumber);
-		int16_t getTorqueActualValue(int driveNumber);
-		uint16_t getTouchProbeStatus(int driveNumber);
-		int32_t getTouchProbePos1Positive(int driveNumber);
-		int32_t getTouchProbePos1Negative(int driveNumber);
-		int32_t getTouchProbePos2Positive(int driveNumber);
-		uint32_t getDCLinkCircuitVoltage(int driveNumber);
-		int32_t getPositionFollowingError(int driveNumber);
-		int32_t getControllEffort(int driveNumber);
-		int32_t getPositionDemandValue_cnt(int driveNumber);
-		uint32_t getDigitalInputs(int driveNumber);
-		int16_t getAnalogInput(int driveNumber);
-		int32_t getAuxilaryPositionActualValue(int driveNumber);
-		int16_t getCurrentActualValue(int driveNumber);
+		uint16_t ll_getStatusWord(int driveNumber);
+		int8_t ll_getModeOfOperationDisplay(int driveNumber);
+		int32_t ll_getPositionDemand_UU(int driveNumber);
+		int32_t ll_getActualPosition_counts(int driveNumber);
+		int32_t ll_getPositionActualValue(int driveNumber);
+		int32_t ll_getVelocitySensorActualValue(int driveNumber);
+		int32_t ll_getVelocityDemand(int driveNumber);
+		int32_t ll_getVelocityActualValue(int driveNumber);
+		int16_t ll_getTorqueDemandValue(int driveNumber);
+		int16_t ll_getTorqueActualValue(int driveNumber);
+		uint16_t ll_getTouchProbeStatus(int driveNumber);
+		int32_t ll_getTouchProbePos1Positive(int driveNumber);
+		int32_t ll_getTouchProbePos1Negative(int driveNumber);
+		int32_t ll_getTouchProbePos2Positive(int driveNumber);
+		uint32_t ll_getDCLinkCircuitVoltage(int driveNumber);
+		int32_t ll_getPositionFollowingError(int driveNumber);
+		int32_t ll_getControllEffort(int driveNumber);
+		int32_t ll_getPositionDemandValue_cnt(int driveNumber);
+		uint32_t ll_getDigitalInputs(int driveNumber);
+		int16_t ll_getAnalogInput(int driveNumber);
+		int32_t ll_getAuxilaryPositionActualValue(int driveNumber);
+		int16_t ll_getCurrentActualValue(int driveNumber);
 		
 		
 		

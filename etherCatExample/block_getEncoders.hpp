@@ -48,12 +48,12 @@ public:
 		//statusWord, position, velocity and torque
 		for ( int i = 0; i < numberOfDrivesTotal; i++ ) {
 			if( etherCATInterface::io_statusWord >= 0 )
-				statusWordValue(i) = elmoDrives.getStatusWord(i);
-			modeOfOperationValue(i) = elmoDrives.getModeOfOperationDisplay(i);
+				statusWordValue(i) = elmoDrives.ll_getStatusWord(i);
+			modeOfOperationValue(i) = elmoDrives.ll_getModeOfOperationDisplay(i);
 // 				positionValue(i) = movingChairEtherCAT.getPos(i);
 			
 			if( etherCATInterface::io_actualPosition_counts >= 0 )
-				positionValue(i) = static_cast<double>( elmoDrives.getActualPosition_counts(i) );
+				positionValue(i) = static_cast<double>( elmoDrives.ll_getActualPosition_counts(i) );
 			positionValue(i) = static_cast<double>( elmoDrives.getPos(i) ); 
 // 			velocityValue(i) = static_cast<double>( movingChairEtherCAT.getVel(i)); //TEST
 // 			torqueValue(i) = static_cast<double>( movingChairEtherCAT.getTorque(i)); // TEST

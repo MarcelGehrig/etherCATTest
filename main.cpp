@@ -81,8 +81,8 @@ int main(int argc, char **argv) {
 // 	elmoDrives.initAllDrives();
 	
 	int count = 0;
-		elmoDrives.setDigitalOutput(0, 0xFFFFFFFF);
-		elmoDrives.setDigitalOutput(1, 0xFFFFFFFF);
+		elmoDrives.ll_setDigitalOutput(0, 0xFFFFFFFF);
+		elmoDrives.ll_setDigitalOutput(1, 0xFFFFFFFF);
 // 		elmoDrives.setDigitalOutput(0, 0);
 // 		elmoDrives.setDigitalOutput(1, 0);
 	
@@ -123,7 +123,7 @@ int main(int argc, char **argv) {
 		if (count == 3000 ) {
 			std::cout << "enableTouchProbe1" << std::endl;
 // 			elmoDrives.setTouchProbeFunction(0, touchProbeFunctionEnum_ELMO::enableTouchProbe1);
-			elmoDrives.setTouchProbeFunction(0, 0x31);
+			elmoDrives.ll_setTouchProbeFunction(0, 0x31);
 		}
 		if (count == 4000) {
 // 			std::cout << "enabling sampling" << std::endl;
@@ -145,9 +145,9 @@ int main(int argc, char **argv) {
 		
 		
 		if ( count%1000 == 0 ) {
-			std::cout << "MAIN: getTouchProbeStatus(0): 0x" << std::hex << elmoDrives.getTouchProbeStatus(0) << std::endl;
-			std::cout << "MAIN: getTouchProbePosition(0): 0x" << std::hex << elmoDrives.getTouchProbePos1Positive(0) << std::endl;
-			log.info() << "                               position: " << elmoDrives.getPositionActualValue(0);
+			std::cout << "MAIN: getTouchProbeStatus(0): 0x" << std::hex << elmoDrives.ll_getTouchProbeStatus(0) << std::endl;
+			std::cout << "MAIN: getTouchProbePosition(0): 0x" << std::hex << elmoDrives.ll_getTouchProbePos1Positive(0) << std::endl;
+			log.info() << "                               position: " << elmoDrives.ll_getPositionActualValue(0);
 		}
 		
 		
