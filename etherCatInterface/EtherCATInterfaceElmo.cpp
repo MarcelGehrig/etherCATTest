@@ -122,7 +122,7 @@ bool EtherCATInterfaceElmo::isAllDrivesEnabled()
 	return enabled;
 }
 
-int64_t EtherCATInterfaceElmo::getPos(int driveNumber)
+int64_t EtherCATInterfaceElmo::getPosition(int driveNumber)
 {
 	int32_t rawPos = ll_getPositionActualValue(driveNumber);
 	int32_t diff = rawPos - drives[driveNumber].prevRawPos;
@@ -131,7 +131,7 @@ int64_t EtherCATInterfaceElmo::getPos(int driveNumber)
  	return drives[driveNumber].absPos + static_cast<int64_t>(drives[driveNumber].posOffset);
 }
 
-int64_t EtherCATInterfaceElmo::getPosAux(int driveNumber)
+int64_t EtherCATInterfaceElmo::getPositionAux(int driveNumber)
 {
 	int32_t rawAuxPos = ll_getAuxilaryPositionActualValue(driveNumber);
 	int32_t diff = rawAuxPos - drives[driveNumber].prevRawAuxPos;
@@ -948,9 +948,9 @@ int32_t EtherCATInterfaceElmo::ll_getPositionFollowingError(int driveNumber)
 	return (int32_t)get32bit(io_positionFollowingError, driveNumber);
 }
 
-int32_t EtherCATInterfaceElmo::ll_getControllEffort(int driveNumber)
+int32_t EtherCATInterfaceElmo::ll_getControlEffort(int driveNumber)
 {
-	return (int32_t)get32bit(io_controllEffort, driveNumber);
+	return (int32_t)get32bit(io_controlEffort, driveNumber);
 }
 
 int32_t EtherCATInterfaceElmo::ll_getPositionDemandValue_cnt(int driveNumber)

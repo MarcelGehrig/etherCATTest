@@ -22,8 +22,8 @@ namespace etherCATInterface {
 		ecmasterlib::EtherCATMain* getEtherCATStack() { return etherCATStack; };
 		bool isAllDrivesReady();
 		bool isAllDrivesEnabled();
-		int64_t getPos(int driveNumber);
-		int64_t getPosAux(int driveNumber);
+		int64_t getPosition(int driveNumber);		// in user value (0x6064)
+		int64_t getPositionAux(int driveNumber);
 		
 		//advanced set functions:
 		void setControlWord(int driveNumber, controlWordCommand_ELMO word);
@@ -103,12 +103,12 @@ namespace etherCATInterface {
 		// low level get functions:
 		uint16_t ll_getStatusWord(int driveNumber);
 		int8_t ll_getModeOfOperationDisplay(int driveNumber);
-		int32_t ll_getPositionDemand_UU(int driveNumber);
-		int32_t ll_getActualPosition_counts(int driveNumber);
-		int32_t ll_getPositionActualValue(int driveNumber);
-		int32_t ll_getVelocitySensorActualValue(int driveNumber);
+		int32_t ll_getPositionDemand_UU(int driveNumber);	// 0x6062 position demand; input internal pos controler
+		int32_t ll_getActualPosition_counts(int driveNumber);	// 0x6063 positin raw in counts
+		int32_t ll_getPositionActualValue(int driveNumber);		// 0x6064 position in user unit
+		int32_t ll_getVelocitySensorActualValue(int driveNumber);	// 0x6069 velocity from encoder in counts/sec
 		int32_t ll_getVelocityDemand(int driveNumber);
-		int32_t ll_getVelocityActualValue(int driveNumber);
+		int32_t ll_getVelocityActualValue(int driveNumber);		// 0x606c velocity in user units; used internaly for velocity controler
 		int16_t ll_getTorqueDemandValue(int driveNumber);
 		int16_t ll_getTorqueActualValue(int driveNumber);
 		uint16_t ll_getTouchProbeStatus(int driveNumber);
@@ -117,7 +117,7 @@ namespace etherCATInterface {
 		int32_t ll_getTouchProbePos2Positive(int driveNumber);
 		uint32_t ll_getDCLinkCircuitVoltage(int driveNumber);
 		int32_t ll_getPositionFollowingError(int driveNumber);
-		int32_t ll_getControllEffort(int driveNumber);
+		int32_t ll_getControlEffort(int driveNumber);
 		int32_t ll_getPositionDemandValue_cnt(int driveNumber);
 		uint32_t ll_getDigitalInputs(int driveNumber);
 		int16_t ll_getAnalogInput(int driveNumber);

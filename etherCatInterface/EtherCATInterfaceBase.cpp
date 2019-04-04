@@ -232,7 +232,7 @@ void setPosAuxOffset(int driveNumber, int32_t offset)
 //private:
 bool EtherCATInterfaceBase::checkOffset(int offsetInByte) {
 	if(offsetInByte < 0) {
-		std::cout << "ERROR: the PDO offset is not defined in EtherCATInterface" << std::endl; //TODO log
+		std::cout << "ERROR: the PDO offset is not defined in EtherCATInterface. Offset: " << offsetInByte << std::endl; //TODO log
 		return false;
 	}
 	else {
