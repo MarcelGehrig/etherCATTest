@@ -14,7 +14,7 @@ namespace etherCATInterface {
 	static constexpr int io_modeOfOperationDisplay		= 2; 	// 0X6061
 	static constexpr int io_postionDemand_UU			= -3;	// 0X6062
 	static constexpr int io_actualPosition_counts		= -4;	// 0X6063
-	static constexpr int io_positionActualValue			= -4; 	// 0X6064	used for getPosition()
+	static constexpr int io_positionActualValue			= 4; 	// 0X6064	used for getPosition()
 	static constexpr int io_velocitySensorActualValue	= -6;	// 0X6069
 	static constexpr int io_velocityDemand				= -7;	// 0X606B
 	static constexpr int io_velocityActualValue			= 8; 	// 0X606C	used for getVelocity

@@ -37,6 +37,7 @@ public:
 	block_getEncoders getEncoders;
 	eeros::control::DeMux<global::numberOfDrivesTotal, double> demuxEncoders;
 	eeros::control::Constant<uint32_t> constantDigitalOut;
+	eeros::control::Constant<uint32_t> constantDigitalOut1;
 	eeros::control::Mux<global::numberOfDrivesTotal, uint32_t> muxDigitalOut;
 	
 	

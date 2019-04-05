@@ -100,7 +100,7 @@ public:
 // 		dCLinkCircuitVoltage.getSignal().clear();
 // 		positionFollowingError.getSignal().clear();
 // 		positionControlEffort.getSignal().clear();
-// 		positionDemandValue.getSignal().clear();
+// 		positionDemandValue.getSignal().clear(); 
 // 		digitalInputs.getSignal().clear();
 // 		analogInput.getSignal().clear();
 	}
@@ -143,6 +143,8 @@ public:
 		
 		for ( int i = 0; i < numberOfDrivesTotal; i++ ) {
 			if( etherCATInterface::oo_digitalOutput >= 0 )
+// 				std::cout << inDigitalOutput.getSignal().getValue()(i) << std::endl;
+// 				log.info() << "asdf";
 				elmoDrives.ll_setDigitalOutput(i, inDigitalOutput.getSignal().getValue()(i));
 		}
 		

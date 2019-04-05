@@ -90,6 +90,7 @@ public:
 	MainSequence(std::string name, Sequencer& sequencer, SafetySystem& SS, MySafetyProperties& safetyProp, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives, Logger& log) :  
 // 	MainSequence(std::string name, Sequencer& sequencer, SafetySystem& SS, MySafetyProperties& safetyProp, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives) :  
 					Sequence(name, sequencer),
+					sequencer(sequencer),
 					SS(SS),
 					safetyProp(safetyProp),
 					CS(CS),
@@ -115,9 +116,17 @@ public:
 		CS.enableMonitoring();
 // 		global::log->info() << "pos0: " << std::to_string(elmoDrives.getPos(0));
 		
-		for(int i=0; i<30; i++) {
-			log.info() << SS.getCurrentLevel();
-// 			if ( i%2 == 0 )
+		for(int i=0; i<30 and sequencer.running; i++) {
+			log.info() << "SS level: " << SS.getCurrentLevel();
+			log.info() << "DI: 0x" << std::hex << CS.getEncoders.getOutDigitalInputs().getSignal().getValue();
+			if ( i%2 == 0 )
+				CS.constantDigitalOut.setValue(0xFFFFFFFF);
+// 				CS.setElmos.getInDigitalOutput().getSignal().setValue<uint32_t>(0xFFFFFFFF);
+// 				elmoDrives.ll_setDigitalOutput(0, 0xFFFFFFFF);
+			else
+				CS.constantDigitalOut.setValue(0x0);
+// 				CS.setElmos.getInDigitalOutput().getSignal().setValue<uint32_t>(0x0);
+// 				elmoDrives.ll_setDigitalOutput(0, 0x0);
 				
 			wait(1);
 		}
@@ -132,6 +141,8 @@ private:
 	Wait wait;
 	InitDrives step_initDrives;
 	double angle;
+	
+	Sequencer& sequencer;
 	SafetySystem& SS;
 	MyControlSystem& CS;
 	Logger& log;
