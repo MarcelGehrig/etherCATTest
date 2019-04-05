@@ -159,92 +159,92 @@ public:
 	}
 	
 	
-	// Defining getOut...() methodes
+	// Defining getOut...() methods
 	//  if the input value is not sent by PDO (Interface_config: io_... < 0) and the output is connectetd in the CS, eeros thows a fault
 	virtual eeros::control::Output< typeGetStatusWord >& getOutStatusWord() {
 		if( etherCATInterface::io_statusWord >= 0 )
 			return statusWord;
 		else {
-			throw new eeros::Fault( "PDO offset for statusWord not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
+			throw eeros::Fault( "PDO offset for statusWord not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
 		}
 	}
 	virtual eeros::control::Output< typeGetPosition >& getOutPosition() {
 		if( etherCATInterface::io_positionActualValue >= 0 )
 			return position;
 		else
-			throw new eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
+			throw eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
 	}
 	virtual eeros::control::Output< typeGetPositionAux >& getOutPositionAux() {
 		if( etherCATInterface::io_auxilaryPositionActualValue >= 0 )
 			return positionAux;
 		else
-			throw new eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
+			throw eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
 	}
 	virtual eeros::control::Output< typeGetVelocity >& getOutVelocity() {
 		if( etherCATInterface::io_velocityActualValue >= 0 )
 			return velocity;
 		else
-			throw new eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
+			throw eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
 	}
 	virtual eeros::control::Output< typeGetTorque >& getOutTorque() {
 		if( etherCATInterface::io_torqueActualValue >= 0 )
 			return torque;
 		else
-			throw new eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
+			throw eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
 	}
 	virtual eeros::control::Output< typeGetTouchProbePos1Positive >& getOutTouchProbePos1Positive() {
 		if( etherCATInterface::io_touchProbePos1Positive >= 0 )
 			return touchProbePos1Positive;
 		else
-			throw new eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
+			throw eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
 	}
 	virtual eeros::control::Output< typeGetTouchProbePos1Negative >& getOutTouchProbePos1Negative() {
 		if( etherCATInterface::io_touchProbePos1Negative >= 0 )
 			return touchProbePos1Negative;
 		else
-			throw new eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
+			throw eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
 	}
 	virtual eeros::control::Output< typeGetTouchProbePos2Positive >& getOutTouchProbePos2Positive() {
 		if( etherCATInterface::io_touchProbePos2Positive >= 0 )
 			return touchProbePos2Positive;
 		else
-			throw new eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
+			throw eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
 	}
 	virtual eeros::control::Output< typeGetDCLinkCircuitVoltage >& getOutDCLinkCircuitVoltage() {
 		if( etherCATInterface::io_DCLinkCircuitVoltage >= 0 )
 			return dCLinkCircuitVoltage;
 		else
-			throw new eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
+			throw eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
 	}
 	virtual eeros::control::Output< typeGetPositionFollowingError >& getOutPositionFollowingError() {
 		if( etherCATInterface::io_positionFollowingError >= 0 )
 			return positionFollowingError;
 		else
-			throw new eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
+			throw eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
 	}
 	virtual eeros::control::Output< typeGetPositionControlEffort >& getOutPositionControlEffort() {
 		if( etherCATInterface::io_controlEffort >= 0 )
 			return positionControlEffort;
 		else
-			throw new eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
+			throw eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
 	}
 	virtual eeros::control::Output< typeGetPositionDemandValue >& getOutPositionDemandValue() {
 		if( etherCATInterface::io_positionDemandValue_cnt >= 0 )
 			return positionDemandValue;
 		else
-			throw new eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
+			throw eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
 	}
 	virtual eeros::control::Output< typeGetDigitalInputs >& getOutDigitalInputs() {
 		if( etherCATInterface::io_digitalInputs >= 0 )
 			return digitalInputs;
 		else
-			throw new eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
+			throw eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
 	}
 	virtual eeros::control::Output< typeGetAnalogInput >& getOutAnalogInput() {
 		if( etherCATInterface::io_analogInput >= 0 )
 			return analogInput;
 		else
-			throw new eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
+			throw eeros::Fault( "PDO offset for position not defined. Define offset in EtherCATInterfaceElmo_config.hpp" );
 	}
 	
 	

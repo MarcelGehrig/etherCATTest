@@ -80,7 +80,6 @@ namespace etherCATInterface {
 		void ll_setTargetVelocity(int driveNumber, int32_t targetVelocity);
 		void ll_setDigitalOutput(int driveNumber, uint32_t digitalOutput);
 		void ll_setPolarity(int driveNumber, uint8_t polarity);
-		
 		void ll_setGainSchedulingManualIndex(int driveNumber, uint16_t index);
 		
 	// 	void setControlWord(int driveNumber, uint16_t word);

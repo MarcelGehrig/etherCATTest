@@ -8,12 +8,17 @@
 // #include <eeros/control/PeripheralInput.hpp>
 // #include <eeros/control/PeripheralOutput.hpp>
 #include <eeros/control/TimeDomain.hpp>
+#include <eeros/control/Constant.hpp>
 #include <eeros/control/DeMux.hpp>
+#include <eeros/control/Mux.hpp>
 #include <eeros/control/SignalChecker.hpp>
 
 #include "../etherCatInterface/EtherCATInterfaceElmo.hpp"
 
+#include "globalConfig.hpp"
+
 #include "block_getEncoders.hpp"
+#include "block_setElmos.hpp"
 #include "block_printNumber.hpp"
 
 using namespace etherCATInterface;
@@ -27,26 +32,27 @@ public:
 // 	EtherCATInterfaceElmo& getElmoDrives() {return elmoDrives;);
 // 	int getElmoDrives() {return 1;);
 	
-	block_getEncoders getEncoders;
-	block_printNumber<double> printNumber;
-	
 	//TODO numberOfDrivesTotal
-	eeros::control::DeMux<2, double> demux;
+	// Inputs
+	block_getEncoders getEncoders;
+	eeros::control::DeMux<global::numberOfDrivesTotal, double> demuxEncoders;
+	eeros::control::Constant<uint32_t> constantDigitalOut;
+	eeros::control::Mux<global::numberOfDrivesTotal, uint32_t> muxDigitalOut;
 	
+	
+	// Internal logic
+	
+	
+	// SignalChecker
 	eeros::control::SignalChecker<> positionChecker;
 	
-// 	eeros::control::Constant<> setpoint;
-// 	eeros::control::PeripheralInput<double> enc;
-// 	eeros::control::D<> diff1;
-// 	eeros::control::Sum<2> sum1;
-// 	eeros::control::Gain<> posController;
-// 	eeros::control::D<> diff2;
-// 	eeros::control::Sum<3> sum2;
-// 	eeros::control::Gain<> speedController;
-// 	eeros::control::Gain<> inertia;
-// 	eeros::control::Gain<> invMotConst;
-// 	eeros::control::PeripheralOutput<double> dac;
 	
+	// Outputs
+	block_printNumber<double> printNumber;
+	block_setElmos setElmos;
+	
+	
+	// Methods
 	void enableMonitoring();
 	void disableMonitoring();
 

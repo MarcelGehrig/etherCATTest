@@ -7,6 +7,32 @@ namespace etherCATInterface {
 	
 	// Configurations offsets in PDOs (ENI files)
 	// //////////////////////////////////////////
+
+	// Input Offsets (io) PDOs [in Byte]
+	// Elmo: GoldLine "EtherCAT Application Manual.pdf"     p. 23
+	static constexpr int io_statusWord					= 0;	// 0x6041
+	static constexpr int io_modeOfOperationDisplay		= 2; 	// 0X6061
+	static constexpr int io_postionDemand_UU			= -3;	// 0X6062
+	static constexpr int io_actualPosition_counts		= -4;	// 0X6063
+	static constexpr int io_positionActualValue			= -4; 	// 0X6064	used for getPosition()
+	static constexpr int io_velocitySensorActualValue	= -6;	// 0X6069
+	static constexpr int io_velocityDemand				= -7;	// 0X606B
+	static constexpr int io_velocityActualValue			= 8; 	// 0X606C	used for getVelocity
+	static constexpr int io_torqueDemandValue			= -9;	// 0X6074
+	static constexpr int io_torqueActualValue			= 12;	// 0X6077	used for getTorque
+	static constexpr int io_touchProbeStatus			= 14;	// 0X60B9
+	static constexpr int io_touchProbePos1Positive		= 16;	// 0X60BA
+	static constexpr int io_touchProbePos1Negative		= 20;	// 0x60BB
+	static constexpr int io_touchProbePos2Positive		= 24;	// 0x60BC
+	static constexpr int io_DCLinkCircuitVoltage		= -15;	// 0x6079
+	static constexpr int io_positionFollowingError		= -16;	// 0x60F4
+	static constexpr int io_controlEffort				= -17;	// 0x60FA
+	static constexpr int io_positionDemandValue_cnt		= -18;	// 0x60FC
+	static constexpr int io_digitalInputs				= 28;	// 0x60FD
+	static constexpr int io_analogInput					= -19;	// 0x2205
+	static constexpr int io_auxilaryPositionActualValue	= -20;	// 0x20A0
+	static constexpr int io_currentActualValue			= -21;	// 0x6078
+	
 		
 	// Output Offsets (oo) PDOs (output from master) [in Byte]
 	// Elmo: GoldLine "EtherCAT Application Manual.pdf"     p. 21
@@ -31,34 +57,7 @@ namespace etherCATInterface {
 	static constexpr int oo_targetVelocity			= 12;
 	static constexpr int oo_digitalOutput			= 16;
 	static constexpr int oo_polarity				= -1;
-	
 	static constexpr int oo_gainSchedlingManualIndex = -1;
-	
-	
-	// Input Offsets (io) PDOs [in Byte]
-	// Elmo: GoldLine "EtherCAT Application Manual.pdf"     p. 23
-	static constexpr int io_statusWord					= 0;	// 0x6041
-	static constexpr int io_modeOfOperationDisplay		= 2; 	// 0X6061
-	static constexpr int io_postionDemand_UU			= -3;	// 0X6062
-	static constexpr int io_actualPosition_counts		= -4;	// 0X6063
-	static constexpr int io_positionActualValue			= 4; 	// 0X6064	used for getPosition()
-	static constexpr int io_velocitySensorActualValue	= -6;	// 0X6069
-	static constexpr int io_velocityDemand				= -7;	// 0X606B
-	static constexpr int io_velocityActualValue			= 8; 	// 0X606C	used for getVelocity
-	static constexpr int io_torqueDemandValue			= -9;	// 0X6074
-	static constexpr int io_torqueActualValue			= 12;	// 0X6077	used for getTorque
-	static constexpr int io_touchProbeStatus			= 14;	// 0X60B9
-	static constexpr int io_touchProbePos1Positive		= 16;	// 0X60BA
-	static constexpr int io_touchProbePos1Negative		= 20;	// 0x60BB
-	static constexpr int io_touchProbePos2Positive		= 24;	// 0x60BC
-	static constexpr int io_DCLinkCircuitVoltage		= -15;	// 0x6079
-	static constexpr int io_positionFollowingError		= -16;	// 0x60F4
-	static constexpr int io_controlEffort				= -17;	// 0x60FA
-	static constexpr int io_positionDemandValue_cnt		= -18;	// 0x60FC
-	static constexpr int io_digitalInputs				= 28;	// 0x60FD
-	static constexpr int io_analogInput					= -19;	// 0x2205
-	static constexpr int io_auxilaryPositionActualValue	= -20;	// 0x20A0
-	static constexpr int io_currentActualValue			= -21;	// 0x6078
 	
 // 	// Configurations offsets in PDOs (ENI files)
 // 	// //////////////////////////////////////////

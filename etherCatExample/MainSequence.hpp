@@ -115,13 +115,15 @@ public:
 		CS.enableMonitoring();
 // 		global::log->info() << "pos0: " << std::to_string(elmoDrives.getPos(0));
 		
-		for(int i=0; i<10; i++) {
+		for(int i=0; i<30; i++) {
 			log.info() << SS.getCurrentLevel();
+// 			if ( i%2 == 0 )
+				
 			wait(1);
 		}
 		
 		
-		wait(30);
+// 		wait(30);
 		log.info() << "MainSequence finished";
 		
 		SS.triggerEvent(safetyProp.switchOff);
