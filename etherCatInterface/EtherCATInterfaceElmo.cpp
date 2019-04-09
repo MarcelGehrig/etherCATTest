@@ -779,7 +779,7 @@ void EtherCATInterfaceElmo::ll_setMaxCurrent(int driveNumber, int16_t maxCurrent
 
 void EtherCATInterfaceElmo::ll_setTargetPosition(int driveNumber, int32_t targetPosition)
 {
-	set32bit(oo_targetPostition, driveNumber, targetPosition);
+	set32bit(oo_targetPosition, driveNumber, targetPosition);
 }
 
 void EtherCATInterfaceElmo::ll_setMaxProfileVelocity(int driveNumber, uint32_t maxProfileVelocity)

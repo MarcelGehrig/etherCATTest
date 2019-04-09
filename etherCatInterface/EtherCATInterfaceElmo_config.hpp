@@ -36,27 +36,28 @@ namespace etherCATInterface {
 		
 	// Output Offsets (oo) PDOs (output from master) [in Byte]
 	// Elmo: GoldLine "EtherCAT Application Manual.pdf"     p. 21
-	static constexpr int oo_controlWord				= 0;
-	static constexpr int oo_modeOfOperation			= 2;
-	static constexpr int oo_targetTorque			= 4;
-	static constexpr int oo_maxTorque				= -1;
-	static constexpr int oo_maxCurrent				= -1;
-	static constexpr int oo_targetPostition			= 6;
-	static constexpr int oo_maxProfileVelocity		= -1;
-	static constexpr int oo_profileVelocity			= -1;
-	static constexpr int oo_endVelocity				= -1;
-	static constexpr int oo_profileAcceleration		= -1;
-	static constexpr int oo_profileDeceleration		= -1;
-	static constexpr int oo_torqueSlope				= -1;
-	static constexpr int oo_positionOffset			= -1;
-	static constexpr int oo_velocityOffset			= -1;
-	static constexpr int oo_torqueOffset			= -1;
-	static constexpr int oo_touchProbeFunction		= 10;
-	static constexpr int oo_interpolatedDataRecord_1		= -1;
-	static constexpr int oo_interpolatedDataRecord_2		= -1;
-	static constexpr int oo_targetVelocity			= 12;
-	static constexpr int oo_digitalOutput			= 16;
-	static constexpr int oo_polarity				= -1;
+	static constexpr int oo_controlWord				= 0;		// 0x6040
+	static constexpr int oo_modeOfOperation			= 2;		// 0x6060
+	static constexpr int oo_targetTorque			= 4;		// 0x6071
+	static constexpr int oo_maxTorque				= -1;		// 0x6072
+	static constexpr int oo_maxCurrent				= -1;		// 0x6073
+	static constexpr int oo_targetPosition			= 6;		// 0x607A
+	static constexpr int oo_maxProfileVelocity		= -1;		// 0x607F
+	static constexpr int oo_profileVelocity			= -1;		// 0x6081
+	static constexpr int oo_endVelocity				= -1;		// 0x6082
+	static constexpr int oo_profileAcceleration		= -1;		// 0x6083
+	static constexpr int oo_profileDeceleration		= -1;		// 0x6084
+	static constexpr int oo_torqueSlope				= -1;		// 0x6087
+	static constexpr int oo_positionOffset			= -1;		// 0x60B0
+	static constexpr int oo_velocityOffset			= -1;		// 0x60B1
+	static constexpr int oo_torqueOffset			= -1;		// 0x60B2
+	static constexpr int oo_touchProbeFunction		= 10;		// 0x60B8
+	static constexpr int oo_interpolatedDataRecord_1		= -1;		// 0x60C1:1
+	static constexpr int oo_interpolatedDataRecord_2		= -1;		// 0x60C1:2
+	static constexpr int oo_targetVelocity			= 12;		// 0x60FF
+	static constexpr int oo_digitalOutput			= 16;		// 0x60FE:1
+	static constexpr int oo_polarity				= -1;		// 0x607F
+	
 	static constexpr int oo_gainSchedlingManualIndex = -1;
 	
 // 	// Configurations offsets in PDOs (ENI files)
