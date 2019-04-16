@@ -19,7 +19,15 @@ printNumber(log, "Encoder: ", "", 200, false),
 setElmos(elmoDrives, numberOfDrivesTotal),
 timedomain("Main time domain", ts, true) 
 {
+	getEncoders.setName("getEncoders");
+	demuxEncoders.setName("demuxEncoders");
+	constantDigitalOut.setName("constantDigitalOut");
+	constantDigitalOut1.setName("constantDigitalOut1");
 	muxDigitalOut.setName("muxDigitalOut");
+	positionChecker.setName("positionChecker");
+	printNumber.setName("printNumber");
+	setElmos.setName("setElmos");
+
 	// Inputs
 	demuxEncoders.getIn().connect(getEncoders.getOutPosition());
 	muxDigitalOut.getIn(0).connect(constantDigitalOut.getOut());

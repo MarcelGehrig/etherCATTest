@@ -46,28 +46,6 @@ public:
 		elmoDrives(elmoDrives),
 		numberOfDrivesTotal(numberOfDrivesTotal)
 	{
-		inControlWord.getSignal().clear();
-		inModeOfOperation.getSignal().clear();
-		inTargetTorque.getSignal().clear();
-		inMaxTorque.getSignal().clear();
-		inMaxCurrent.getSignal().clear();
-		inTargetPosition.getSignal().clear();
-		inMaxProfileVelocity.getSignal().clear();
-		inProfileVelocity.getSignal().clear();
-		inEndVelocity.getSignal().clear();
-		inProfileAcceleration.getSignal().clear();
-		inProfileDeceleration.getSignal().clear();
-		inTorqueSlope.getSignal().clear();
-		inPositionOffset.getSignal().clear();
-		inVelocityOffset.getSignal().clear();
-		inTorqueOffset.getSignal().clear();
-		inTouchProbeFunction.getSignal().clear();
-		inInterpolatedDataRecord_1.getSignal().clear();
-		inInterpolatedDataRecord_2.getSignal().clear();
-		inTargetVelocity.getSignal().clear();
-		inDigitalOutput.getSignal().clear();
-		inPolarity.getSignal().clear();
-		inGainSchedlingManualIndex.getSignal().clear();
 	}
 	
 	virtual void run() {
@@ -75,48 +53,49 @@ public:
 		//  if the output value is not sent by PDO (Interface_config: oo_... < 0) the variable will not be processed
 
 		for ( int i = 0; i < numberOfDrivesTotal; i++ ) {
-			if( etherCATInterface::oo_controlWord >= 0 )
-				elmoDrives.ll_setControlWord(i, inControlWord.getSignal().getValue()(i) );
-			if( etherCATInterface::oo_modeOfOperation >= 0 )
-				elmoDrives.ll_setModeOfOperation(i, inModeOfOperation.getSignal().getValue()(i) );
-			if( etherCATInterface::oo_targetTorque >= 0 )
-				elmoDrives.ll_setTargetTorque(i, inTargetTorque.getSignal().getValue()(i) );
-			if( etherCATInterface::oo_maxTorque >= 0 )
-				elmoDrives.ll_setMaxTorque(i, inMaxTorque.getSignal().getValue()(i) );
-			if( etherCATInterface::oo_maxCurrent >= 0 )
-				elmoDrives.ll_setMaxCurrent(i, inMaxCurrent.getSignal().getValue()(i) );
-			if( etherCATInterface::oo_targetPosition >= 0 )
-				elmoDrives.ll_setTargetPosition(i, inTargetPosition.getSignal().getValue()(i) );
-			if( etherCATInterface::oo_maxProfileVelocity >= 0 )
-				elmoDrives.ll_setMaxProfileVelocity(i, inMaxProfileVelocity.getSignal().getValue()(i) );
-			if( etherCATInterface::oo_profileVelocity >= 0 )
-				elmoDrives.ll_setProfileVelocity(i, inProfileVelocity.getSignal().getValue()(i) );
-			if( etherCATInterface::oo_endVelocity >= 0 )
-				elmoDrives.ll_setEndVelocity(i, inEndVelocity.getSignal().getValue()(i) );
-			if( etherCATInterface::oo_profileAcceleration >= 0 )
-				elmoDrives.ll_setProfileAcceleration(i, inProfileAcceleration.getSignal().getValue()(i) );
-			if( etherCATInterface::oo_profileDeceleration >= 0 )
-				elmoDrives.ll_setProfileDeceleration(i, inProfileDeceleration.getSignal().getValue()(i) );
-			if( etherCATInterface::oo_torqueSlope >= 0 )
-				elmoDrives.ll_setTorqueSlope(i, inTorqueSlope.getSignal().getValue()(i) );
-			if( etherCATInterface::oo_positionOffset >= 0 )
-				elmoDrives.ll_setPositionOffset(i, inPositionOffset.getSignal().getValue()(i) );
-			if( etherCATInterface::oo_velocityOffset >= 0 )
-				elmoDrives.ll_setVelocityOffset(i, inVelocityOffset.getSignal().getValue()(i) );
-			if( etherCATInterface::oo_torqueOffset >= 0 )
-				elmoDrives.ll_setTorqueOffset(i, inTorqueOffset.getSignal().getValue()(i) );
-			if( etherCATInterface::oo_touchProbeFunction >= 0 )
-				elmoDrives.ll_setTouchProbeFunction(i, inTouchProbeFunction.getSignal().getValue()(i) );
-			if( etherCATInterface::oo_interpolatedDataRecord_1 >= 0 )
-				elmoDrives.ll_setInterpolatedDataRecord1(i, inInterpolatedDataRecord_1.getSignal().getValue()(i) );
-			if( etherCATInterface::oo_interpolatedDataRecord_2 >= 0 )
-				elmoDrives.ll_setInterpolatedDataRecord2(i, inInterpolatedDataRecord_2.getSignal().getValue()(i) );
-			if( etherCATInterface::oo_targetVelocity >= 0 )
-				elmoDrives.ll_setTargetVelocity(i, inTargetVelocity.getSignal().getValue()(i) );
+// 			if( etherCATInterface::oo_controlWord >= 0 )
+// 				elmoDrives.ll_setControlWord(i, inControlWord.getSignal().getValue()(i) );
+// 			if( etherCATInterface::oo_modeOfOperation >= 0 )
+// 				elmoDrives.ll_setModeOfOperation(i, inModeOfOperation.getSignal().getValue()(i) );
+// 			if( etherCATInterface::oo_targetTorque >= 0 )
+// 				elmoDrives.ll_setTargetTorque(i, inTargetTorque.getSignal().getValue()(i) );
+// 			if( etherCATInterface::oo_maxTorque >= 0 )
+// 				elmoDrives.ll_setMaxTorque(i, inMaxTorque.getSignal().getValue()(i) );
+// 			if( etherCATInterface::oo_maxCurrent >= 0 )
+// 				elmoDrives.ll_setMaxCurrent(i, inMaxCurrent.getSignal().getValue()(i) );
+// 			if( etherCATInterface::oo_targetPosition >= 0 )
+// 				elmoDrives.ll_setTargetPosition(i, inTargetPosition.getSignal().getValue()(i) );
+// 			if( etherCATInterface::oo_maxProfileVelocity >= 0 )
+// 				elmoDrives.ll_setMaxProfileVelocity(i, inMaxProfileVelocity.getSignal().getValue()(i) );
+// 			if( etherCATInterface::oo_profileVelocity >= 0 )
+// 				elmoDrives.ll_setProfileVelocity(i, inProfileVelocity.getSignal().getValue()(i) );
+// 			if( etherCATInterface::oo_endVelocity >= 0 )
+// 				elmoDrives.ll_setEndVelocity(i, inEndVelocity.getSignal().getValue()(i) );
+// 			if( etherCATInterface::oo_profileAcceleration >= 0 )
+// 				elmoDrives.ll_setProfileAcceleration(i, inProfileAcceleration.getSignal().getValue()(i) );
+// 			if( etherCATInterface::oo_profileDeceleration >= 0 )
+// 				elmoDrives.ll_setProfileDeceleration(i, inProfileDeceleration.getSignal().getValue()(i) );
+// 			if( etherCATInterface::oo_torqueSlope >= 0 )
+// 				elmoDrives.ll_setTorqueSlope(i, inTorqueSlope.getSignal().getValue()(i) );
+// 			if( etherCATInterface::oo_positionOffset >= 0 )
+// 				elmoDrives.ll_setPositionOffset(i, inPositionOffset.getSignal().getValue()(i) );
+// 			if( etherCATInterface::oo_velocityOffset >= 0 )
+// 				elmoDrives.ll_setVelocityOffset(i, inVelocityOffset.getSignal().getValue()(i) );
+// 			if( etherCATInterface::oo_torqueOffset >= 0 )
+// 				elmoDrives.ll_setTorqueOffset(i, inTorqueOffset.getSignal().getValue()(i) );
+// 			if( etherCATInterface::oo_touchProbeFunction >= 0 )
+// 				elmoDrives.ll_setTouchProbeFunction(i, inTouchProbeFunction.getSignal().getValue()(i) );
+// 			if( etherCATInterface::oo_interpolatedDataRecord_1 >= 0 )
+// 				elmoDrives.ll_setInterpolatedDataRecord1(i, inInterpolatedDataRecord_1.getSignal().getValue()(i) );
+// 			if( etherCATInterface::oo_interpolatedDataRecord_2 >= 0 )
+// 				elmoDrives.ll_setInterpolatedDataRecord2(i, inInterpolatedDataRecord_2.getSignal().getValue()(i) );
+// 			if( etherCATInterface::oo_targetVelocity >= 0 )
+// 				elmoDrives.ll_setTargetVelocity(i, inTargetVelocity.getSignal().getValue()(i) );
 			if( etherCATInterface::oo_digitalOutput >= 0 )
 				elmoDrives.ll_setDigitalOutput(i, inDigitalOutput.getSignal().getValue()(i) );
-			if( etherCATInterface::oo_polarity >= 0 )
-				elmoDrives.ll_setPolarity(i, inPolarity.getSignal().getValue()(i) );
+// 			if( etherCATInterface::oo_polarity >= 0 )
+// 				elmoDrives.ll_setPolarity(i, inPolarity.getSignal().getValue()(i) );
+			
 // 			if( etherCATInterface::oo_gainSchedlingManualIndex  >= 0 )
 // 				elmoDrives.ll_setGainSchedlingManualIndex (i, inGainSchedlingManualIndex .getSignal().getValue()(i) );
 		}
