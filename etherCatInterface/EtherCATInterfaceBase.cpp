@@ -14,11 +14,21 @@ etherCATStack(etherCATStack)
 // 	}
 }
 
+void EtherCATInterfaceBase::set8bit(uint32_t offsetInByte, int8_t payload)
+{
+	set8bit(offsetInByte, 0, payload);
+}
+
 void EtherCATInterfaceBase::set8bit(uint32_t offsetInByte, uint32_t driveNumber, int8_t payload)
 {	
 	if(checkOffset(offsetInByte)) {
 		etherCATStack->setByte(outBuffer + driveNumber*bytesPerPDOFrameTx + offsetInByte, payload);
 	}
+}
+
+void EtherCATInterfaceBase::set8bit(uint32_t offsetInByte, uint8_t payload)
+{
+	set8bit(offsetInByte, 0, payload);
 }
 
 void EtherCATInterfaceBase::set8bit(uint32_t offsetInByte, uint32_t driveNumber, uint8_t payload)
@@ -28,11 +38,21 @@ void EtherCATInterfaceBase::set8bit(uint32_t offsetInByte, uint32_t driveNumber,
 	}
 }
 
+void EtherCATInterfaceBase::set16bit(uint32_t offsetInByte, int16_t payload)
+{
+	set16bit(offsetInByte, 0, payload);
+}
+
 void EtherCATInterfaceBase::set16bit(uint32_t offsetInByte, uint32_t driveNumber, int16_t payload)
 {
 	if(checkOffset(offsetInByte)) {
 		etherCATStack->setWord(outBuffer + driveNumber*bytesPerPDOFrameTx + offsetInByte, payload);
 	}
+}
+
+void EtherCATInterfaceBase::set16bit(uint32_t offsetInByte, uint16_t payload)
+{
+	set16bit(offsetInByte, 0, payload);
 }
 
 void EtherCATInterfaceBase::set16bit(uint32_t offsetInByte, uint32_t driveNumber, uint16_t payload)
@@ -42,11 +62,21 @@ void EtherCATInterfaceBase::set16bit(uint32_t offsetInByte, uint32_t driveNumber
 	}
 }
 
+void EtherCATInterfaceBase::set32bit(uint32_t offsetInByte, int32_t payload)
+{
+	set32bit(offsetInByte, 0, payload);
+}
+
 void EtherCATInterfaceBase::set32bit(uint32_t offsetInByte, uint32_t driveNumber, int32_t payload)
 {
 	if(checkOffset(offsetInByte)) {
 		etherCATStack->setDWord(outBuffer + driveNumber*bytesPerPDOFrameTx + offsetInByte, payload);
 	}
+}
+
+void EtherCATInterfaceBase::set32bit(uint32_t offsetInByte, uint32_t payload)
+{
+	set32bit(offsetInByte, 0, payload);
 }
 
 void EtherCATInterfaceBase::set32bit(uint32_t offsetInByte, uint32_t driveNumber, uint32_t payload)
@@ -58,6 +88,11 @@ void EtherCATInterfaceBase::set32bit(uint32_t offsetInByte, uint32_t driveNumber
 
 
 
+uint8_t EtherCATInterfaceBase::get8bit(uint32_t offsetInByte)
+{
+	get8bit(offsetInByte, 0);
+}
+
 uint8_t EtherCATInterfaceBase::get8bit(uint32_t offsetInByte, uint32_t driveNumber)
 {
 	if(checkOffset(offsetInByte)) {
@@ -65,18 +100,21 @@ uint8_t EtherCATInterfaceBase::get8bit(uint32_t offsetInByte, uint32_t driveNumb
 	}
 }
 
+uint16_t EtherCATInterfaceBase::get16bit(uint32_t offsetInByte)
+{
+	get16bit(offsetInByte, 0);
+}
+
 uint16_t EtherCATInterfaceBase::get16bit(uint32_t offsetInByte, uint32_t driveNumber)
 {
-// 	return etherCATStack->getFrmWord(inBuffer + driveNumber*bytesPerPDOFrameTx + offsetInByte);
-//  	std::cout << "IBase: get16bit: driveNumber: " << driveNumber << "   offsetInByte: " << std::dec << driveNumber*bytesPerPDOFrameTx + offsetInByte << std::endl;
-// 	auto data16 = etherCATStack->getFrmWord(inBuffer + driveNumber*bytesPerPDOFrameTx + offsetInByte);
-//  	std::cout << "IBase: get16bit: driveNumber: " << driveNumber << "   offsetInByte: " << offsetInByte << "   data: 0x" << std::hex << data16 << std::endl;
-// 	return data16;
-	
 	if(checkOffset(offsetInByte)) {
-// 		std::cout << "IBase: Offset ok" << std::endl;
 		return (uint16_t)etherCATStack->getFrmWord(inBuffer + driveNumber*bytesPerPDOFrameTx + offsetInByte);
 	}
+}
+
+uint32_t EtherCATInterfaceBase::get32bit(uint32_t offsetInByte)
+{
+	get32bit(offsetInByte, 0);
 }
 
 uint32_t EtherCATInterfaceBase::get32bit(uint32_t offsetInByte, uint32_t driveNumber)

@@ -17,17 +17,26 @@ namespace etherCATInterface {
 		
 		
 		// basic set functions:
+		void set8bit(uint32_t offsetInByte, uint8_t payload);
 		void set8bit(uint32_t offsetInByte, uint32_t driveNumber, uint8_t payload);
+		void set8bit(uint32_t offsetInByte, int8_t payload);
 		void set8bit(uint32_t offsetInByte, uint32_t driveNumber, int8_t payload);
+		void set16bit(uint32_t offsetInByte, uint16_t payload);
 		void set16bit(uint32_t offsetInByte, uint32_t driveNumber, uint16_t payload);
+		void set16bit(uint32_t offsetInByte, int16_t payload);
 		void set16bit(uint32_t offsetInByte, uint32_t driveNumber, int16_t payload);
+		void set32bit(uint32_t offsetInByte, uint32_t payload);
 		void set32bit(uint32_t offsetInByte, uint32_t driveNumber, uint32_t payload);
+		void set32bit(uint32_t offsetInByte, int32_t payload);
 		void set32bit(uint32_t offsetInByte, uint32_t driveNumber, int32_t payload);
 		
 		
 		// basic get functions:
+		uint8_t get8bit(uint32_t offsetInByte); 
 		uint8_t get8bit(uint32_t offsetInByte, uint32_t driveNumber);
+		uint16_t get16bit(uint32_t offsetInByte); 
 		uint16_t get16bit(uint32_t offsetInByte, uint32_t driveNumber);
+		uint32_t get32bit(uint32_t offsetInByte); 
 		uint32_t get32bit(uint32_t offsetInByte, uint32_t driveNumber);
 		
 		
