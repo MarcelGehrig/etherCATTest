@@ -119,7 +119,7 @@ namespace etherCATInterface {
 	// Configurations for Elmo drives
 	// //////////////////////////////
 	
-	// Drive modes
+	// Elmo: GoldLine "CAN DS-402 Implementation Guide"		p.56
 	enum driveModeOfOperation_ELMO {
 		CANEncoderMode,
 		profilePosition,
@@ -142,18 +142,18 @@ namespace etherCATInterface {
 	static constexpr int16_t dmoov_cyclicSynchronousPosition	= 8;
 	static constexpr int16_t dmoov_cyclicSynchronousVelocity	= 9;
 	static constexpr int16_t dmoov_cyclicSynchronousTorque		= 10;
-	
-	
-	// Control words 
+
+
+	// Elmo: GoldLine "CAN DS-402 Implementation Guide"		p.43
 	enum controlWordCommand_ELMO {
-		shutdown,			//0x06
-		switchOn,			//0X07 -> prepares drive to enable
-		switchOnAndEnable,	//0x0F
-		disableVoltage,		//0x00
-		quickStop,			//0x02
-		disableOperation,	//0x07
-		enableOperation,	//0x0F	-> enables drive
-		faultReset			//0X80
+	shutdown,			//0x06
+	switchOn,			//0X07
+	switchOnAndEnable,	//0x0F
+	disableVoltage,		//0x00
+	quickStop,			//0x02
+	disableOperation,	//0x07
+	enableOperation,	//0x0F
+	faultReset			//0X80
 	};
 	  
 	// Control World Commands (cwc)
@@ -167,7 +167,7 @@ namespace etherCATInterface {
 	static constexpr uint16_t cwc_faultReset		= 0x80;
 	  
 	
-	// Drive states (elmo "CAN DS-402 Implementation Guide" p. 46
+	// Elmo: GoldLine "CAN DS-402 Implementation Guide"		p.46
 	enum driveStatus_ELMO {
 		notReadyToSwitchOn,
 		switchOnDisabled,
@@ -249,10 +249,6 @@ namespace etherCATInterface {
 	static constexpr int gainSchedulingManualIndex_velocity =	-1;		// chair 1
 	static constexpr int gainSchedulingManualIndex_torque =		-1;		// chair 2
 	static constexpr int gainSchedulingManualIndex_homing =		-1;		// chair 2
-
-
-
-
 }
 
 #endif // ETHERCAT_INTERFACE_ELMO_CONFIG_HPP_

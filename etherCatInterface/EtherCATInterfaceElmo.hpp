@@ -12,31 +12,30 @@ namespace etherCATInterface {
 	public:
 		EtherCATInterfaceElmo(ecmasterlib::EtherCATMain* etherCATStack);
 		
-		//advanced functions
+		//advanced set functions
+		// call repeatedly until the method returns 'true'
 		bool initAllDrives();
 		bool recoverAllDrivesFromFault();
 		bool switchOnAllDrives();
 		bool switchOnDrive(int driveNumber);
+
+		void enableAllDrives();
+		void disableAllDrives();
+		void setControlWord(int driveNumber, controlWordCommand_ELMO word);
 		
 		//advanced get functions
 		ecmasterlib::EtherCATMain* getEtherCATStack() { return etherCATStack; };
 		bool isAllDrivesReady();
 		bool isAllDrivesEnabled();
-		int64_t getPosition(int driveNumber);		// in user value (0x6064)
-		int64_t getPositionAux(int driveNumber);
-		
-		//advanced set functions:
-		void setControlWord(int driveNumber, controlWordCommand_ELMO word);
-		void enableAllDrives();
-		void disableAllDrives();
+
+		//getPos-methodes prevent overflows with 32-bit integers
+		int64_t getPos(int driveNumber);
+		int64_t getPosAux(int driveNumber);
 		
 		// gain scheduling functions
 		void disableVelocityControl(int driveNumber);
 		void enableVelocityControl(int driveNumber);
 		
-		
-		
-
 		
 		// basic functions
 		void disableDrive(int driveNumber);
@@ -49,9 +48,7 @@ namespace etherCATInterface {
 		driveModeOfOperation_ELMO getDriveModeElmo(int driveNumber);
 		bool checkDriveStatus(int driveNumber, driveStatus_ELMO driveStatusToCheck);
 		driveStatus_ELMO getDriveStatusElmo(int driveNumber);
-		
-		
-		
+		std::string getDriveStatusStringElmo(int driveNumber);
 		
 		
 		
@@ -81,22 +78,6 @@ namespace etherCATInterface {
 		void ll_setDigitalOutput(int driveNumber, uint32_t digitalOutput);
 		void ll_setPolarity(int driveNumber, uint8_t polarity);
 		void ll_setGainSchedulingManualIndex(int driveNumber, uint16_t index);
-		
-	// 	void setControlWord(int driveNumber, uint16_t word);
-	// 	void setModeOfOperation(int driveNumber, int8_t mode);
-	// 	void setTorque(int driveNumber, int16_t torque);
-	// 	void setPos(int driveNumber, int32_t position);
-	// 	void setTouchProbeFunction(int driveNumber, uint16_t function);
-	// 	void setGainSchedulingManualIndex(int driveNumber, uint16_t index);
-	// 	void setVel(int driveNumber, int32_t velocity);
-	// 	
-	// 	void setPosOffset(int driveNumber, int32_t offset);
-	// 	void setPosAuxOffset(int driveNumber, int32_t offset);
-	// 	
-	// 	
-	// 	//crude debug functions, do not use:
-	// 	int16_t DBGgetSetTorque();
-		
 		
 		
 		// low level get functions:
@@ -174,34 +155,7 @@ namespace etherCATInterface {
 		};
 		
 		drive drives[numberOfDrives];
-		
-		
-		
-		
-	// 		int32_t posAct[numberOfDrives]		= { 0 };
-	// 		int32_t diff1[numberOfDrives]		= { 0 };
-	// 		int64_t posNew1[numberOfDrives]		= { 0 };
-	// 		int32_t posRawOld[numberOfDrives]		= { 0 };
-	// 		int64_t posOld[numberOfDrives] 		= { 0 };
-	// 		int32_t posAuxRawOld[numberOfDrives]	= { 0 };
-	// 		int32_t posAuxOld[numberOfDrives] 		= { 0 };
-		int32_t posOffset[numberOfDrives]		= { 0 };
-		int32_t posAuxOffset[numberOfDrives]	= { 0 };
-		int32_t prevRawPos[numberOfDrives]		= { 0 };
-		int32_t prevRawAuxPos[numberOfDrives]	= { 0 };
-		int64_t absPos[numberOfDrives] 		= { 0 };
-		int64_t absAuxPos[numberOfDrives] 		= { 0 };
-		
-	// 	eeros::logger::Logger log;
-		
-
 	};
 }
-
-
-
-
-
-
 
 #endif // ETHERCAT_INTERFACE_ELMO_HPP_
