@@ -30,6 +30,7 @@ MySafetyProperties::MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElm
 	
 	switchOff("Switching off"),
 	doEmergency("Emergency activated"),
+	recoverEmergency("Recover from emergency"),
 	disableDrives("Disabeling drives"),
 	enableDrives("Enabeling drives"),
 	doHoming("Start homing"),
@@ -59,6 +60,7 @@ MySafetyProperties::MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElm
 // 	addLevel(slMoving);
 // 	addLevel(slFault);
 	
+	slEmergency			.addEvent(recoverEmergency,	slDrivesDisabled,		kPublicEvent  );
 	slDrivesDisabled	.addEvent(enableDrives,		slDrivesEnabled,		kPublicEvent  );
 	slDrivesEnabled		.addEvent(doHoming,			slHoming,				kPublicEvent  );
 	slDrivesEnabled		.addEvent(startMoving,		slMoving,				kPublicEvent  );

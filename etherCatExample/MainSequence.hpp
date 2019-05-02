@@ -59,6 +59,30 @@ private:
 // 	MyControlSystem& cs;
 };
 
+
+class HomingDrives : public Step {
+public:
+	HomingDrives(std::string name, Sequencer& sequencer, BaseSequence* caller, SafetySystem& SS, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives) : 
+		Step(name, this),
+		SS(SS),
+		elmoDrives(elmoDrives),
+		wait("waiting1", this)
+		{ }
+		
+	int action() {	
+		elmoDrives.ll_setTargetTorque(0, 0);
+		wait(1);
+		elmoDrives.ll_setTargetTorque(0, 0);
+	}
+	
+private:
+	SafetySystem& SS;
+	EtherCATInterfaceElmo& elmoDrives;
+	double pos;
+	Wait wait;
+// 	MyControlSystem& cs;
+};
+
 class showEncoder : public Step {
 public:
 	showEncoder(std::string name, Sequencer& sequencer, BaseSequence* caller, SafetySystem& SS, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives) : 
@@ -84,7 +108,8 @@ private:
 };
 
 
-
+// MainSequence
+// ////////////////////////////////////////////////////////////////////////////
 class MainSequence : public Sequence {
 public:
 	MainSequence(std::string name, Sequencer& sequencer, SafetySystem& SS, MySafetyProperties& safetyProp, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives, Logger& log) :  
@@ -97,7 +122,8 @@ public:
 					log(log),
 					elmoDrives(elmoDrives),
 					wait("waiting1", this),
-					step_initDrives("initDrives", sequencer, this, SS, CS, elmoDrives)
+					step_initDrives("initDrives", sequencer, this, SS, CS, elmoDrives),
+					step_homingDrives("homingDrives", sequencer, this, SS, CS, elmoDrives)
 					{
 		log.info() << "Sequence created: " << name;
 	}
@@ -106,19 +132,26 @@ public:
 	
 	int action() {
 		// Initialize signal checkers
-		CS.positionChecker.registerSafetyEvent(SS, safetyProp.doEmergency);
-		CS.positionChecker.setActiveLevel(safetyProp.slDrivesDisabled);
-		CS.positionChecker.reset();
-// 		CS.positionChecker.setLimits();
+		CS.velocityChecker.setActiveLevel(safetyProp.slDrivesDisabled);
+		CS.velocityChecker.registerSafetyEvent(SS, safetyProp.doEmergency);
+// 		wait(2);
+		CS.velocityChecker.reset();
+// 		SS.triggerEvent(safetyProp.recoverEmergency);
+		CS.velocityChecker.setLimits(-40000, 40000);
+// 		std::cout << 5 << std::endl;
 		//TODO
 		step_initDrives();
+		step_homingDrives();
 		wait(3);
-		CS.enableMonitoring();
+// 		CS.enableMonitoring();
+		
 // 		global::log->info() << "pos0: " << std::to_string(elmoDrives.getPos(0));
 		
 		for(int i=0; i<30 and sequencer.running; i++) {
 			log.info() << "SS level: " << SS.getCurrentLevel();
 			log.info() << "DI: 0x" << std::hex << CS.getEncoders.getOutDigitalInputs().getSignal().getValue();
+			log.info() << "Velocity:" << CS.getEncoders.getOutVelocity().getSignal().getValue();
+			log.info() << "Vel SC: " << CS.demuxVelocities.getOut(0).getSignal().getValue();
 			if ( i%2 == 0 )
 				CS.constantDigitalOut.setValue(0xFFFFFFFF);
 // 				CS.setElmos.getInDigitalOutput().getSignal().setValue<uint32_t>(0xFFFFFFFF);
@@ -140,6 +173,8 @@ public:
 private:
 	Wait wait;
 	InitDrives step_initDrives;
+	HomingDrives step_homingDrives;
+	
 	double angle;
 	
 	Sequencer& sequencer;

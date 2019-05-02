@@ -41,7 +41,8 @@ int main(int argc, char **argv) {
 	StreamLogWriter w(std::cout);
 	Logger log;
 	log.set(w);
-
+	w.show(LogLevel::INFO);
+	
 	log.info() << "Hello, EEROS";
 
 

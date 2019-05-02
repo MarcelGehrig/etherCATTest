@@ -36,6 +36,7 @@ public:
 	// Inputs
 	block_getEncoders getEncoders;
 	eeros::control::DeMux<global::numberOfDrivesTotal, double> demuxEncoders;
+	eeros::control::DeMux<global::numberOfDrivesTotal, double> demuxVelocities;
 	eeros::control::Constant<uint32_t> constantDigitalOut;
 	eeros::control::Constant<uint32_t> constantDigitalOut1;
 	eeros::control::Mux<global::numberOfDrivesTotal, uint32_t> muxDigitalOut;
@@ -45,7 +46,9 @@ public:
 	
 	
 	// SignalChecker
-	eeros::control::SignalChecker<> positionChecker;
+// 	eeros::control::SignalChecker<global::numberOfDrivesTotal, double> velocityChecker;
+// 	eeros::control::SignalChecker< eeros::math::Matrix<2,1,double> > velocityChecker;
+	eeros::control::SignalChecker< double > velocityChecker;
 	
 	
 	// Outputs
