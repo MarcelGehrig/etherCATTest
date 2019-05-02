@@ -31,10 +31,10 @@ namespace etherCATInterface {
 		uint32_t get32bit(uint32_t offsetInByte); 
 		uint32_t get32bit(uint32_t offsetInByte, uint32_t driveNumber);
 		
-		private:
 		bool checkOffset(int offsetInByte);
 		bool checkMaskedBits(uint16_t variable, uint16_t compareWord, uint16_t mask);
 
+		private:
 		ecmasterlib::EtherCATMain* etherCATStack;
 		uint8_t* inBuffer;
 		uint8_t* outBuffer;

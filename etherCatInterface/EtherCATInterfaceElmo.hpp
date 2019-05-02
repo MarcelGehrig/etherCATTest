@@ -19,7 +19,7 @@ namespace etherCATInterface {
 		bool switchOnAllDrives();
 		bool switchOnDrive(int driveNumber);
 
-		void enableAllDrives();
+		bool enableAllDrives();
 		void disableAllDrives();
 		void setControlWord(int driveNumber, controlWordCommand_ELMO word);
 		
@@ -29,8 +29,8 @@ namespace etherCATInterface {
 		bool isAllDrivesEnabled();
 
 		//getPos-methodes prevent overflows with 32-bit integers
-		int64_t getPos(int driveNumber);
-		int64_t getPosAux(int driveNumber);
+		int64_t getPosition(int driveNumber);
+		int64_t getPositionAux(int driveNumber);
 		
 		// gain scheduling functions
 		void disableVelocityControl(int driveNumber);
@@ -39,7 +39,7 @@ namespace etherCATInterface {
 		
 		// basic functions
 		void disableDrive(int driveNumber);
-		void enableDrive(int driveNumber);
+		bool enableDrive(int driveNumber);
 		void setModeOfOperation(int driveNumber, driveModeOfOperation_ELMO mode, bool scheduleGainIndex = false);
 		
 		bool getIsDriveEnabled(int driveNumber);

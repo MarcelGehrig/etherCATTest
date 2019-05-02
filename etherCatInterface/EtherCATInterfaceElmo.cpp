@@ -83,11 +83,13 @@ bool EtherCATInterfaceElmo::switchOnDrive(int driveNumber)
 	return getIsDriveSwitchedOn( driveNumber ) ;
 }
 
-void EtherCATInterfaceElmo::enableAllDrives()
+bool EtherCATInterfaceElmo::enableAllDrives()
 {
+	bool sucess = true;
 	for ( int i; i < numberOfDrives; i++) {
-		enableDrive(i);
+		if( !enableDrive(i) ) sucess = false;
 	}
+	return sucess;
 }
 
 void EtherCATInterfaceElmo::disableAllDrives()
@@ -95,27 +97,7 @@ void EtherCATInterfaceElmo::disableAllDrives()
 	for ( int i; i < numberOfDrives; i++) {
 		disableDrive(i);
 	}
-	return enabled;
 }
-
-int64_t EtherCATInterfaceElmo::getPosition(int driveNumber)
-{
-	int32_t rawPos = ll_getPositionActualValue(driveNumber);
-	int32_t diff = rawPos - drives[driveNumber].prevRawPos;
-	drives[driveNumber].prevRawPos = rawPos;
-	drives[driveNumber].absPos += static_cast<int64_t>(diff);
- 	return drives[driveNumber].absPos + static_cast<int64_t>(drives[driveNumber].posOffset);
-}
-
-int64_t EtherCATInterfaceElmo::getPositionAux(int driveNumber)
-{
-	int32_t rawAuxPos = ll_getAuxilaryPositionActualValue(driveNumber);
-	int32_t diff = rawAuxPos - drives[driveNumber].prevRawAuxPos;
-	drives[driveNumber].prevRawAuxPos = rawAuxPos;
-	drives[driveNumber].absAuxPos += static_cast<int64_t>(diff);
- 	return drives[driveNumber].absAuxPos + static_cast<int64_t>(drives[driveNumber].auxPosOffset);
-}
-
 
 
 //advanced set functions:
@@ -163,18 +145,18 @@ bool EtherCATInterfaceElmo::isAllDrivesEnabled()
 	return enabled;
 }
 
-int64_t EtherCATInterfaceElmo::getPos(int driveNumber)
+int64_t EtherCATInterfaceElmo::getPosition(int driveNumber)
 {
-	int32_t rawPos = getPositionActualValue(driveNumber);
+	int32_t rawPos = ll_getPositionActualValue(driveNumber);
 	int32_t diff = rawPos - drives[driveNumber].prevRawPos;
 	drives[driveNumber].prevRawPos = rawPos;
 	drives[driveNumber].absPos += static_cast<int64_t>(diff);
  	return drives[driveNumber].absPos + static_cast<int64_t>(drives[driveNumber].posOffset);
 }
 
-int64_t EtherCATInterfaceElmo::getPosAux(int driveNumber)
+int64_t EtherCATInterfaceElmo::getPositionAux(int driveNumber)
 {
-	int32_t rawAuxPos = getAuxilaryPositionActualValue(driveNumber);
+	int32_t rawAuxPos = ll_getAuxilaryPositionActualValue(driveNumber);
 	int32_t diff = rawAuxPos - drives[driveNumber].prevRawAuxPos;
 	drives[driveNumber].prevRawAuxPos = rawAuxPos;
 	drives[driveNumber].absAuxPos += static_cast<int64_t>(diff);
@@ -201,12 +183,14 @@ void EtherCATInterfaceElmo::disableDrive(int driveNumber)
 	setControlWord(driveNumber, controlWordCommand_ELMO::disableOperation);
 }
 
-void EtherCATInterfaceElmo::enableDrive(int driveNumber)
+bool EtherCATInterfaceElmo::enableDrive(int driveNumber)
 {
 	if ( !checkDriveStatus(driveNumber, driveStatus_ELMO::switchedOn) and getIsDriveEnabled(driveNumber) ) {
- 		std::cout << "WARNING: EnableDrive(" << driveNumber << ") with status: 0x" << std::hex << getStatusWord(driveNumber) << "not possible. It needs to be in state 'switched on'" << std::endl;
+ 		std::cout << "WARNING: EnableDrive(" << driveNumber << ") with status: 0x" << std::hex << ll_getStatusWord(driveNumber) << "not possible. It needs to be in state 'switched on'" << std::endl;
+		return false;
 	}
 	else ll_setControlWord(driveNumber, cwc_enableOperation);
+	return true;
 }
 
 void EtherCATInterfaceElmo::setModeOfOperation(int driveNumber, driveModeOfOperation_ELMO mode, bool scheduleGainIndex)
@@ -338,49 +322,6 @@ driveStatus_ELMO EtherCATInterfaceElmo::getDriveStatusElmo(int driveNumber)
 
  	std::cout << "EtherCATInterfaceElmo: 0x" << std::hex << statusWord  << std::dec << " is no valid status word" << std::endl;
 }
-
-driveStatus_ELMO EtherCATInterfaceElmo::getDriveStatusStringElmo(int driveNumber)
-{
-	uint16_t statusWord = getStatusWord(driveNumber);
-	if ( checkMaskedBits(statusWord, notReadyToSwitchOnValue, notReadyToSwitchOnMask) ) {
-		std:: cout << "drive: " << driveNumber << "   Status: notReadyToSwitchOn   statusWord: " << std::hex << statusWord << std::endl;
-		return "notReadyToSwitchOn";
-	}
-	if ( checkMaskedBits(statusWord, switchOnDisabledValue, switchOnDisabledMask) ) {
-		std:: cout << "drive: " << driveNumber << "   Status: switchOnDisabled   statusWord: " << std::hex << statusWord << std::endl;
-		return "switchOnDisabled";
-	}
-	if ( checkMaskedBits(statusWord, readyToSwitchOnValue, readyToSwitchOnMask) ) {
-		std:: cout << "drive: " << driveNumber << "   Status: readyToSwitchOn   statusWord: " << std::hex << statusWord << std::endl;
-		return "readyToSwitchOn";
-	}
-	if ( checkMaskedBits(statusWord, switchedOnValue, switchedOnMask) ) {
-		std:: cout << "drive: " << driveNumber << "   Status: switchedOn   statusWord: " << std::hex << statusWord << std::endl;
-		return "switchedOn";
-	}
-	if ( checkMaskedBits(statusWord, operationEnabledValue, operationEnabledMask) ) {
-		std:: cout << "drive: " << driveNumber << "   Status: operationEnabled   statusWord: " << std::hex << statusWord << std::endl;
-		return "operationEnabled";
-	}
-	if ( checkMaskedBits(statusWord, quickStopActiveValue, quickStopActiveMask) ) {
-		std:: cout << "drive: " << driveNumber << "   Status: quickStopActive   statusWord: " << std::hex << statusWord << std::endl;
-		return "quickStopActive";
-	}
-	if ( checkMaskedBits(statusWord, faultReactionActiveValue, faultReactionActiveMask) ) {
-		std:: cout << "drive: " << driveNumber << "   Status: faultReactionactive   statusWord: " << std::hex << statusWord << std::endl;
-		return "faultReactionactive";
-	}
-	if ( checkMaskedBits(statusWord, faultValue, faultMask) ) {
-		std:: cout << "drive: " << driveNumber << "   Status: fault   statusWord: " << std::hex << statusWord << std::endl;
-		return "fault";
-	}
-
- 	std::string s;
- 	s << "EtherCATInterfaceElmo: 0x" << std::hex << statusWord  << std::dec << " is no valid status word";
-	return s;
-}
-
-
 
 
 // index pulse
