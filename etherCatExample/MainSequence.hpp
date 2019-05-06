@@ -36,9 +36,10 @@ public:
 
 class InitDrives : public Step {
 public:
-	InitDrives(std::string name, Sequencer& sequencer, BaseSequence* caller, SafetySystem& SS, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives) : 
+	InitDrives(std::string name, Sequencer& sequencer, BaseSequence* caller, SafetySystem& SS, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives, Logger& log) : 
 		Step(name, this),
 		SS(SS),
+		log(log),
 		elmoDrives(elmoDrives)
 		{ }
 	int action() {	
@@ -56,28 +57,36 @@ private:
 	SafetySystem& SS;
 	EtherCATInterfaceElmo& elmoDrives;
 	double pos;
+	Logger& log;
 // 	MyControlSystem& cs;
 };
 
 
 class HomingDrives : public Step {
 public:
-	HomingDrives(std::string name, Sequencer& sequencer, BaseSequence* caller, SafetySystem& SS, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives) : 
+	HomingDrives(std::string name, Sequencer& sequencer, BaseSequence* caller, SafetySystem& SS, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives, Logger& log) : 
 		Step(name, this),
 		SS(SS),
 		elmoDrives(elmoDrives),
+		log(log),
 		wait("waiting1", this)
 		{ }
 		
-	int action() {	
+	int action() {
+		log.info() << "Homing drives";
 		elmoDrives.ll_setTargetTorque(0, 0);
-		wait(1);
+		elmoDrives.setModeOfOperation(0, etherCATInterface::cyclicSynchronousTorque);
+		elmoDrives.enableDrive(0);
+		elmoDrives.ll_setTargetTorque(0, 12);
+// 		wait(5);
 		elmoDrives.ll_setTargetTorque(0, 0);
+		log.info() << "Drives homed";
 	}
 	
 private:
 	SafetySystem& SS;
 	EtherCATInterfaceElmo& elmoDrives;
+	Logger&  log;
 	double pos;
 	Wait wait;
 // 	MyControlSystem& cs;
@@ -122,8 +131,8 @@ public:
 					log(log),
 					elmoDrives(elmoDrives),
 					wait("waiting1", this),
-					step_initDrives("initDrives", sequencer, this, SS, CS, elmoDrives),
-					step_homingDrives("homingDrives", sequencer, this, SS, CS, elmoDrives)
+					step_initDrives("initDrives", sequencer, this, SS, CS, elmoDrives, log),
+					step_homingDrives("homingDrives", sequencer, this, SS, CS, elmoDrives, log)
 					{
 		log.info() << "Sequence created: " << name;
 	}
@@ -134,13 +143,12 @@ public:
 		// Initialize signal checkers
 		CS.velocityChecker.setActiveLevel(safetyProp.slDrivesDisabled);
 		CS.velocityChecker.registerSafetyEvent(SS, safetyProp.doEmergency);
+		CS.velocityChecker.setLimits(-100000, 100000);
 // 		wait(2);
 		CS.velocityChecker.reset();
-// 		SS.triggerEvent(safetyProp.recoverEmergency);
-		CS.velocityChecker.setLimits(-40000, 40000);
-// 		std::cout << 5 << std::endl;
 		//TODO
 		step_initDrives();
+		SS.triggerEvent(safetyProp.enableDrives);
 		step_homingDrives();
 		wait(3);
 // 		CS.enableMonitoring();

@@ -39,6 +39,7 @@ public:
 	eeros::control::DeMux<global::numberOfDrivesTotal, double> demuxVelocities;
 	eeros::control::Constant<uint32_t> constantDigitalOut;
 	eeros::control::Constant<uint32_t> constantDigitalOut1;
+	eeros::control::Constant<int16_t> constantTargetTorque0;
 	eeros::control::Mux<global::numberOfDrivesTotal, uint32_t> muxDigitalOut;
 	
 	

@@ -112,6 +112,7 @@ MySafetyProperties::MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElm
 			else {
 				//TODO set DIO for STO
 			}
+			elmoDrives.disableDrive(driveNumber);
 		}
 	});
 	

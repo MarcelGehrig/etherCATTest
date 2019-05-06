@@ -720,6 +720,7 @@ void EtherCATInterfaceElmo::ll_setModeOfOperation(int driveNumber, int8_t modeOf
 
 void EtherCATInterfaceElmo::ll_setTargetTorque(int driveNumber, int16_t targetTorque)
 {
+	std::cout << "ll_setTargetTorque; driveNumber: " << driveNumber << "   targetTorque: " << targetTorque << std::endl;
 	set16bit(oo_targetTorque, driveNumber, targetTorque);
 }
 
