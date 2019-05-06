@@ -44,60 +44,81 @@ class block_setElmos : public Block {
 public:
 	block_setElmos(EtherCATInterfaceElmo& elmoDrives, int numberOfDrivesTotal) :
 		elmoDrives(elmoDrives),
-		numberOfDrivesTotal(numberOfDrivesTotal)
-	{
-	}
+		numberOfDrivesTotal(numberOfDrivesTotal),
+		setControlWordByCS(false ),
+		setModeOfOperationByCS(false),
+		setTargetTorqueByCS(false),
+		setMaxTorqueByCS(false),
+		setMaxCurrentByCS(false),
+		setTargetPositionByCS(false),
+		setMaxProfileVelocityByCS(false),
+		setProfileVelocityByCS(false),
+		setEndVelocityByCS(false),
+		setProfileAccelerationByCS(false),
+		setProfileDecelerationByCS(false),
+		setTorqueSlopeByCS(false),
+		setPositionOffsetByCS(false),
+		setVelocityOffsetByCS(false),
+		setTorqueOffsetByCS(false),
+		setTouchProbeFunctionByCS(false),
+		setInterpolatedDataRecord_1ByCS(false),
+		setInterpolatedDataRecord_2ByCS(false),
+		setTargetVelocityByCS(false),
+		setDigitalOutputByCS(true),
+		setPolarityByCS(false),
+		setGainSchedlingManualIndexByCS(false)
+	{}
 	
 	virtual void run() {
 		// set PDO values from EtherCAT using EtherCATInterfaceElmo
 		//  if the output value is not sent by PDO (Interface_config: oo_... < 0) the variable will not be processed
 
 		for ( int i = 0; i < numberOfDrivesTotal; i++ ) {
-// 			if( etherCATInterface::oo_controlWord >= 0 )
-// 				elmoDrives.ll_setControlWord(i, inControlWord.getSignal().getValue()(i) );
-// 			if( etherCATInterface::oo_modeOfOperation >= 0 )
-// 				elmoDrives.ll_setModeOfOperation(i, inModeOfOperation.getSignal().getValue()(i) );
-// 			if( etherCATInterface::oo_targetTorque >= 0 )
-// 				elmoDrives.ll_setTargetTorque(i, inTargetTorque.getSignal().getValue()(i) );
-// 			if( etherCATInterface::oo_maxTorque >= 0 )
-// 				elmoDrives.ll_setMaxTorque(i, inMaxTorque.getSignal().getValue()(i) );
-// 			if( etherCATInterface::oo_maxCurrent >= 0 )
-// 				elmoDrives.ll_setMaxCurrent(i, inMaxCurrent.getSignal().getValue()(i) );
-// 			if( etherCATInterface::oo_targetPosition >= 0 )
-// 				elmoDrives.ll_setTargetPosition(i, inTargetPosition.getSignal().getValue()(i) );
-// 			if( etherCATInterface::oo_maxProfileVelocity >= 0 )
-// 				elmoDrives.ll_setMaxProfileVelocity(i, inMaxProfileVelocity.getSignal().getValue()(i) );
-// 			if( etherCATInterface::oo_profileVelocity >= 0 )
-// 				elmoDrives.ll_setProfileVelocity(i, inProfileVelocity.getSignal().getValue()(i) );
-// 			if( etherCATInterface::oo_endVelocity >= 0 )
-// 				elmoDrives.ll_setEndVelocity(i, inEndVelocity.getSignal().getValue()(i) );
-// 			if( etherCATInterface::oo_profileAcceleration >= 0 )
-// 				elmoDrives.ll_setProfileAcceleration(i, inProfileAcceleration.getSignal().getValue()(i) );
-// 			if( etherCATInterface::oo_profileDeceleration >= 0 )
-// 				elmoDrives.ll_setProfileDeceleration(i, inProfileDeceleration.getSignal().getValue()(i) );
-// 			if( etherCATInterface::oo_torqueSlope >= 0 )
-// 				elmoDrives.ll_setTorqueSlope(i, inTorqueSlope.getSignal().getValue()(i) );
-// 			if( etherCATInterface::oo_positionOffset >= 0 )
-// 				elmoDrives.ll_setPositionOffset(i, inPositionOffset.getSignal().getValue()(i) );
-// 			if( etherCATInterface::oo_velocityOffset >= 0 )
-// 				elmoDrives.ll_setVelocityOffset(i, inVelocityOffset.getSignal().getValue()(i) );
-// 			if( etherCATInterface::oo_torqueOffset >= 0 )
-// 				elmoDrives.ll_setTorqueOffset(i, inTorqueOffset.getSignal().getValue()(i) );
-// 			if( etherCATInterface::oo_touchProbeFunction >= 0 )
-// 				elmoDrives.ll_setTouchProbeFunction(i, inTouchProbeFunction.getSignal().getValue()(i) );
-// 			if( etherCATInterface::oo_interpolatedDataRecord_1 >= 0 )
-// 				elmoDrives.ll_setInterpolatedDataRecord1(i, inInterpolatedDataRecord_1.getSignal().getValue()(i) );
-// 			if( etherCATInterface::oo_interpolatedDataRecord_2 >= 0 )
-// 				elmoDrives.ll_setInterpolatedDataRecord2(i, inInterpolatedDataRecord_2.getSignal().getValue()(i) );
-// 			if( etherCATInterface::oo_targetVelocity >= 0 )
-// 				elmoDrives.ll_setTargetVelocity(i, inTargetVelocity.getSignal().getValue()(i) );
-			if( etherCATInterface::oo_digitalOutput >= 0 )
+ 			if( etherCATInterface::oo_controlWord >= 0 && setControlWordByCS )
+ 				elmoDrives.ll_setControlWord(i, inControlWord.getSignal().getValue()(i) );
+ 			if( etherCATInterface::oo_modeOfOperation >= 0 && setModeOfOperationByCS )
+ 				elmoDrives.ll_setModeOfOperation(i, inModeOfOperation.getSignal().getValue()(i) );
+ 			if( etherCATInterface::oo_targetTorque >= 0 && setTargetTorqueByCS )
+ 				elmoDrives.ll_setTargetTorque(i, inTargetTorque.getSignal().getValue()(i) );
+ 			if( etherCATInterface::oo_maxTorque >= 0 && setMaxTorqueByCS )
+ 				elmoDrives.ll_setMaxTorque(i, inMaxTorque.getSignal().getValue()(i) );
+ 			if( etherCATInterface::oo_maxCurrent >= 0 && setMaxCurrentByCS )
+ 				elmoDrives.ll_setMaxCurrent(i, inMaxCurrent.getSignal().getValue()(i) );
+ 			if( etherCATInterface::oo_targetPosition >= 0 && setTargetPositionByCS )
+ 				elmoDrives.ll_setTargetPosition(i, inTargetPosition.getSignal().getValue()(i) );
+ 			if( etherCATInterface::oo_maxProfileVelocity >= 0 && setMaxProfileVelocityByCS )
+ 				elmoDrives.ll_setMaxProfileVelocity(i, inMaxProfileVelocity.getSignal().getValue()(i) );
+ 			if( etherCATInterface::oo_profileVelocity >= 0 && setProfileVelocityByCS )
+ 				elmoDrives.ll_setProfileVelocity(i, inProfileVelocity.getSignal().getValue()(i) );
+ 			if( etherCATInterface::oo_endVelocity >= 0 && setEndVelocityByCS )
+ 				elmoDrives.ll_setEndVelocity(i, inEndVelocity.getSignal().getValue()(i) );
+ 			if( etherCATInterface::oo_profileAcceleration >= 0 && setProfileAccelerationByCS )
+ 				elmoDrives.ll_setProfileAcceleration(i, inProfileAcceleration.getSignal().getValue()(i) );
+ 			if( etherCATInterface::oo_profileDeceleration >= 0 && setProfileDecelerationByCS )
+ 				elmoDrives.ll_setProfileDeceleration(i, inProfileDeceleration.getSignal().getValue()(i) );
+ 			if( etherCATInterface::oo_torqueSlope >= 0 && setTorqueSlopeByCS )
+ 				elmoDrives.ll_setTorqueSlope(i, inTorqueSlope.getSignal().getValue()(i) );
+ 			if( etherCATInterface::oo_positionOffset >= 0 && setPositionOffsetByCS )
+ 				elmoDrives.ll_setPositionOffset(i, inPositionOffset.getSignal().getValue()(i) );
+ 			if( etherCATInterface::oo_velocityOffset >= 0 && setVelocityOffsetByCS )
+ 				elmoDrives.ll_setVelocityOffset(i, inVelocityOffset.getSignal().getValue()(i) );
+ 			if( etherCATInterface::oo_torqueOffset >= 0 && setTorqueOffsetByCS )
+ 				elmoDrives.ll_setTorqueOffset(i, inTorqueOffset.getSignal().getValue()(i) );
+ 			if( etherCATInterface::oo_touchProbeFunction >= 0 && setTouchProbeFunctionByCS )
+ 				elmoDrives.ll_setTouchProbeFunction(i, inTouchProbeFunction.getSignal().getValue()(i) );
+ 			if( etherCATInterface::oo_interpolatedDataRecord_1 >= 0 && setInterpolatedDataRecord_1ByCS )
+ 				elmoDrives.ll_setInterpolatedDataRecord1(i, inInterpolatedDataRecord_1.getSignal().getValue()(i) );
+ 			if( etherCATInterface::oo_interpolatedDataRecord_2 >= 0 && setInterpolatedDataRecord_2ByCS )
+ 				elmoDrives.ll_setInterpolatedDataRecord2(i, inInterpolatedDataRecord_2.getSignal().getValue()(i) );
+ 			if( etherCATInterface::oo_targetVelocity >= 0 && setTargetVelocityByCS )
+ 				elmoDrives.ll_setTargetVelocity(i, inTargetVelocity.getSignal().getValue()(i) );
+			if( etherCATInterface::oo_digitalOutput >= 0 && setDigitalOutputByCS )
 				elmoDrives.ll_setDigitalOutput(i, inDigitalOutput.getSignal().getValue()(i) );
-// 			if( etherCATInterface::oo_polarity >= 0 )
-// 				elmoDrives.ll_setPolarity(i, inPolarity.getSignal().getValue()(i) );
+ 			if( etherCATInterface::oo_polarity >= 0 && setPolarityByCS )
+ 				elmoDrives.ll_setPolarity(i, inPolarity.getSignal().getValue()(i) );
 			
-// 			if( etherCATInterface::oo_gainSchedlingManualIndex  >= 0 )
-// 				elmoDrives.ll_setGainSchedlingManualIndex (i, inGainSchedlingManualIndex .getSignal().getValue()(i) );
+//  			if( etherCATInterface::oo_gainSchedlingManualIndex  >= 0 && setGainSchedlingManualIndexByCS )
+//  				elmoDrives.ll_setGainSchedlingManualIndex (i, inGainSchedlingManualIndex .getSignal().getValue()(i) );
 		}
 	}
 	
@@ -197,6 +218,30 @@ public:
 		eeros::control::Input< typeDigitalOutput >				inDigitalOutput;
 		eeros::control::Input< typePolarity >					inPolarity;
 		eeros::control::Input< typeGainSchedlingManualIndex >	inGainSchedlingManualIndex;
+		
+		
+		bool setControlWordByCS;
+		bool setModeOfOperationByCS;
+		bool setTargetTorqueByCS;
+		bool setMaxTorqueByCS;
+		bool setMaxCurrentByCS;
+		bool setTargetPositionByCS;
+		bool setMaxProfileVelocityByCS;
+		bool setProfileVelocityByCS;
+		bool setEndVelocityByCS;
+		bool setProfileAccelerationByCS;
+		bool setProfileDecelerationByCS;
+		bool setTorqueSlopeByCS;
+		bool setPositionOffsetByCS;
+		bool setVelocityOffsetByCS;
+		bool setTorqueOffsetByCS;
+		bool setTouchProbeFunctionByCS;
+		bool setInterpolatedDataRecord_1ByCS;
+		bool setInterpolatedDataRecord_2ByCS;
+		bool setTargetVelocityByCS;
+		bool setDigitalOutputByCS;
+		bool setPolarityByCS;
+		bool setGainSchedlingManualIndexByCS;
 
 
 		int numberOfDrivesTotal;
