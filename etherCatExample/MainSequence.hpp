@@ -87,35 +87,41 @@ private:
 	SafetySystem& SS;
 	EtherCATInterfaceElmo& elmoDrives;
 	Logger&  log;
-	double pos;
+
 	Wait wait;
-// 	MyControlSystem& cs;
 };
 
-class showEncoder : public Step {
+
+class SetVelocity : public Step {
 public:
-	showEncoder(std::string name, Sequencer& sequencer, BaseSequence* caller, SafetySystem& SS, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives) : 
+	SetVelocity(std::string name, Sequencer& sequencer, BaseSequence* caller, SafetySystem& SS, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives, Logger& log) : 
 		Step(name, this),
 		SS(SS),
-		elmoDrives(elmoDrives)
-	{ }
-	
-	int operator() (int drive) {this->drive = drive; return start();}
-	
-	int action() {	}
-	
-	bool checkExitCondition() {	//blocking and endless
-		return false;
+		elmoDrives(elmoDrives),
+		log(log)
+		{ }
+		
+	int operator() (int drive, double velocity) {
+		this->velocity = velocity;
+		this->drive = drive;
+		return start();
 	}
 
+	int action() {
+		log.info() << "Set drive '" << drive << "' to velocity: " << velocity;
+		elmoDrives.setModeOfOperation(drive, etherCATInterface::cyclicSynchronousVelocity);
+		elmoDrives.ll_setTargetVelocity(0, velocity);
+		elmoDrives.enableDrive(drive);
+	}
+	
 private:
 	SafetySystem& SS;
 	EtherCATInterfaceElmo& elmoDrives;
+	Logger&  log;
+	
 	int drive;
-// 	double pos;
-// 	MyControlSystem& cs;
+	double velocity;
 };
-
 
 // MainSequence
 // ////////////////////////////////////////////////////////////////////////////
@@ -132,7 +138,8 @@ public:
 					elmoDrives(elmoDrives),
 					wait("waiting1", this),
 					step_initDrives("initDrives", sequencer, this, SS, CS, elmoDrives, log),
-					step_homingDrives("homingDrives", sequencer, this, SS, CS, elmoDrives, log)
+					step_homingDrives("homingDrives", sequencer, this, SS, CS, elmoDrives, log),
+					step_setVelocity("homingDrives", sequencer, this, SS, CS, elmoDrives, log)
 					{
 		log.info() << "Sequence created: " << name;
 	}
@@ -149,9 +156,10 @@ public:
 		//TODO
 		step_initDrives();
 		SS.triggerEvent(safetyProp.enableDrives);
-		step_homingDrives();
+// 		step_homingDrives();
+		step_setVelocity(0, 5000);
 		wait(3);
-// 		CS.enableMonitoring();
+// 		step_setVelocity(0, 0);
 		
 // 		global::log->info() << "pos0: " << std::to_string(elmoDrives.getPos(0));
 		
@@ -182,6 +190,7 @@ private:
 	Wait wait;
 	InitDrives step_initDrives;
 	HomingDrives step_homingDrives;
+	SetVelocity step_setVelocity;
 	
 	double angle;
 	
