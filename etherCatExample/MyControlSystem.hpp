@@ -20,6 +20,7 @@
 #include "block_getEncoders.hpp"
 #include "block_setElmos.hpp"
 #include "block_printNumber.hpp"
+#include "block_timingPerformanceTester.hpp"
 
 using namespace etherCATInterface;
 
@@ -37,14 +38,14 @@ public:
 	block_getEncoders getEncoders;
 	eeros::control::DeMux<global::numberOfDrivesTotal, double> demuxEncoders;
 	eeros::control::DeMux<global::numberOfDrivesTotal, double> demuxVelocities;
+	eeros::control::DeMux<global::numberOfDrivesTotal, double> demuxTorque;
 	eeros::control::Constant<uint32_t> constantDigitalOut;
 	eeros::control::Constant<uint32_t> constantDigitalOut1;
-	eeros::control::Constant<int16_t> constantTargetTorque0;
-	eeros::control::Mux<global::numberOfDrivesTotal, uint32_t> muxDigitalOut;
+	eeros::control::Constant<double> constantTargetTorque0;
 	
 	
 	// Internal logic
-	
+	block_timingPerformanceTester<double> timingPerformanceTester;
 	
 	// SignalChecker
 // 	eeros::control::SignalChecker<global::numberOfDrivesTotal, double> velocityChecker;
@@ -53,6 +54,8 @@ public:
 	
 	
 	// Outputs
+	eeros::control::Mux<global::numberOfDrivesTotal, uint32_t> muxDigitalOut;
+	eeros::control::Mux<global::numberOfDrivesTotal, double> muxTorqueOut;
 	block_printNumber<double> printNumber;
 	block_setElmos setElmos;
 	

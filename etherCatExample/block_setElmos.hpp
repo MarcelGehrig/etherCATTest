@@ -18,7 +18,7 @@ using namespace etherCATInterface;
 //TODO numberOfDrivesTotal
 typedef eeros::math::Matrix< global::numberOfDrivesTotal, 1, uint16_t >			typeControlWord;
 typedef eeros::math::Matrix< global::numberOfDrivesTotal, 1, uint8_t >			typeModeOfOperation;
-typedef eeros::math::Matrix< global::numberOfDrivesTotal, 1, uint16_t >			typeTargetTorque;
+typedef eeros::math::Matrix< global::numberOfDrivesTotal, 1, double >			typeTargetTorque;
 typedef eeros::math::Matrix< global::numberOfDrivesTotal, 1, int16_t >			typeMaxTorque;
 typedef eeros::math::Matrix< global::numberOfDrivesTotal, 1, int16_t >			typeMaxCurrent;
 typedef eeros::math::Matrix< global::numberOfDrivesTotal, 1, int32_t >			typeTargetPosition;
@@ -79,7 +79,7 @@ public:
  			if( etherCATInterface::oo_modeOfOperation >= 0 && setModeOfOperationByCS )
  				elmoDrives.ll_setModeOfOperation(i, inModeOfOperation.getSignal().getValue()(i) );
  			if( etherCATInterface::oo_targetTorque >= 0 && setTargetTorqueByCS )
- 				elmoDrives.ll_setTargetTorque(i, inTargetTorque.getSignal().getValue()(i) );
+ 				elmoDrives.ll_setTargetTorque(i, static_cast<uint16_t>( inTargetTorque.getSignal().getValue()(i) ));
  			if( etherCATInterface::oo_maxTorque >= 0 && setMaxTorqueByCS )
  				elmoDrives.ll_setMaxTorque(i, inMaxTorque.getSignal().getValue()(i) );
  			if( etherCATInterface::oo_maxCurrent >= 0 && setMaxCurrentByCS )
@@ -193,6 +193,29 @@ public:
 
 	
 	
+		
+		bool setControlWordByCS;
+		bool setModeOfOperationByCS;
+		bool setTargetTorqueByCS;
+		bool setMaxTorqueByCS;
+		bool setMaxCurrentByCS;
+		bool setTargetPositionByCS;
+		bool setMaxProfileVelocityByCS;
+		bool setProfileVelocityByCS;
+		bool setEndVelocityByCS;
+		bool setProfileAccelerationByCS;
+		bool setProfileDecelerationByCS;
+		bool setTorqueSlopeByCS;
+		bool setPositionOffsetByCS;
+		bool setVelocityOffsetByCS;
+		bool setTorqueOffsetByCS;
+		bool setTouchProbeFunctionByCS;
+		bool setInterpolatedDataRecord_1ByCS;
+		bool setInterpolatedDataRecord_2ByCS;
+		bool setTargetVelocityByCS;
+		bool setDigitalOutputByCS;
+		bool setPolarityByCS;
+		bool setGainSchedlingManualIndexByCS;
 	
 	protected:
 //TODO numberOfDrivesTotal
@@ -219,29 +242,6 @@ public:
 		eeros::control::Input< typePolarity >					inPolarity;
 		eeros::control::Input< typeGainSchedlingManualIndex >	inGainSchedlingManualIndex;
 		
-		
-		bool setControlWordByCS;
-		bool setModeOfOperationByCS;
-		bool setTargetTorqueByCS;
-		bool setMaxTorqueByCS;
-		bool setMaxCurrentByCS;
-		bool setTargetPositionByCS;
-		bool setMaxProfileVelocityByCS;
-		bool setProfileVelocityByCS;
-		bool setEndVelocityByCS;
-		bool setProfileAccelerationByCS;
-		bool setProfileDecelerationByCS;
-		bool setTorqueSlopeByCS;
-		bool setPositionOffsetByCS;
-		bool setVelocityOffsetByCS;
-		bool setTorqueOffsetByCS;
-		bool setTouchProbeFunctionByCS;
-		bool setInterpolatedDataRecord_1ByCS;
-		bool setInterpolatedDataRecord_2ByCS;
-		bool setTargetVelocityByCS;
-		bool setDigitalOutputByCS;
-		bool setPolarityByCS;
-		bool setGainSchedlingManualIndexByCS;
 
 
 		int numberOfDrivesTotal;

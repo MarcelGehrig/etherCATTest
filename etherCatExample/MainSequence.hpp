@@ -156,12 +156,24 @@ public:
 		//TODO
 		step_initDrives();
 		SS.triggerEvent(safetyProp.enableDrives);
+		
 // 		step_homingDrives();
-		step_setVelocity(0, 5000);
-		wait(3);
+		
+// 		step_setVelocity(0, 5000);
+// 		wait(1);
 // 		step_setVelocity(0, 0);
 		
-// 		global::log->info() << "pos0: " << std::to_string(elmoDrives.getPos(0));
+		log.info() << "timingPerformanceTest started";
+		elmoDrives.ll_setTargetTorque(0, 0);
+		elmoDrives.setModeOfOperation(0, etherCATInterface::cyclicSynchronousTorque);
+		elmoDrives.enableDrive(0);
+		CS.setElmos.setTargetTorqueByCS = true;
+		CS.timingPerformanceTester.enable();
+		wait(1);
+		CS.timingPerformanceTester.disable();
+		CS.setElmos.setTargetTorqueByCS = false;
+		elmoDrives.disableAllDrives();
+		
 		
 		for(int i=0; i<30 and sequencer.running; i++) {
 			log.info() << "SS level: " << SS.getCurrentLevel();

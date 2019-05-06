@@ -41,7 +41,6 @@ void EtherCATInterfaceBase::set16bit(uint32_t offsetInByte, int16_t payload)
 
 void EtherCATInterfaceBase::set16bit(uint32_t offsetInByte, uint32_t driveNumber, int16_t payload)
 {
-	std::cout << "set16bit; offsetInByte: " << offsetInByte << "   driveNumber: " << driveNumber << "   payload: " << payload << std::endl;
 	if(checkOffset(offsetInByte)) {
 		etherCATStack->setWord(outBuffer + driveNumber*bytesPerPDOFrameTx + offsetInByte, payload);
 	}
