@@ -17,8 +17,8 @@ public:
 	counterHighLow(0),
 	counterLowHigh(0),
 	signalLow(0),
-	signalHigh(40),
-	inThreshold(20),
+	signalHigh(10),
+	inThreshold(5),
 	lastCycleWasHigh(false)
 	{
 		this->out.getSignal().clear();
@@ -26,7 +26,7 @@ public:
 	
 	virtual void run() {
 		if (enabled) {
-			std::cout << "this->in.getSignal().getValue(): " << this->in.getSignal().getValue() << std::endl;
+// 			std::cout << "this->in.getSignal().getValue(): " << this->in.getSignal().getValue() << std::endl;
 			if (this->in.getSignal().getValue() >= inThreshold ) {
 				counterLowHigh++;
 				if (lastCycleWasHigh) {		// signal stays high

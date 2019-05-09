@@ -155,20 +155,26 @@ public:
 		CS.velocityChecker.reset();
 		//TODO
 		step_initDrives();
-		SS.triggerEvent(safetyProp.enableDrives);
+// 		SS.triggerEvent(safetyProp.enableDrives);
 		
 // 		step_homingDrives();
 		
-// 		step_setVelocity(0, 5000);
-// 		wait(1);
+		// set velocity	
+// 		SS.triggerEvent(safetyProp.enableDrives);
+// 		step_setVelocity(0, -5000);
+// 		wait(4);
 // 		step_setVelocity(0, 0);
 		
+		// timingPerformanceTest
 		log.info() << "timingPerformanceTest started";
 		elmoDrives.ll_setTargetTorque(0, 0);
 		elmoDrives.setModeOfOperation(0, etherCATInterface::cyclicSynchronousTorque);
-		elmoDrives.enableDrive(0);
+		SS.triggerEvent(safetyProp.enableDrives);
 		CS.setElmos.setTargetTorqueByCS = true;
 		CS.timingPerformanceTester.enable();
+		wait(1);
+		log.info() << "timingPerformanceTest without waiting";
+		elmoDrives.getEtherCATStack()->getInstance()->stopWaitingForEeros();
 		wait(1);
 		CS.timingPerformanceTester.disable();
 		CS.setElmos.setTargetTorqueByCS = false;

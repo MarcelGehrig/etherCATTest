@@ -185,8 +185,9 @@ void EtherCATInterfaceElmo::disableDrive(int driveNumber)
 
 bool EtherCATInterfaceElmo::enableDrive(int driveNumber)
 {
+	if ( getIsDriveEnabled(driveNumber) ) return true;
 	if ( !checkDriveStatus(driveNumber, driveStatus_ELMO::switchedOn) and getIsDriveEnabled(driveNumber) ) {
- 		std::cout << "WARNING: EnableDrive(" << driveNumber << ") with status: 0x" << std::hex << ll_getStatusWord(driveNumber) << "not possible. It needs to be in state 'switched on'" << std::endl;
+ 		std::cout << "WARNING: EnableDrive(" << driveNumber << ") with status: 0x" << std::hex << ll_getStatusWord(driveNumber) << " not possible. It needs to be in state 'switched on'" << std::endl;
 		return false;
 	}
 	else ll_setControlWord(driveNumber, cwc_enableOperation);
@@ -320,7 +321,9 @@ driveStatus_ELMO EtherCATInterfaceElmo::getDriveStatusElmo(int driveNumber)
 		return driveStatus_ELMO::fault;
 	}
 
- 	std::cout << "EtherCATInterfaceElmo: 0x" << std::hex << statusWord  << std::dec << " is no valid status word" << std::endl;
+//  	std::cout << "EtherCATInterfaceElmo: 0x" << std::hex << statusWord  << std::dec << " is no valid status word" << std::endl;
+	
+	std::cout << "getDriveStatusElmo(" << driveNumber << ") returns: 0x" << std::hex << statusWord << std::dec << " which is not a valid status word" << std::endl;
 }
 
 

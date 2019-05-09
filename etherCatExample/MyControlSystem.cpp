@@ -2,10 +2,13 @@
 #include <eeros/core/Executor.hpp>
 #include <float.h>
 
+#include <eeros/task/Periodic.hpp>
+#include <eeros/core/PeriodicCounter.hpp>
+
 using namespace eeros::control;
 
-MyControlSystem::MyControlSystem(double ts, EtherCATInterfaceElmo& elmoDrives, int numberOfDrivesTotal, Logger& log) :
-log(log),
+MyControlSystem::MyControlSystem(double ts, EtherCATInterfaceElmo& elmoDrives, int numberOfDrivesTotal) :
+log('C'),
 elmoDrives(elmoDrives),
 numberOfDrivesTotal(numberOfDrivesTotal),
 getEncoders(elmoDrives, numberOfDrivesTotal),
@@ -82,7 +85,26 @@ timedomain("Main time domain", ts, true)
 	timedomain.addBlock(printNumber);
 	timedomain.addBlock(setElmos);
 	
-	eeros::Executor::instance().add(timedomain);
+	
+	
+	eeros::task::Periodic periodic("control system", ts, timedomain);  // create a periodic with a given period 
+	// the periodic will run a given time domain
+	
+	periodic.monitors.push_back([&](eeros::PeriodicCounter &c, Logger &log) {
+		static int ticks = 0;
+		if (++ticks < 250) return;
+		ticks = 0;
+		log.info() << "period max: " << c.period.max << ", run mean: " << c.run.mean;
+		std::cout << "jitter max: " << c.jitter.max << ", run mean: " << c.run.mean << std::endl;
+		std::cout << "period max: " << c.period.max << ", run max: " << c.run.max << std::endl;
+		ticks = 0;
+		c.reset();
+	});
+	
+	eeros::Executor::instance().add(periodic);
+	
+	
+// 	eeros::Executor::instance().add(timedomain);
 }
 
 void MyControlSystem::enableMonitoring()

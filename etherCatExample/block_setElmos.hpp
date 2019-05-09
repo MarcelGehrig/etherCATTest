@@ -45,6 +45,8 @@ public:
 	block_setElmos(EtherCATInterfaceElmo& elmoDrives, int numberOfDrivesTotal) :
 		elmoDrives(elmoDrives),
 		numberOfDrivesTotal(numberOfDrivesTotal),
+		ecmasterlibWaitsForThisBlock(false),
+		
 		setControlWordByCS(false ),
 		setModeOfOperationByCS(false),
 		setTargetTorqueByCS(false),
@@ -119,6 +121,12 @@ public:
 			
 //  			if( etherCATInterface::oo_gainSchedlingManualIndex  >= 0 && setGainSchedlingManualIndexByCS )
 //  				elmoDrives.ll_setGainSchedlingManualIndex (i, inGainSchedlingManualIndex .getSignal().getValue()(i) );
+			
+			if (!ecmasterlibWaitsForThisBlock) {
+				elmoDrives.getEtherCATStack()->getInstance()->startWaitingForEeros();
+				ecmasterlibWaitsForThisBlock = true;
+			}
+			elmoDrives.getEtherCATStack()->getInstance()->getConditionalVariable2()->notify_one();
 		}
 	}
 	
@@ -246,7 +254,7 @@ public:
 
 		int numberOfDrivesTotal;
 		EtherCATInterfaceElmo& elmoDrives;
-		
+		bool ecmasterlibWaitsForThisBlock;
 };
 
 #endif /* BLOCK_SET_ELMOS_HPP */

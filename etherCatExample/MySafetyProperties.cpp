@@ -121,6 +121,7 @@ MySafetyProperties::MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElm
 	});
 	
 	slDrivesEnabled.setLevelAction([&](SafetyContext* privateContext) {
+		elmoDrives.enableAllDrives();
 		// check max speed and acceleration with signal checker
 	});
 	

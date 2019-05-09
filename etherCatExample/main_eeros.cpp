@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
 	// Logger
 	// ////////////////////////////////////////////////////////////////////////
 	StreamLogWriter w(std::cout);
-	Logger log;
+	Logger log('M');
 	log.set(w);
 
 	log.info() << "Hello, EEROS";
@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
 	
 	// Control system
 	// ////////////////////////////////////////////////////////////////////////
-	MyControlSystem CS(dt, elmoDrives, global::numberOfDrivesTotal, log);
+	MyControlSystem CS(dt, elmoDrives, global::numberOfDrivesTotal);
 	
 	// Safety system
 	// ////////////////////////////////////////////////////////////////////////
@@ -93,7 +93,9 @@ int main(int argc, char **argv) {
 	auto &executor = eeros::Executor::instance();
 	executor.syncWithEtherCATSTack(etherCATStack);
 	executor.setMainTask(SS);
+// 	executor.
 // 	SS.triggerEvent(properties.initDrives);
+// 	etherCATStack->getInstance()->startWaiting();
 	
 	executor.run();
 	

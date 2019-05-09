@@ -27,7 +27,7 @@ using namespace etherCATInterface;
 class MyControlSystem {
 
 public:
-	MyControlSystem(double ts, EtherCATInterfaceElmo& elmoDrives, int numberOfDrivesTotal, Logger& log);
+	MyControlSystem(double ts, EtherCATInterfaceElmo& elmoDrives, int numberOfDrivesTotal);
 	~MyControlSystem();
 	
 // 	EtherCATInterfaceElmo& getElmoDrives() {return elmoDrives;);
@@ -70,7 +70,7 @@ public:
 private:
 	EtherCATInterfaceElmo& elmoDrives;
 	int numberOfDrivesTotal;
-	Logger& log;
+	Logger log;
 };
 
 #endif // CONTROLSYSTEM_HPP_
