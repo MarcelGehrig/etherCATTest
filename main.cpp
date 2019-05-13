@@ -14,6 +14,7 @@ using namespace etherCATInterface;
 
 
 ecmasterlib::EtherCATMain* etherCATStackPtr;
+EtherCATInterfaceElmo* elmoDrivesPtr;
 
 bool running = true;
 
@@ -26,7 +27,8 @@ static constexpr int numberOfDrivesTotal = 2;
 static void signalHandler( int nSignal )
 {
     std::cout << "signalHandler" << std::endl;
-    etherCATStackPtr->stop();
+	if (elmoDrivesPtr) elmoDrivesPtr->disableAllDrives();
+    if (etherCATStackPtr) etherCATStackPtr->stop();
     running = false;
     std::cout << "signalHandler" << std::endl;
 }
@@ -52,9 +54,10 @@ int main(int argc, char **argv) {
 	// ////////////////////////////////////////////////////////////////////////
 	auto etherCATStack = ecmasterlib::EtherCATMain::createInstance(argc, argv, byteSizePerSlave*numberOfDrivesTotal);
 	signal(SIGINT, signalHandler);
-	//   etherCATStackPtr = etherCATStack;
+	etherCATStackPtr = etherCATStack;
 	sleep(9);
 	EtherCATInterfaceElmo elmoDrives = EtherCATInterfaceElmo( etherCATStack );
+	elmoDrivesPtr = &elmoDrives;
 	//   movingchair::MovingChairEtherCAT chairEtherCAT(etherCATStack);
 	//	while(1) { sleep(1); }
 	//   chairEtherCAT.initElmoDrives();
@@ -74,6 +77,10 @@ int main(int argc, char **argv) {
 // 		cv->notify_one();
 	};
 
+
+		log.info() << "MAIN: enableDrive(0)";
+		elmoDrives.enableDrive(0);
+
 // 	while ( running ) {
 // 		log.info() << "loop";
 // 		sleep(1);
@@ -90,23 +97,31 @@ int main(int argc, char **argv) {
 	int delay = 0;
 	
 // 	etherCATStack->wait = true;
+	
+	
+	log.info() << "setting mode of operation: 0";
+	elmoDrives.setModeOfOperation(0, etherCATInterface::cyclicSynchronousVelocity);
+	sleep(0.1);
+	log.info() << "elmoDrives.ll_setTargetVelocity(0, 5000), Status:" << elmoDrives.getDriveStatusStringElmo(0);
+	elmoDrives.ll_setTargetVelocity(0, 5000);
+	sleep(5);
+	log.info() << "elmoDrives.ll_setTargetVelocity(0, 0), Status: " << elmoDrives.getDriveStatusStringElmo(0);
+	elmoDrives.ll_setTargetVelocity(0, 0);
+	sleep(5);
+		
 	while (running) {
-// 		std::unique_lock<std::mutex> lk(*m);
-// 		cv->wait(lk);
-// 		lk.unlock();
+		// Synchronisation with ecmasterlib
+		// ////////////////////////////////////////////////////////////////////
+		std::unique_lock<std::mutex> lk(*m);
+		cv->wait(lk);
+		lk.unlock();
+		// ////////////////////////////////////////////////////////////////////
 		
-// 		if ( count == 10000 ) {
-// 			log.info() << "AAAAAAA: start waiting";
-// 			etherCATStack->wait = true;
-// 			cv2->notify_one();
-// 		}
+
 		
-// 		if ( count%200 == 0 ) {
-// 					log.info() << "                               position: " << elmoDrives.getPositionActualValue(0);
-// 		}
-// 		
+		// ////////////////////////////////////////////////////////////////////
 		if ( count%500 == 0 ) {
-			log.info() << "delay: " << delay;
+			log.info() << "delay: " << delay << ", count: " << count;
 			delay = 0;
 			if ( elmoDrives.ll_getDigitalInputs(1) == 0x3f0000 ) {
 				elmoDrives.ll_setDigitalOutput(0, 0xFFFFFFFF);

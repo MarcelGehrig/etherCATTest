@@ -326,6 +326,38 @@ driveStatus_ELMO EtherCATInterfaceElmo::getDriveStatusElmo(int driveNumber)
 	std::cout << "getDriveStatusElmo(" << driveNumber << ") returns: 0x" << std::hex << statusWord << std::dec << " which is not a valid status word" << std::endl;
 }
 
+std::__cxx11::string EtherCATInterfaceElmo::getDriveStatusStringElmo(int driveNumber)
+{
+	uint16_t statusWord = ll_getStatusWord(driveNumber);
+	if ( checkMaskedBits(statusWord, notReadyToSwitchOnValue, notReadyToSwitchOnMask) ) {
+		return "notReadyToSwitchOn";
+	}
+	if ( checkMaskedBits(statusWord, switchOnDisabledValue, switchOnDisabledMask) ) {
+		return "switchOnDisabled";
+	}
+	if ( checkMaskedBits(statusWord, readyToSwitchOnValue, readyToSwitchOnMask) ) {
+		return "readyToSwitchOn";
+	}
+	if ( checkMaskedBits(statusWord, switchedOnValue, switchedOnMask) ) {
+		return "switchedOn";
+	}
+	if ( checkMaskedBits(statusWord, operationEnabledValue, operationEnabledMask) ) {
+		return "operationEnabled";
+	}
+	if ( checkMaskedBits(statusWord, quickStopActiveValue, quickStopActiveMask) ) {
+		return "quickStopActive";
+	}
+	if ( checkMaskedBits(statusWord, faultReactionActiveValue, faultReactionActiveMask) ) {
+		return "faultReactionactive";
+	}
+	if ( checkMaskedBits(statusWord, faultValue, faultMask) ) {
+		return "fault";
+	}
+
+	std::cout << "getDriveStatusElmo(" << driveNumber << ") returns: 0x" << std::hex << statusWord << std::dec << " which is not a valid status word" << std::endl;
+}
+
+
 
 // index pulse
 // void homeWithIndexPulse(std::array< int, numberOfWheels > driveNumbers, std::array< int, numberOfWheels > offsets, bool auxPos)
