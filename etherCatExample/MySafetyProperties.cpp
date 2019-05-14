@@ -16,10 +16,10 @@ using namespace eeros::safety;
 
 
 // MySafetyProperties::MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives, double dt) : 
-MySafetyProperties::MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives, double dt, Logger& log) : 
+MySafetyProperties::MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives, double dt) : 
 	CS(CS),
 	elmoDrives(elmoDrives),
-	log(log),
+	log('S'),
 	// ############ Define Levels ############
 	slOff("Software is off"),
 	slEmergency("Emergency state"),
@@ -97,6 +97,7 @@ MySafetyProperties::MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElm
 	/////////////////////////////////////////////////////////////// 
 	slOff.setLevelAction([&](SafetyContext* privateContext) {
 		elmoDrives.disableAllDrives();
+		sleep(1);
 		Executor::stop();
 	});
 	
@@ -121,7 +122,8 @@ MySafetyProperties::MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElm
 	});
 	
 	slDrivesEnabled.setLevelAction([&](SafetyContext* privateContext) {
-		elmoDrives.enableAllDrives();
+		elmoDrives.enableDrive(0);
+// 		elmoDrives.enableAllDrives();
 		// check max speed and acceleration with signal checker
 	});
 	

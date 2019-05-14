@@ -199,9 +199,9 @@ namespace etherCATInterface {
 	
 	// Touch probe status
 	enum touchProbeStateEnum_ELMO {
-		  reset,
-		  enableProbe,
-		  enableSampling,
+		  resetting,
+		  enablingProbe,
+		  enablingSampling,
 		  enabled
 	  };
 

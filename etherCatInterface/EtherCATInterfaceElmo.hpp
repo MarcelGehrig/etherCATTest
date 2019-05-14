@@ -106,7 +106,7 @@ namespace etherCATInterface {
 		
 		
 		
-		
+		// index puls
 		bool enableCapturingIndexPulse(std::vector<int> driveNumbers);
 		bool enableCapturingIndexPulse(std::vector<int> driveNumbers, std::vector<int> touchProbes);
 		bool enableCapturingIndexPulse(int driveNumber, int touchProbe=1);
@@ -114,9 +114,11 @@ namespace etherCATInterface {
 	// 		void waitForAllIndexPulses(std::array<int, numberOfWheels> driveNumbers, int pollingTimeUSec=1e5);
 	// 		void waitForAllIndexPulses(std::array<int, numberOfWheels> driveNumbers, std::array<int, numberOfWheels> touchProbes, int pollingTimeUSec=1e5);
 	// 		void waitForAllIndexPulses(int driveNumber, int touchProbe=1, int pollingTimeUSec=1e5);
-		void setOffsetAtIndexPos(std::vector<int> driveNumbers, bool isAuxPos, std::vector<int> offsets);
-		void setOffsetAtIndexPos(std::vector<int> driveNumbers, bool isAuxPos, std::vector<int> offsets, std::vector<int> touchProbes);
-		void setOffsetAtIndexPos(int driveNumber, bool isAuxPos, int offset=0, int touchProbe=1);
+		void setOffsetAtIndexPos(std::vector<int> driveNumbers, std::vector<int> offsets, bool isAuxPos=false);
+		void setOffsetAtIndexPos(std::vector<int> driveNumbers, std::vector<int> offsets, bool isAuxPos, std::vector<int> touchProbes);
+		void setOffsetAtIndexPos(int driveNumber, int offset=0, bool isAuxPos=false, int touchProbe=1);
+		void setPosOffset(int driveNumber, int32_t offset);
+		void setPosAuxOffset(int driveNumber, int32_t offset);
 		void setTouchProbeFunction(int driveNumber, touchProbeFunctionEnum_ELMO function);
 		
 		bool getTouchProbeIsEnabled(int driveNumber, int touchProbe=1);
@@ -149,7 +151,7 @@ namespace etherCATInterface {
 			int32_t prevRawAuxPos	= 0;
 			int64_t absPos 			= 0;
 			int64_t absAuxPos 		= 0;
-			touchProbeStateEnum_ELMO touchProbeState = touchProbeStateEnum_ELMO::reset;
+			touchProbeStateEnum_ELMO touchProbeState = touchProbeStateEnum_ELMO::resetting;
 			uint16_t touchProbeFunctionSet = 0x0;
 // 			int32_t standardTouchProbeIndex	= 1;
 		};

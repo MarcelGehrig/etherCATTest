@@ -53,11 +53,9 @@ int main(int argc, char **argv) {
 	// EtherCAT
 	// ////////////////////////////////////////////////////////////////////////
 	ecmasterlib::EtherCATMain* etherCATStack = ecmasterlib::EtherCATMain::createInstance(argc, argv, global::byteSizePerSlave*global::numberOfDrivesTotal);
-// 	global::etherCATStackPtr = etherCATStack;
 	signal(SIGINT, signalHandler);
 	sleep(9);
 	EtherCATInterfaceElmo elmoDrives = EtherCATInterfaceElmo( etherCATStack );
-// 	global::elmoDrivesPtr = &elmoDrives;
 	bool allDrivesAreSwitchedOn = false;
 	
 	// HAL
@@ -71,9 +69,7 @@ int main(int argc, char **argv) {
 	
 	// Safety system
 	// ////////////////////////////////////////////////////////////////////////
-	MySafetyProperties properties(CS, elmoDrives, dt, log);
-// 	MySafetyProperties properties(CS, elmoDrives, dt);
-// 	global::safetyProperties = &properties;
+	MySafetyProperties properties(CS, elmoDrives, dt);
 	SafetySystem SS(properties, dt);
 //	CS.timedomain.registerSafetyEvent(SS, properties.doEmergency);
 	

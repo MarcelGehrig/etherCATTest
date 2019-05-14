@@ -13,25 +13,10 @@
 #include <unistd.h>
 
 
-//#include "etherCatInterface/EtherCATInterfaceElmo.hpp"
-
 using namespace etherCATInterface;
 using namespace eeros::sequencer;
 using namespace eeros::safety;
 using namespace eeros::logger;
-
-class Move : public Step {
-public:
-	Move(std::string name, Sequencer& sequencer, BaseSequence* caller, MyControlSystem& cs) : 
-		Step(name, this), cs(cs) { }
-	int operator() (double pos) {this->pos = pos; return start();}
-	int action() {
-// 		cs.setpoint.setValue(pos);
-		sleep(1);
-	}
-	double pos;
-	MyControlSystem& cs;
-};
 
 
 class InitDrives : public Step {
@@ -42,9 +27,11 @@ public:
 		log(log),
 		elmoDrives(elmoDrives)
 		{ }
+		
 	int action() {	
-// 		log.info() << "Initializing drives:";
+		log.info() << "Initializing drives:";
 	}
+	
 	bool checkExitCondition() {
 		if (elmoDrives.initAllDrives()) {
 			log.info() << "Drives initialized";
@@ -58,7 +45,6 @@ private:
 	EtherCATInterfaceElmo& elmoDrives;
 	double pos;
 	Logger& log;
-// 	MyControlSystem& cs;
 };
 
 
@@ -70,26 +56,44 @@ public:
 		elmoDrives(elmoDrives),
 		log(log),
 		wait("waiting1", this)
-		{ }
+		{
+			this->resetTimeout(); 
+			this->setTimeoutTime(30);
+			this->setTimeoutBehavior(SequenceProp::abort);
+		}
+		
+	int operator() (int drive) {
+		this->drive = drive;
+		return start();
+	}
 		
 	int action() {
+		
 		log.info() << "Homing drives";
-		elmoDrives.ll_setTargetTorque(0, 0);
-		elmoDrives.setModeOfOperation(0, etherCATInterface::cyclicSynchronousTorque);
-		elmoDrives.enableDrive(0);
-		elmoDrives.ll_setTargetTorque(0, 12);
-// 		wait(5);
-		elmoDrives.ll_setTargetTorque(0, 0);
-		log.info() << "Drives homed";
+		elmoDrives.setModeOfOperation(drive, etherCATInterface::cyclicSynchronousVelocity);
+		elmoDrives.ll_setTargetVelocity(0, 5000);
+		
+		int attempts = 0;
+		while ( attempts < 10 && !elmoDrives.enableCapturingIndexPulse(0)) {
+			wait(0.1);
+			attempts++;
+		}
 	}
+	
+	bool checkExitCondition() {
+		return elmoDrives.getIndexPulseIsCaptured(0);
+	}
+	
 	
 private:
 	SafetySystem& SS;
 	EtherCATInterfaceElmo& elmoDrives;
 	Logger&  log;
-
+	
+	int drive;
 	Wait wait;
 };
+
 
 
 class SetVelocity : public Step {
@@ -111,7 +115,6 @@ public:
 		log.info() << "Set drive '" << drive << "' to velocity: " << velocity;
 		elmoDrives.setModeOfOperation(drive, etherCATInterface::cyclicSynchronousVelocity);
 		elmoDrives.ll_setTargetVelocity(0, velocity);
-		elmoDrives.enableDrive(drive);
 	}
 	
 private:
@@ -123,12 +126,14 @@ private:
 	double velocity;
 };
 
+
+// ////////////////////////////////////////////////////////////////////////////
 // MainSequence
 // ////////////////////////////////////////////////////////////////////////////
+
 class MainSequence : public Sequence {
 public:
 	MainSequence(std::string name, Sequencer& sequencer, SafetySystem& SS, MySafetyProperties& safetyProp, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives, Logger& log) :  
-// 	MainSequence(std::string name, Sequencer& sequencer, SafetySystem& SS, MySafetyProperties& safetyProp, MyControlSystem& CS, EtherCATInterfaceElmo& elmoDrives) :  
 					Sequence(name, sequencer),
 					sequencer(sequencer),
 					SS(SS),
@@ -157,7 +162,13 @@ public:
 		step_initDrives();
 // 		SS.triggerEvent(safetyProp.enableDrives);
 		
-// 		step_homingDrives();
+		SS.triggerEvent(safetyProp.enableDrives);
+		step_homingDrives(0);
+		elmoDrives.setOffsetAtIndexPos(0);
+		log.info() << "Index pulse captured at:      " << elmoDrives.getCapturedPosition(0);
+		log.info() << "getPosition(0):               " << elmoDrives.getPosition(0);
+		log.info() << "ll_getPositionActualValue(0): " << elmoDrives.ll_getPositionActualValue(0);
+		SS.triggerEvent(safetyProp.disableDrives);
 		
 		// set velocity	
 // 		SS.triggerEvent(safetyProp.enableDrives);
@@ -165,20 +176,21 @@ public:
 // 		wait(4);
 // 		step_setVelocity(0, 0);
 		
+		
 		// timingPerformanceTest
-		log.info() << "timingPerformanceTest started";
-		elmoDrives.ll_setTargetTorque(0, 0);
-		elmoDrives.setModeOfOperation(0, etherCATInterface::cyclicSynchronousTorque);
-		SS.triggerEvent(safetyProp.enableDrives);
-		CS.setElmos.setTargetTorqueByCS = true;
-		CS.timingPerformanceTester.enable();
-		wait(1);
-		log.info() << "timingPerformanceTest without waiting";
-		elmoDrives.getEtherCATStack()->getInstance()->stopWaitingForEeros();
-		wait(1);
-		CS.timingPerformanceTester.disable();
-		CS.setElmos.setTargetTorqueByCS = false;
-		elmoDrives.disableAllDrives();
+// 		log.info() << "timingPerformanceTest started";
+// 		elmoDrives.ll_setTargetTorque(0, 0);
+// 		elmoDrives.setModeOfOperation(0, etherCATInterface::cyclicSynchronousTorque);
+// 		SS.triggerEvent(safetyProp.enableDrives);
+// 		CS.setElmos.setTargetTorqueByCS = true;
+// 		CS.timingPerformanceTester.enable();
+// 		wait(1);
+// 		log.info() << "timingPerformanceTest without waiting";
+// 		elmoDrives.getEtherCATStack()->getInstance()->stopWaitingForEeros();
+// 		wait(1);
+// 		CS.timingPerformanceTester.disable();
+// 		CS.setElmos.setTargetTorqueByCS = false;
+// 		elmoDrives.disableAllDrives();
 		
 		
 		for(int i=0; i<30 and sequencer.running; i++) {

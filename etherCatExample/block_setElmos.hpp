@@ -122,11 +122,13 @@ public:
 //  			if( etherCATInterface::oo_gainSchedlingManualIndex  >= 0 && setGainSchedlingManualIndexByCS )
 //  				elmoDrives.ll_setGainSchedlingManualIndex (i, inGainSchedlingManualIndex .getSignal().getValue()(i) );
 			
-			if (!ecmasterlibWaitsForThisBlock) {
-				elmoDrives.getEtherCATStack()->getInstance()->startWaitingForEeros();
-				ecmasterlibWaitsForThisBlock = true;
-			}
-			elmoDrives.getEtherCATStack()->getInstance()->getConditionalVariable2()->notify_one();
+			
+			
+// 			if (!ecmasterlibWaitsForThisBlock) {
+// 				elmoDrives.getEtherCATStack()->getInstance()->startWaitingForEeros();
+// 				ecmasterlibWaitsForThisBlock = true;
+// 			}
+// 			elmoDrives.getEtherCATStack()->getInstance()->getConditionalVariable2()->notify_one();
 		}
 	}
 	

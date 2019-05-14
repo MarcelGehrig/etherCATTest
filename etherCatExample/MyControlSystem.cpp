@@ -95,8 +95,8 @@ timedomain("Main time domain", ts, true)
 		if (++ticks < 250) return;
 		ticks = 0;
 		log.info() << "period max: " << c.period.max << ", run mean: " << c.run.mean;
-		std::cout << "jitter max: " << c.jitter.max << ", run mean: " << c.run.mean << std::endl;
-		std::cout << "period max: " << c.period.max << ", run max: " << c.run.max << std::endl;
+// 		std::cout << "jitter max: " << c.jitter.max << ", run mean: " << c.run.mean << std::endl;
+// 		std::cout << "period max: " << c.period.max << ", run max: " << c.run.max << std::endl;
 		ticks = 0;
 		c.reset();
 	});
