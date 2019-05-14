@@ -194,10 +194,14 @@ public:
 		
 		
 		for(int i=0; i<30 and sequencer.running; i++) {
-			log.info() << "SS level: " << SS.getCurrentLevel();
-			log.info() << "DI: 0x" << std::hex << CS.getEncoders.getOutDigitalInputs().getSignal().getValue();
-			log.info() << "Velocity:" << CS.getEncoders.getOutVelocity().getSignal().getValue();
-			log.info() << "Vel SC: " << CS.demuxVelocities.getOut(0).getSignal().getValue();
+			log.info() << "SS level:                     " << SS.getCurrentLevel();
+			log.info() << "DI:                           0x" << std::hex << CS.getEncoders.getOutDigitalInputs().getSignal().getValue();
+			log.info() << "Velocity:                     " << CS.getEncoders.getOutVelocity().getSignal().getValue();
+			log.info() << "Vel SC:                       " << CS.demuxVelocities.getOut(0).getSignal().getValue();
+			log.info() << "getPosition(0):               " << elmoDrives.getPosition(0);
+			log.info() << "ll_getPositionActualValue(0): " << elmoDrives.ll_getPositionActualValue(0);
+			log.info();
+			
 			if ( i%2 == 0 )
 				CS.constantDigitalOut.setValue(0xFFFFFFFF);
 // 				CS.setElmos.getInDigitalOutput().getSignal().setValue<uint32_t>(0xFFFFFFFF);
