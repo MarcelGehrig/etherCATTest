@@ -7,18 +7,16 @@
 
 using namespace eeros::control;
 
-MyControlSystem::MyControlSystem(double ts, EtherCATInterfaceElmo& elmoDrives, int numberOfDrivesTotal) :
-log('C'),
+MyControlSystem::MyControlSystem(double ts, EtherCATInterfaceElmo& elmoDrives, int numberOfDrivesTotal, Logger& log) :
+// log('C'),
+log(log),
 elmoDrives(elmoDrives),
 numberOfDrivesTotal(numberOfDrivesTotal),
 getEncoders(elmoDrives, numberOfDrivesTotal),
 demuxEncoders(),
 demuxVelocities(),
 demuxTorque(),
-//TODO min max value
-// 	velocityChecker(-DBL_MAX, 10000),
-// velocityChecker(-DBL_MAX, DBL_MAX),
-velocityChecker(-99999999, 9999999),
+velocityChecker(-DBL_MAX, DBL_MAX),
 constantDigitalOut(0),
 constantDigitalOut1(0),
 constantTargetTorque0(0),
@@ -31,6 +29,11 @@ printNumber(log, "Encoder: ", "", 200, false),
 setElmos(elmoDrives, numberOfDrivesTotal),
 timedomain("Main time domain", ts, true) 
 {
+// 	StreamLogWriter w(std::cout);
+// 	Logger log('C');
+// 	log.set(w);
+// 	w.show(LogLevel::INFO);
+	
 	getEncoders.setName("getEncoders");
 	demuxEncoders.setName("demuxEncoders");
 	demuxVelocities.setName("demuxVelocities");
@@ -54,9 +57,6 @@ timedomain("Main time domain", ts, true)
 	timingPerformanceTester.getIn().connect(demuxTorque.getOut(0));
 	
 	// Signal checker
-// 	velocityChecker.setName("signal checker position");
-// 	velocityChecker.getIn().connect(demuxEncoders.getOut(0));
-// 	velocityChecker.getIn().connect(getEncoders.getOutVelocity());
 	velocityChecker.getIn().connect(demuxVelocities.getOut(0));
 	
 	// Outputs
@@ -92,7 +92,7 @@ timedomain("Main time domain", ts, true)
 	
 	periodic.monitors.push_back([&](eeros::PeriodicCounter &c, Logger &log) {
 		static int ticks = 0;
-		if (++ticks < 250) return;
+		if (++ticks < 1000) return;
 		ticks = 0;
 		log.info() << "period max: " << c.period.max << ", run mean: " << c.run.mean;
 // 		std::cout << "jitter max: " << c.jitter.max << ", run mean: " << c.run.mean << std::endl;

@@ -200,8 +200,6 @@ public:
 		virtual eeros::control::Input<typeGainSchedlingManualIndex>& getInGainSchedlingManualIndex() {
 			return inGainSchedlingManualIndex;
 		}
-
-	
 	
 		
 		bool setControlWordByCS;
@@ -252,7 +250,6 @@ public:
 		eeros::control::Input< typePolarity >					inPolarity;
 		eeros::control::Input< typeGainSchedlingManualIndex >	inGainSchedlingManualIndex;
 		
-
 
 		int numberOfDrivesTotal;
 		EtherCATInterfaceElmo& elmoDrives;

@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
 	
 	// Control system
 	// ////////////////////////////////////////////////////////////////////////
-	MyControlSystem CS(dt, elmoDrives, global::numberOfDrivesTotal);
+	MyControlSystem CS(dt, elmoDrives, global::numberOfDrivesTotal, log);
 	
 	// Safety system
 	// ////////////////////////////////////////////////////////////////////////

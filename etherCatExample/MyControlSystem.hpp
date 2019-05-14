@@ -1,12 +1,6 @@
 #ifndef CONTROLSYSTEM_HPP_
 #define CONTROLSYSTEM_HPP_
 
-// #include <eeros/control/Sum.hpp>
-// #include <eeros/control/D.hpp>
-// #include <eeros/control/Gain.hpp>
-// #include <eeros/control/Constant.hpp>
-// #include <eeros/control/PeripheralInput.hpp>
-// #include <eeros/control/PeripheralOutput.hpp>
 #include <eeros/control/TimeDomain.hpp>
 #include <eeros/control/Constant.hpp>
 #include <eeros/control/DeMux.hpp>
@@ -14,8 +8,6 @@
 #include <eeros/control/SignalChecker.hpp>
 
 #include "../etherCatInterface/EtherCATInterfaceElmo.hpp"
-
-#include "globalConfig.hpp"
 
 #include "block_getEncoders.hpp"
 #include "block_setElmos.hpp"
@@ -27,11 +19,9 @@ using namespace etherCATInterface;
 class MyControlSystem {
 
 public:
-	MyControlSystem(double ts, EtherCATInterfaceElmo& elmoDrives, int numberOfDrivesTotal);
+	MyControlSystem(double ts, EtherCATInterfaceElmo& elmoDrives, int numberOfDrivesTotal, Logger& log);
 	~MyControlSystem();
 	
-// 	EtherCATInterfaceElmo& getElmoDrives() {return elmoDrives;);
-// 	int getElmoDrives() {return 1;);
 	
 	//TODO numberOfDrivesTotal
 	// Inputs
@@ -48,8 +38,6 @@ public:
 	block_timingPerformanceTester<double> timingPerformanceTester;
 	
 	// SignalChecker
-// 	eeros::control::SignalChecker<global::numberOfDrivesTotal, double> velocityChecker;
-// 	eeros::control::SignalChecker< eeros::math::Matrix<2,1,double> > velocityChecker;
 	eeros::control::SignalChecker< double > velocityChecker;
 	
 	
@@ -70,7 +58,7 @@ public:
 private:
 	EtherCATInterfaceElmo& elmoDrives;
 	int numberOfDrivesTotal;
-	Logger log;
+	Logger& log;
 };
 
 #endif // CONTROLSYSTEM_HPP_

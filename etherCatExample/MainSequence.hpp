@@ -9,7 +9,6 @@
 #include <eeros/safety/SafetySystem.hpp>
 #include "MySafetyProperties.hpp"
 #include "MyControlSystem.hpp"
-#include "globalConfig.hpp"
 #include <unistd.h>
 
 
@@ -55,10 +54,12 @@ public:
 		SS(SS),
 		elmoDrives(elmoDrives),
 		log(log),
+		isHomed(false),
 		wait("waiting1", this)
 		{
+			// 10 second timeout
 			this->resetTimeout(); 
-			this->setTimeoutTime(30);
+			this->setTimeoutTime(10);
 			this->setTimeoutBehavior(SequenceProp::abort);
 		}
 		
@@ -81,9 +82,11 @@ public:
 	}
 	
 	bool checkExitCondition() {
-		return elmoDrives.getIndexPulseIsCaptured(0);
+		isHomed = elmoDrives.getIndexPulseIsCaptured(0);
+		return isHomed;
 	}
 	
+	bool getIsHomed() { return isHomed; };
 	
 private:
 	SafetySystem& SS;
@@ -91,6 +94,7 @@ private:
 	Logger&  log;
 	
 	int drive;
+	bool isHomed;
 	Wait wait;
 };
 
@@ -139,6 +143,7 @@ public:
 					SS(SS),
 					safetyProp(safetyProp),
 					CS(CS),
+// 					log('S'),
 					log(log),
 					elmoDrives(elmoDrives),
 					wait("waiting1", this),
@@ -146,12 +151,17 @@ public:
 					step_homingDrives("homingDrives", sequencer, this, SS, CS, elmoDrives, log),
 					step_setVelocity("homingDrives", sequencer, this, SS, CS, elmoDrives, log)
 					{
+// 		StreamLogWriter w(std::cout);
+// 		Logger log('P');
+// 		log.set(w);
+// 		w.show(LogLevel::INFO);
 		log.info() << "Sequence created: " << name;
 	}
 	
 	
 	
 	int action() {
+		log.info() << "ACTION ";
 		// Initialize signal checkers
 		CS.velocityChecker.setActiveLevel(safetyProp.slDrivesDisabled);
 		CS.velocityChecker.registerSafetyEvent(SS, safetyProp.doEmergency);
@@ -164,11 +174,19 @@ public:
 		
 		SS.triggerEvent(safetyProp.enableDrives);
 		step_homingDrives(0);
-		elmoDrives.setOffsetAtIndexPos(0);
-		log.info() << "Index pulse captured at:      " << elmoDrives.getCapturedPosition(0);
-		log.info() << "getPosition(0):               " << elmoDrives.getPosition(0);
-		log.info() << "ll_getPositionActualValue(0): " << elmoDrives.ll_getPositionActualValue(0);
 		SS.triggerEvent(safetyProp.disableDrives);
+		if ( step_homingDrives.getIsHomed() )  {
+			elmoDrives.setOffsetAtIndexPos(0);
+			log.info() << "Drives homed";
+			log.info() << "Index pulse captured at:      " << elmoDrives.getCapturedPosition(0);
+			log.info() << "getPosition(0):               " << elmoDrives.getPosition(0);
+			log.info() << "ll_getPositionActualValue(0): " << elmoDrives.ll_getPositionActualValue(0);
+		}
+		else {
+			log.info() << "Drives NOT homed due to timeout";
+		}
+		log.info();
+		
 		
 		// set velocity	
 // 		SS.triggerEvent(safetyProp.enableDrives);
