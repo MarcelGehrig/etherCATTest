@@ -21,7 +21,7 @@ namespace global {
 	static constexpr int byteSizePerSlave = 32;
 	
 // 	eeros::logger::Logger* log;
-// 	ecmasterlib::EtherCATMain* etherCATStackPtr;
+// 	ecmasterlib::EcMasterlibMain* etherCATStackPtr;
 // 	etherCATInterface::EtherCATInterfaceElmo* elmoDrivesPtr;
 // 	MyControlSystem* CS;
 // 	MySafetyProperties* safetyProperties;

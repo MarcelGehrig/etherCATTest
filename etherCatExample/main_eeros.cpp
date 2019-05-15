@@ -11,7 +11,7 @@
 #include "MyControlSystem.hpp"
 #include "globalConfig.hpp"
 
-#include <EtherCATMain.hpp>
+#include <EcMasterlibMain.hpp>
 
 #include "../etherCatInterface/EtherCATInterfaceElmo.hpp"
 
@@ -24,7 +24,7 @@ using namespace eeros::hal;
 
 
 bool running = true;
-ecmasterlib::EtherCATMain* etherCATStackPtr;
+ecmasterlib::EcMasterlibMain* etherCATStackPtr;
 static constexpr double dt = 0.001;
 
 static void signalHandler( int nSignal )
@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
 
 	// EtherCAT
 	// ////////////////////////////////////////////////////////////////////////
-	ecmasterlib::EtherCATMain* etherCATStack = ecmasterlib::EtherCATMain::createInstance(argc, argv, global::byteSizePerSlave*global::numberOfDrivesTotal);
+	ecmasterlib::EcMasterlibMain* etherCATStack = ecmasterlib::EcMasterlibMain::createInstance(argc, argv, global::byteSizePerSlave*global::numberOfDrivesTotal);
 	signal(SIGINT, signalHandler);
 	sleep(9);
 	EtherCATInterfaceElmo elmoDrives = EtherCATInterfaceElmo( etherCATStack );

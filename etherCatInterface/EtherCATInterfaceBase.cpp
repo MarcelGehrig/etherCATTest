@@ -2,7 +2,7 @@
 
 using namespace etherCATInterface;
 
-EtherCATInterfaceBase::EtherCATInterfaceBase(ecmasterlib::EtherCATMain* etherCATStack) :
+EtherCATInterfaceBase::EtherCATInterfaceBase(ecmasterlib::EcMasterlibMain* etherCATStack) :
 etherCATStack(etherCATStack)
 {
 	outBuffer = etherCATStack->getOutBuffer();
@@ -126,7 +126,7 @@ uint32_t EtherCATInterfaceBase::get32bit(uint32_t offsetInByte, uint32_t driveNu
 bool EtherCATInterfaceBase::checkOffset(int offsetInByte)
 {
 	if(offsetInByte < 0) {
-		std::cout << "ERROR: the PDO offset is not defined in EtherCATInterface" << std::endl;
+		std::cout << "ERROR EtherCATInterfaceBase::checkOffset():   the PDO offset is not defined in EtherCATInterface" << std::endl;
 		return false;
 	}
 	else {

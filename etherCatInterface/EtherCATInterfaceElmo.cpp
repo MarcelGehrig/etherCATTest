@@ -2,27 +2,9 @@
 
 using namespace etherCATInterface;
 
-EtherCATInterfaceElmo::EtherCATInterfaceElmo(ecmasterlib::EtherCATMain* etherCATStack): 
+EtherCATInterfaceElmo::EtherCATInterfaceElmo(ecmasterlib::EcMasterlibMain* etherCATStack): 
 EtherCATInterfaceBase(etherCATStack)
 { }
-
-// //blocking functions
-// void EtherCATInterfaceBase::initElmoDrives()
-// {
-// 	log.trace() << "initElmoDrives()";
-// 	bool allDrivesAreSwitchedOn = false;
-// 	while (!allDrivesAreSwitchedOn) {
-// 		allDrivesAreSwitchedOn = switchOnAllDrives();
-// // 		usleep(1.1e6);	
-// 	}
-// 	
-// 	for (int drive = 0; drive < numberOfDrivesTotal; drive++) {
-// 		setModeOfOperation(drive, driveMode::profileVelocity);
-// // 		setModeOfOperation(drive, driveMode::profilePosition);
-// 	}
-// 	log.trace() << "done";
-// }
-
 
 
 //advanced set functions:
@@ -99,8 +81,6 @@ void EtherCATInterfaceElmo::disableAllDrives()
 	}
 }
 
-
-//advanced set functions:
 void EtherCATInterfaceElmo::setControlWord(int driveNumber, controlWordCommand_ELMO word)
 {
 	switch(word) {
@@ -163,7 +143,6 @@ int64_t EtherCATInterfaceElmo::getPositionAux(int driveNumber)
  	return drives[driveNumber].absAuxPos + static_cast<int64_t>(drives[driveNumber].auxPosOffset);
 }
 
-
 // gain scheduling functions (chair)
 void EtherCATInterfaceElmo::disableVelocityControl(int driveNumber)
 {
@@ -176,7 +155,6 @@ void EtherCATInterfaceElmo::enableVelocityControl(int driveNumber)
 }
 
 
-
 // basic functions
 void EtherCATInterfaceElmo::disableDrive(int driveNumber)
 {
@@ -187,7 +165,7 @@ bool EtherCATInterfaceElmo::enableDrive(int driveNumber)
 {
 	if ( getIsDriveEnabled(driveNumber) ) return true;
 	if ( !checkDriveStatus(driveNumber, driveStatus_ELMO::switchedOn) and getIsDriveEnabled(driveNumber) ) {
- 		std::cout << "WARNING: EnableDrive(" << driveNumber << ") with status: 0x" << std::hex << ll_getStatusWord(driveNumber) << " not possible. It needs to be in state 'switched on'" << std::endl;
+ 		std::cout << "WARNING EtherCATInterfaceElmo::getDriveModeElmo():   EnableDrive(" << driveNumber << ") with status: 0x" << std::hex << ll_getStatusWord(driveNumber) << " not possible. It needs to be in state 'switched on'" << std::endl;
 		return false;
 	}
 	else ll_setControlWord(driveNumber, cwc_enableOperation);
@@ -283,8 +261,8 @@ driveModeOfOperation_ELMO EtherCATInterfaceElmo::getDriveModeElmo(int driveNumbe
 		case dmoov_cyclicSynchronousPosition:	return driveModeOfOperation_ELMO::interpolatedPosition;
 		case dmoov_cyclicSynchronousVelocity:	return driveModeOfOperation_ELMO::cyclicSynchronousVelocity;
 		case dmoov_cyclicSynchronousTorque:		return driveModeOfOperation_ELMO::cyclicSynchronousTorque;
- 		default:		std::string s;
- 						std::cout << "EtherCATInterfaceElmo: 0x" << std::hex << modeOfOperation  << std::dec << " is no valid mode of operation code" << std::endl;
+ 		default:	std::string s;
+ 					std::cout << "ERROR EtherCATInterfaceElmo::getDriveModeElmo():   EtherCATInterfaceElmo: 0x" << std::hex << modeOfOperation  << std::dec << " is no valid mode of operation code" << std::endl;
 	}
 }
 
@@ -320,10 +298,8 @@ driveStatus_ELMO EtherCATInterfaceElmo::getDriveStatusElmo(int driveNumber)
 	if ( checkMaskedBits(statusWord, faultValue, faultMask) ) {
 		return driveStatus_ELMO::fault;
 	}
-
-//  	std::cout << "EtherCATInterfaceElmo: 0x" << std::hex << statusWord  << std::dec << " is no valid status word" << std::endl;
 	
-	std::cout << "getDriveStatusElmo(" << driveNumber << ") returns: 0x" << std::hex << statusWord << std::dec << " which is not a valid status word" << std::endl;
+	std::cout << "ERROR EtherCATInterfaceElmo::getDriveStatusElmo(" << driveNumber << "):   Methode returns: 0x" << std::hex << statusWord << std::dec << " which is not a valid status word" << std::endl;
 }
 
 std::__cxx11::string EtherCATInterfaceElmo::getDriveStatusStringElmo(int driveNumber)
@@ -354,45 +330,11 @@ std::__cxx11::string EtherCATInterfaceElmo::getDriveStatusStringElmo(int driveNu
 		return "fault";
 	}
 
-	std::cout << "getDriveStatusElmo(" << driveNumber << ") returns: 0x" << std::hex << statusWord << std::dec << " which is not a valid status word" << std::endl;
+	std::cout << "ERROR EtherCATInterfaceElmo::getDriveStatusStringElmo(" << driveNumber << "):   Methode returns: 0x" << std::hex << statusWord << std::dec << " which is not a valid status word" << std::endl;
 }
 
 
-
 // index pulse
-// void homeWithIndexPulse(std::array< int, numberOfWheels > driveNumbers, std::array< int, numberOfWheels > offsets, bool auxPos)
-// {
-// 	return homeWithIndexPulse(driveNumbers, offsets, drives[drive]);
-// }
-
-
-// void homeWithIndexPulse(std::array< int, numberOfWheels > driveNumbers, std::array< int, numberOfWheels > offsets, bool auxPos, std::array< int, numberOfWheels > touchProbes)
-// {
-// 	if ( (driveNumbers.size()!=offsets.size()) || (offsets.size()!=touchProbes.size()) ) {
-// 		log.error() << "homeWithIndexPulse(...) all argument lists have to be of the same size";
-// 		return;
-// 	}
-// 	
-// 	//enable capturing for all drives
-// 	enableCapturingIndexPulse(driveNumbers, touchProbes);
-// 	
-// 	//waiting for all pulses to be captured
-// 	waitForAllIndexPulses(driveNumbers, touchProbes);
-// 	
-// 	//set offsets
-// 	setOffsetAtIndexPos(driveNumbers, offsets, touchProbes);
-// }
-// 
-// int32_t homeWithIndexPulse(int driveNumber, int offset, bool auxPos, int touchProbe)
-// {
-// 	//TODO check status of drive?
-// 	enableCapturingIndexPulse(driveNumber, touchProbe);
-// 	while ( !getIndexPulseIsCaptured(driveNumber, touchProbe) )	usleep(100);
-// 	int32_t posOffset = static_cast<int32_t>( static_cast<int>(getCapturedPosition(driveNumber)) + offset );
-// 	setPosOffset(driveNumber, posOffset);asdf	//	isAuxPos ? setPosAuxOffset(driveNumber, offs) : setPosOffset(driveNumber, offs);
-// 	return posOffset;
-// }
-
 bool EtherCATInterfaceElmo::enableCapturingIndexPulse(std::vector< int > driveNumbers )
 {
 	std::vector< int > touchProbes;
@@ -405,7 +347,7 @@ bool EtherCATInterfaceElmo::enableCapturingIndexPulse(std::vector< int > driveNu
 bool EtherCATInterfaceElmo::enableCapturingIndexPulse(std::vector< int > driveNumbers, std::vector< int > touchProbes)
 {
 	if ( (driveNumbers.size()!=touchProbes.size()) ) {
-		std::cout << "enableCapturingIndexPulse(...) all argument vectors have to be of the same size" << std::endl;
+		std::cout << "ERROR EtherCATInterfaceElmo::enableCapturingIndexPulse():   All argument vectors have to be of the same size" << std::endl;
 		return false;
 	}
 	
@@ -425,33 +367,29 @@ bool EtherCATInterfaceElmo::enableCapturingIndexPulse(std::vector< int > driveNu
 
 bool EtherCATInterfaceElmo::enableCapturingIndexPulse(int driveNumber, int touchProbe)
 {
-// 		std::cout << "enableCapturingIndexPulse is not implemented" << std::endl;
-		
-// 	if( touchProbe == 1 ) setTouchProbeFunction(driveNumber, touchProbeFunctionEnum_ELMO::etherCATInterface::enableSamplingAtThePositiveEdgeOfTouchProbe1);
-// 	if( touchProbe == 2 ) setTouchProbeFunction(driveNumber, touchProbeFunctionEnum_ELMO::switchOffTouchProbe2);
-		
 	if ( touchProbe != 1 ) {
-		std::cout << "ERROR EtherCATInterfaceElmo::enableCapturingIndexPulse(int driveNumber, int touchProbe):   touchProbe " << touchProbe << "is not implemented" << std::endl;
+		std::cout << "ERROR EtherCATInterfaceElmo::enableCapturingIndexPulse():   touchProbe " << touchProbe << "is not implemented" << std::endl;
 		return false;
 	}
 	
-// 	drives[driveNumber].touchProbeState = touchProbeStateEnum_ELMO::resetting;
-// 	switch(touchProbeState[driveNumber]) {
 	switch(drives[driveNumber].touchProbeState) {
 		case touchProbeStateEnum_ELMO::resetting :
 			ll_setTouchProbeFunction( driveNumber, 0x0000 );		// disable everything
+			drives[driveNumber].touchProbeFunctionSet = 0x0000;
 			if ( ll_getTouchProbeStatus(driveNumber) == 0x0000 )	// both touch probes are switched off  -> stored values on elmo are reset
 				drives[driveNumber].touchProbeState = touchProbeStateEnum_ELMO::enablingProbe;
 			return false;
 			break;
 		case touchProbeStateEnum_ELMO::enablingProbe :
 			ll_setTouchProbeFunction( driveNumber, 0x0001 );			//0x01 enable touchProbe1; disabled sampling -> stored value on elmo is reset
+			drives[driveNumber].touchProbeFunctionSet = 0x0001;
 			if ( ll_getTouchProbeStatus(driveNumber) == 0x0001 )	// touch probe 1 is enabled again
 				drives[driveNumber].touchProbeState = touchProbeStateEnum_ELMO::enablingSampling;
 			return false;
 			break;
 		case touchProbeStateEnum_ELMO::enablingSampling :
 			ll_setTouchProbeFunction( driveNumber, 0x0031 );		//0x31 enable sampling on positive and negative edge
+			drives[driveNumber].touchProbeFunctionSet = 0x0031;
 			drives[driveNumber].touchProbeState = touchProbeStateEnum_ELMO::enabled;
 			return true;
 			break;
@@ -459,66 +397,16 @@ bool EtherCATInterfaceElmo::enableCapturingIndexPulse(int driveNumber, int touch
 			return true;
 			break;
 		default :
-			std::cout << "ERROR EtherCATInterfaceElmo::enableCapturingIndexPulse(int driveNumber, int touchProbe):   touchProbeStateEnum does not exist" << std::endl;
+			std::cout << "ERROR EtherCATInterfaceElmo::enableCapturingIndexPulse():   touchProbeStateEnum does not exist" << std::endl;
 	}
 }
-
 
 bool EtherCATInterfaceElmo::disableCapturingIndexPulse(int driveNumber, int touchProbe)
 {
 	if( touchProbe == 1 ) setTouchProbeFunction(driveNumber, touchProbeFunctionEnum_ELMO::switchOffTouchProbe1);
 	if( touchProbe == 2 ) setTouchProbeFunction(driveNumber, touchProbeFunctionEnum_ELMO::switchOffTouchProbe2);
-	
-// 	if ( touchProbe != 1 ) {
-// 		log.error() << "touchProbe " << touchProbe << "is not implemented";
-// 		return false;
-// 	}
-// 	
-// 	setTouchProbeFunction( driveNumber, 0x0000 );		// disable everything
-// 	if ( getTouchProbeStatus(driveNumber) == 0x0000 ) {	// touch probe is swithced off  -> stored values on elmo are reset 
-// 		touchProbeState[driveNumber] = touchProbeStateEnum::reset;
-// 		return true;
-// 	}
-// 	return false;
 }
 
-
-// void waitForAllIndexPulses(std::array< int, numberOfDrives > driveNumbers, int pollingTimeUSec)
-// {
-// 	std::array< int, numberOfDrives > touchProbes;
-// // 	touchProbes.resize( driveNumbers.size() );
-// 	std::fill( touchProbes.begin(), touchProbes.end(), 1 );		//allways use touchProbe 1
-// 	return waitForAllIndexPulses(driveNumbers, touchProbes);
-// 
-// }
-// 
-// void waitForAllIndexPulses(std::array< int, numberOfDrives > driveNumbers, std::array< int, numberOfDrives > touchProbes, int pollingTimeUSec)
-// {	
-// 	bool allPulsesCaptured = false;
-// 	while ( !allPulsesCaptured ) {
-// 			for (	std::array< int, numberOfDrives >::iterator itDriveNumbers=driveNumbers.begin(),
-// 					itTouchProbes=touchProbes.begin();
-// 					itDriveNumbers != driveNumbers.end();
-// 					++itDriveNumbers, ++itTouchProbes) {
-// 						if ( getIndexPulseIsCaptured(*itDriveNumbers, *itTouchProbes) ) {
-// 							allPulsesCaptured = true;
-// 						}
-// 						else {
-// 							allPulsesCaptured = false;
-// 							usleep(pollingTimeUSec);		// 0.1 sec
-// 							break;
-// 						}
-// 					}
-// 	}
-// 
-// }
-// 
-// void EtherCATInterfaceElmo::waitForAllIndexPulses(int driveNumber, int touchProbe, int pollingTimeUSec)
-// {
-// 	if ( !getIndexPulseIsCaptured(driveNumber, touchProbe) ) usleep(pollingTimeUSec);
-// }
-// 
-// 
 void EtherCATInterfaceElmo::setOffsetAtIndexPos(std::vector< int > driveNumbers, std::vector< int > offsets, bool isAuxPos)
 {
 	std::vector< int > touchProbes;
@@ -552,7 +440,7 @@ void EtherCATInterfaceElmo::setPosOffset(int driveNumber, int32_t offset)
 		drives[driveNumber].posOffset = offset;
 	}
 		else {
-		std::cout << "ERROR setPosOffset(int driveNumber, int32_t offset):   driveNumber '" << driveNumber << "' is not valid." << std::endl;
+		std::cout << "ERROR EtherCATInterfaceElmo::setPosOffset():   driveNumber '" << driveNumber << "' is not valid." << std::endl;
 	}
 }
 
@@ -562,7 +450,7 @@ void EtherCATInterfaceElmo::setPosAuxOffset(int driveNumber, int32_t offset)
 		drives[driveNumber].auxPosOffset = offset;
 	}
 		else {
-		std::cout << "ERROR setPosAuxOffset(int driveNumber, int32_t offset):   driveNumber '" << driveNumber << "' is not valid." << std::endl;
+		std::cout << "ERROR EtherCATInterfaceElmo::setPosAuxOffset():   driveNumber '" << driveNumber << "' is not valid." << std::endl;
 	}
 }
 
@@ -633,7 +521,6 @@ void EtherCATInterfaceElmo::setTouchProbeFunction(int driveNumber, touchProbeFun
 			break;
 	}
 	
-	std::cout << "ELMO: valueSet: " << std::hex << valueToSet << std::endl;
 	drives[driveNumber].touchProbeFunctionSet = valueToSet;
 	ll_setTouchProbeFunction(driveNumber, valueToSet);
 }
@@ -650,7 +537,7 @@ bool EtherCATInterfaceElmo::getTouchProbeIsEnabled(int driveNumber, int touchPro
 	else if	( touchProbe == 2 ) {
 		if ( checkMaskedBits(touchProbeStatus, touchProbe1EnabledValue, touchProbe1EnabledMask) ) return true;
 	}
-	else	std::cout << "touchProbe " << touchProbe << " does not exists." << std::endl;
+	else	std::cout << "ERROR EtherCATInterfaceElmo::getTouchProbeIsEnabled():   TouchProbe " << touchProbe << " does not exists." << std::endl;
 	return false;
 }
 
@@ -672,7 +559,7 @@ bool EtherCATInterfaceElmo::getIndexPulsePositiveEdgeIsCaptured(int driveNumber,
 	else if	( touchProbe == 2 ) {
 		if ( checkMaskedBits(touchProbeStatus, touchProbe2PositiveEdgeStoredValue, touchProbe2PositiveEdgeStoredMask) ) return true;
 	}
-	else	std::cout << "touchProbe " << touchProbe << " does not exists." << std::endl;
+	else	std::cout << "ERROR: EtherCATInterfaceElmo::getIndexPulsePositiveEdgeIsCaptured():   TouchProbe " << touchProbe << " does not exists." << std::endl;
 	return false;
 }
 
@@ -685,36 +572,9 @@ bool EtherCATInterfaceElmo::getIndexPulseNegativeEdgeIsCaptured(int driveNumber,
 	else if	( touchProbe == 2 ) {
 		if ( checkMaskedBits(touchProbeStatus, touchProbe2NegativeEdgeStoredValue, touchProbe2NegativeEdgeStoredMask) ) return true;
 	}
-	else	std::cout << "touchProbe " << touchProbe << " does not exists." << std::endl;
+	else	std::cout << "ERROR: EtherCATInterfaceElmo::getIndexPulseNegativeEdgeIsCaptured():   TouchProbe " << touchProbe << " does not exists." << std::endl;
 	return false;
 }
-
-// bool getIndexPulseIsCapturedIsValid(int driveNumber, int touchProbe)
-// {
-// 	if ( !getIndexPulseIsCaptured(driveNumber, touchProbe) ) {
-// 		log.warn() << "isDirectionOfRotationPositive(...) index pulse is not captured";
-// 		return false;
-// 	}
-// 	
-// 	if ( touchProbe == 1 ) {
-// 		auto positiveEdgeValue = getCapturedPositionPositivePulse(driveNumber, touchProbe);
-// 		auto negativeEdgeValue = getCapturedPositionNegativePulse(driveNumber, touchProbe);
-// 		
-// 		check if both physical index pulses are captured
-// 		if ( abs( abs(positiveEdgeValue) - abs(negativeEdgeValue) ) < 32000 ) {	// 0/1
-// 			log.trace() << "Positve edge value ( " << positiveEdgeValue << " ) is to similar to negative edge value ( " << negativeEdgeValue 
-// 			<< " ). Difference: " << abs( abs(positiveEdgeValue) - abs(negativeEdgeValue) );
-// 			return false;
-// 		}
-// 		else {
-// 			return true;
-// 		}
-// 	}
-// 	else {
-// 		log.error() << "Touch probe " << touchProbe << " is not implemented.";
-// 		return false;
-// 	}
-// }
 
 int32_t EtherCATInterfaceElmo::getCapturedPosition(int driveNumber, int touchProbe)	// compensated for direction of rotation
 {
@@ -725,7 +585,7 @@ int32_t EtherCATInterfaceElmo::getCapturedPositionPositivePulse(int driveNumber,
 {
 	if	( touchProbe == 1 )		return ll_getTouchProbePos1Positive(driveNumber);
 	else if	( touchProbe == 2 )	return ll_getTouchProbePos2Positive(driveNumber);
-	else						std::cout << "touchProbe " << touchProbe << " does not exists." << std::endl;
+	else						std::cout << "ERROR EtherCATInterfaceElmo::getCapturedPosition():   TouchProbe " << touchProbe << " does not exists." << std::endl;
 	return 0;
 }
 
@@ -733,29 +593,11 @@ int32_t EtherCATInterfaceElmo::getCapturedPositionNegativePulse(int driveNumber,
 {
 	if	( touchProbe == 1 )		return ll_getTouchProbePos1Negative(driveNumber);
 	else if	( touchProbe == 2 )	std::cout << "No TouchProbePosition negative pulse for TouchProbe 2." << std::endl;
-	else						std::cout << "touchProbe " << touchProbe << " does not exists." << std::endl;
+	else						std::cout << "ERROR EtherCATInterfaceElmo::getCapturedPositionNegativePulse():   TouchProbe " << touchProbe << " does not exists." << std::endl;
 	return 0;
 }
 
-// bool isDirectionOfRotationPositive(int driveNumber, int touchProbe)
-// {
-// 	if ( !getIndexPulseIsCaptured(driveNumber, touchProbe) ) log.warn() << "isDirectionOfRotationPositive(...) index pulse is not captured";
-// 	
-// 	auto positiveEdgeValue = getCapturedPositionPositivePulse(driveNumber, touchProbe);
-// 	auto negativeEdgeValue = getCapturedPositionNegativePulse(driveNumber, touchProbe);
-// 		
-// 	if (positiveEdgeValue < negativeEdgeValue  ) {			// positive direction of rotation
-// 		return true;
-// 	}
-// 	else if ( positiveEdgeValue > negativeEdgeValue  ) {	// negative direction of rotation
-// 		return false;
-// 	}
-// }
 
-
-
-	
-	
 // Basic get and set functions to get/write values from/to buffer array
 // ////////////////////////////////////////////////////////////////////
 
@@ -837,7 +679,6 @@ void EtherCATInterfaceElmo::ll_setTorqueOffset(int driveNumber, int16_t torqueOf
 
 void EtherCATInterfaceElmo::ll_setTouchProbeFunction(int driveNumber, uint16_t touchProbeFunction)
 {
-// 	std::cout << "Elmo: setTouchProbeFunction: driveNumber: " << driveNumber << "   value: 0x" << std::hex << touchProbeFunction << std::endl;
 	set16bit(oo_touchProbeFunction, driveNumber, touchProbeFunction);
 }
 
@@ -871,9 +712,6 @@ void EtherCATInterfaceElmo::ll_setGainSchedulingManualIndex(int driveNumber, uin
 	set16bit(oo_gainSchedlingManualIndex, driveNumber, index);
 }
 
-
-
-//TODO casting signed/unsigned?
 
 //basic get functions:
 uint16_t EtherCATInterfaceElmo::ll_getStatusWord(int driveNumber)

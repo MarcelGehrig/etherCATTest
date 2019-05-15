@@ -10,38 +10,33 @@
 namespace etherCATInterface {
 	class EtherCATInterfaceElmo : public EtherCATInterfaceBase {
 	public:
-		EtherCATInterfaceElmo(ecmasterlib::EtherCATMain* etherCATStack);
+		EtherCATInterfaceElmo(ecmasterlib::EcMasterlibMain* etherCATStack);
 		
-		//advanced set functions
-		// call repeatedly until the method returns 'true'
+		// advanced set functions
+		//  call repeatedly until the method returns 'true'
 		bool initAllDrives();
 		bool recoverAllDrivesFromFault();
 		bool switchOnAllDrives();
 		bool switchOnDrive(int driveNumber);
-
 		bool enableAllDrives();
 		void disableAllDrives();
 		void setControlWord(int driveNumber, controlWordCommand_ELMO word);
 		
-		//advanced get functions
-		ecmasterlib::EtherCATMain* getEtherCATStack() { return etherCATStack; };
+		// advanced get functions
+		ecmasterlib::EcMasterlibMain* getEtherCATStack() { return etherCATStack; };
 		bool isAllDrivesReady();
 		bool isAllDrivesEnabled();
-
-		//getPos-methodes prevent overflows with 32-bit integers
+		// getPos-methodes prevent overflows with 32-bit integers
 		int64_t getPosition(int driveNumber);
 		int64_t getPositionAux(int driveNumber);
-		
 		// gain scheduling functions
 		void disableVelocityControl(int driveNumber);
 		void enableVelocityControl(int driveNumber);
-		
 		
 		// basic functions
 		void disableDrive(int driveNumber);
 		bool enableDrive(int driveNumber);
 		void setModeOfOperation(int driveNumber, driveModeOfOperation_ELMO mode, bool scheduleGainIndex = false);
-		
 		bool getIsDriveEnabled(int driveNumber);
 		bool getIsDriveReady(int driveNumber);
 		bool getIsDriveSwitchedOn(int driveNumber);
@@ -50,6 +45,27 @@ namespace etherCATInterface {
 		driveStatus_ELMO getDriveStatusElmo(int driveNumber);
 		std::string getDriveStatusStringElmo(int driveNumber);
 		
+		
+		// index puls
+		bool enableCapturingIndexPulse(std::vector<int> driveNumbers);
+		bool enableCapturingIndexPulse(std::vector<int> driveNumbers, std::vector<int> touchProbes);
+		bool enableCapturingIndexPulse(int driveNumber, int touchProbe=1);
+		bool disableCapturingIndexPulse(int driveNumber, int touchProbe=1);
+		// use 'setOffsetAtIndexPos' after capturing an index pulse to set the position at the index pulse to 0 or an arbitrary value
+		void setOffsetAtIndexPos(std::vector<int> driveNumbers, std::vector<int> offsets, bool isAuxPos=false);
+		void setOffsetAtIndexPos(std::vector<int> driveNumbers, std::vector<int> offsets, bool isAuxPos, std::vector<int> touchProbes);
+		void setOffsetAtIndexPos(int driveNumber, int offset=0, bool isAuxPos=false, int touchProbe=1);
+		void setPosOffset(int driveNumber, int32_t offset);
+		void setPosAuxOffset(int driveNumber, int32_t offset);
+		void setTouchProbeFunction(int driveNumber, touchProbeFunctionEnum_ELMO function);
+		
+		bool getTouchProbeIsEnabled(int driveNumber, int touchProbe=1);
+		bool getIndexPulseIsCaptured(int driveNumber, int touchProbe=1);	// both pulses are captured
+		bool getIndexPulsePositiveEdgeIsCaptured(int driveNumber, int touchProbe=1);
+		bool getIndexPulseNegativeEdgeIsCaptured(int driveNumber, int touchProbe=1);
+		int32_t getCapturedPosition(int driveNumber, int touchProbe=1);
+		int32_t getCapturedPositionPositivePulse(int driveNumber, int touchProbe=1);
+		int32_t getCapturedPositionNegativePulse(int driveNumber, int touchProbe=1);
 		
 		
 		// Low level get and set functions to get/write values from/to buffer array
@@ -83,12 +99,12 @@ namespace etherCATInterface {
 		// low level get functions:
 		uint16_t ll_getStatusWord(int driveNumber);
 		int8_t ll_getModeOfOperationDisplay(int driveNumber);
-		int32_t ll_getPositionDemand_UU(int driveNumber);	// 0x6062 position demand; input internal pos controler
-		int32_t ll_getActualPosition_counts(int driveNumber);	// 0x6063 positin raw in counts
-		int32_t ll_getPositionActualValue(int driveNumber);		// 0x6064 position in user unit
+		int32_t ll_getPositionDemand_UU(int driveNumber);			// 0x6062 position demand; input internal pos controler
+		int32_t ll_getActualPosition_counts(int driveNumber);		// 0x6063 positin raw in counts
+		int32_t ll_getPositionActualValue(int driveNumber);			// 0x6064 position in user unit
 		int32_t ll_getVelocitySensorActualValue(int driveNumber);	// 0x6069 velocity from encoder in counts/sec
 		int32_t ll_getVelocityDemand(int driveNumber);
-		int32_t ll_getVelocityActualValue(int driveNumber);		// 0x606c velocity in user units; used internaly for velocity controler
+		int32_t ll_getVelocityActualValue(int driveNumber);			// 0x606c velocity in user units; used internaly for velocity controler
 		int16_t ll_getTorqueDemandValue(int driveNumber);
 		int16_t ll_getTorqueActualValue(int driveNumber);
 		uint16_t ll_getTouchProbeStatus(int driveNumber);
@@ -105,43 +121,10 @@ namespace etherCATInterface {
 		int16_t ll_getCurrentActualValue(int driveNumber);
 		
 		
-		
-		// index puls
-		bool enableCapturingIndexPulse(std::vector<int> driveNumbers);
-		bool enableCapturingIndexPulse(std::vector<int> driveNumbers, std::vector<int> touchProbes);
-		bool enableCapturingIndexPulse(int driveNumber, int touchProbe=1);
-		bool disableCapturingIndexPulse(int driveNumber, int touchProbe=1);
-	// 		void waitForAllIndexPulses(std::array<int, numberOfWheels> driveNumbers, int pollingTimeUSec=1e5);
-	// 		void waitForAllIndexPulses(std::array<int, numberOfWheels> driveNumbers, std::array<int, numberOfWheels> touchProbes, int pollingTimeUSec=1e5);
-	// 		void waitForAllIndexPulses(int driveNumber, int touchProbe=1, int pollingTimeUSec=1e5);
-		void setOffsetAtIndexPos(std::vector<int> driveNumbers, std::vector<int> offsets, bool isAuxPos=false);
-		void setOffsetAtIndexPos(std::vector<int> driveNumbers, std::vector<int> offsets, bool isAuxPos, std::vector<int> touchProbes);
-		void setOffsetAtIndexPos(int driveNumber, int offset=0, bool isAuxPos=false, int touchProbe=1);
-		void setPosOffset(int driveNumber, int32_t offset);
-		void setPosAuxOffset(int driveNumber, int32_t offset);
-		void setTouchProbeFunction(int driveNumber, touchProbeFunctionEnum_ELMO function);
-		
-		bool getTouchProbeIsEnabled(int driveNumber, int touchProbe=1);
-		bool getIndexPulseIsCaptured(int driveNumber, int touchProbe=1);	// both pulses are captured
-		bool getIndexPulsePositiveEdgeIsCaptured(int driveNumber, int touchProbe=1);
-		bool getIndexPulseNegativeEdgeIsCaptured(int driveNumber, int touchProbe=1);
-// 		bool getIndexPulseIsCapturedIsValid(int driveNumber, int touchProbe=1);
-		int32_t getCapturedPosition(int driveNumber, int touchProbe=1);			// compensated for direction of rotation
-		int32_t getCapturedPositionPositivePulse(int driveNumber, int touchProbe=1);
-		int32_t getCapturedPositionNegativePulse(int driveNumber, int touchProbe=1);
-	// 		bool isDirectionOfRotationPositive(int driveNumber, int touchProbe=1);
-		
-// 		touchProbeStateEnum touchProbeState[numberOfDrives];
-		
-		
-		
-		
-		
-	// 	private:
-		ecmasterlib::EtherCATMain* etherCATStack;
+		private:
+		ecmasterlib::EcMasterlibMain* etherCATStack;
 		uint8_t* inBuffer;
 		uint8_t* outBuffer;
-		
 		
 		
 		struct drive {

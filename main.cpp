@@ -5,7 +5,7 @@
 #include <eeros/logger/StreamLogWriter.hpp>
 #include <eeros/core/Executor.hpp>
 
-#include <EtherCATMain.hpp>
+#include <EcMasterlibMain.hpp>
 
 #include "etherCatInterface/EtherCATInterfaceElmo.hpp"
 using namespace etherCATInterface;
@@ -13,7 +13,7 @@ using namespace etherCATInterface;
 
 
 
-ecmasterlib::EtherCATMain* etherCATStackPtr;
+ecmasterlib::EcMasterlibMain* etherCATStackPtr;
 EtherCATInterfaceElmo* elmoDrivesPtr;
 
 bool running = true;
@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
 
 	// EtherCAT
 	// ////////////////////////////////////////////////////////////////////////
-	auto etherCATStack = ecmasterlib::EtherCATMain::createInstance(argc, argv, byteSizePerSlave*numberOfDrivesTotal);
+	auto etherCATStack = ecmasterlib::EcMasterlibMain::createInstance(argc, argv, byteSizePerSlave*numberOfDrivesTotal);
 	signal(SIGINT, signalHandler);
 	etherCATStackPtr = etherCATStack;
 	sleep(9);

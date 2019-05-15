@@ -2,12 +2,12 @@
 #define ETHERCAT_INTERFACE_BASE_HPP_
 
 #include "EtherCATInterfaceBase_config.hpp"
-#include <EtherCATMain.hpp>
+#include <EcMasterlibMain.hpp>
 
 namespace etherCATInterface {
 	class EtherCATInterfaceBase {
 	public:
-		EtherCATInterfaceBase(ecmasterlib::EtherCATMain* etherCATStack);
+		EtherCATInterfaceBase(ecmasterlib::EcMasterlibMain* etherCATStack);
 		
 		// basic set functions:
 		void set8bit(uint32_t offsetInByte, uint8_t payload);
@@ -35,7 +35,7 @@ namespace etherCATInterface {
 		bool checkMaskedBits(uint16_t variable, uint16_t compareWord, uint16_t mask);
 
 		private:
-		ecmasterlib::EtherCATMain* etherCATStack;
+		ecmasterlib::EcMasterlibMain* etherCATStack;
 		uint8_t* inBuffer;
 		uint8_t* outBuffer;
 	};
