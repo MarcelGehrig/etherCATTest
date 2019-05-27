@@ -70,19 +70,20 @@ public:
 		
 	int action() {
 		
-		log.info() << "Homing drives";
+		log.info() << "Homing drive: " << drive;
 		elmoDrives.setModeOfOperation(drive, etherCATInterface::cyclicSynchronousVelocity);
-		elmoDrives.ll_setTargetVelocity(0, 5000);
+        elmoDrives.enableDrive(drive);
+		elmoDrives.ll_setTargetVelocity(drive, 5000);
 		
 		int attempts = 0;
-		while ( attempts < 10 && !elmoDrives.enableCapturingIndexPulse(0)) {
+		while ( attempts < 10 && !elmoDrives.enableCapturingIndexPulse(drive)) {
 			wait(0.1);
 			attempts++;
 		}
 	}
 	
 	bool checkExitCondition() {
-		isHomed = elmoDrives.getIndexPulseIsCaptured(0);
+		isHomed = elmoDrives.getIndexPulseIsCaptured(drive);
 		return isHomed;
 	}
 	
@@ -109,16 +110,16 @@ public:
 		log(log)
 		{ }
 		
-	int operator() (int drive, double velocity) {
-		this->velocity = velocity;
-		this->drive = drive;
+	int operator() (int driveNr, double velocityVal) {
+		velocity = velocityVal;
+		drive = driveNr;
 		return start();
 	}
 
 	int action() {
 		log.info() << "Set drive '" << drive << "' to velocity: " << velocity;
 		elmoDrives.setModeOfOperation(drive, etherCATInterface::cyclicSynchronousVelocity);
-		elmoDrives.ll_setTargetVelocity(0, velocity);
+		elmoDrives.ll_setTargetVelocity(drive, velocity);
 	}
 	
 private:
@@ -172,15 +173,16 @@ public:
 		step_initDrives();
 // 		SS.triggerEvent(safetyProp.enableDrives);
 		
+        // homing drives with index pulse (manual switch)
 		SS.triggerEvent(safetyProp.enableDrives);
-		step_homingDrives(0);
+		step_homingDrives(1);
 		SS.triggerEvent(safetyProp.disableDrives);
 		if ( step_homingDrives.getIsHomed() )  {
-			elmoDrives.setOffsetAtIndexPos(0);
+			elmoDrives.setOffsetAtIndexPos(1, 0);
 			log.info() << "Drives homed";
-			log.info() << "Index pulse captured at:      " << elmoDrives.getCapturedPosition(0);
-			log.info() << "getPosition(0):               " << elmoDrives.getPosition(0);
-			log.info() << "ll_getPositionActualValue(0): " << elmoDrives.ll_getPositionActualValue(0);
+			log.info() << "Index pulse captured at:      " << elmoDrives.getCapturedPosition(1);
+			log.info() << "getPosition(1):               " << elmoDrives.getPosition(1);
+			log.info() << "ll_getPositionActualValue(1): " << elmoDrives.ll_getPositionActualValue(1);
 		}
 		else {
 			log.info() << "Drives NOT homed due to timeout";
@@ -188,15 +190,20 @@ public:
 		log.info();
 		
 		
-		// set velocity	
+		// simple set velocity test
+// 		log.info() << "Set velocity test started";
 // 		SS.triggerEvent(safetyProp.enableDrives);
-// 		step_setVelocity(0, -5000);
-// 		wait(4);
 // 		step_setVelocity(0, 0);
+// 		elmoDrives.enableDrive(0);
+// 		step_setVelocity(1, 0);
+// 		elmoDrives.enableDrive(1);
+// 		step_setVelocity(1, -5000);
+// 		wait(4);
+// 		SS.triggerEvent(safetyProp.disableDrives);
 		
 		
-		// timingPerformanceTest
-// 		log.info() << "timingPerformanceTest started";
+		// timingPerformanceTest/*
+// 		log.info() << "timingPerformanceTest started";*/
 // 		elmoDrives.ll_setTargetTorque(0, 0);
 // 		elmoDrives.setModeOfOperation(0, etherCATInterface::cyclicSynchronousTorque);
 // 		SS.triggerEvent(safetyProp.enableDrives);
@@ -215,9 +222,11 @@ public:
 			log.info() << "SS level:                     " << SS.getCurrentLevel();
 			log.info() << "DI:                           0x" << std::hex << CS.getEncoders.getOutDigitalInputs().getSignal().getValue();
 			log.info() << "Velocity:                     " << CS.getEncoders.getOutVelocity().getSignal().getValue();
-			log.info() << "Vel SC:                       " << CS.demuxVelocities.getOut(0).getSignal().getValue();
-			log.info() << "getPosition(0):               " << elmoDrives.getPosition(0);
-			log.info() << "ll_getPositionActualValue(0): " << elmoDrives.ll_getPositionActualValue(0);
+			log.info() << "Vel SC:                       " << CS.demuxVelocities.getOut(1).getSignal().getValue();
+			log.info() << "getPosition(1):               " << elmoDrives.getPosition(1);
+			log.info() << "ll_getPositionActualValue(1): " << elmoDrives.ll_getPositionActualValue(1);
+			log.info() << "ll_getStatusWord(0): " << elmoDrives.ll_getStatusWord(0);
+			log.info() << "ll_getStatusWord(1): " << elmoDrives.ll_getStatusWord(1);
 			log.info();
 			
 			if ( i%2 == 0 )

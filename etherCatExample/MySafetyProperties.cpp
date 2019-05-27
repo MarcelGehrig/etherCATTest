@@ -118,11 +118,14 @@ MySafetyProperties::MySafetyProperties(MyControlSystem& CS, EtherCATInterfaceElm
 	});
 	
 	slDrivesDisabled.setLevelAction([&](SafetyContext* privateContext) {
-		elmoDrives.disableAllDrives();
+		for (int driveNumber = 0; driveNumber < numberOfDrives; driveNumber++ ) {
+            elmoDrives.disableDrive(driveNumber);
+        }
+// 		elmoDrives.disableAllDrives();
 	});
 	
 	slDrivesEnabled.setLevelAction([&](SafetyContext* privateContext) {
-		elmoDrives.enableDrive(0);
+// 		elmoDrives.enableDrive(0);
 // 		elmoDrives.enableAllDrives();
 		// check max speed and acceleration with signal checker
 	});
